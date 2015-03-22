@@ -264,7 +264,7 @@ namespace JustOlaf
             {
                 foreach (var enemy in
                     ObjectManager.Get<Obj_AI_Hero>()
-                        .Where(x => x.IsValidTarget(R.Range))
+                        .Where(x => x.IsValidTarget(Q.Range))
                         .Where(x => !x.IsZombie)
                         .Where(x => !x.IsDead))
                 {
