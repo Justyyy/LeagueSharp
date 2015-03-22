@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics.Eventing.Reader;
 using System.Drawing.Printing;
 using System.Linq;
@@ -197,6 +197,7 @@ namespace JustOlaf
 
             var qmana = Config.Item("qmana").GetValue<Slider>().Value;
 
+<<<<<<< HEAD
             if (Q.IsReady() && player.ManaPercentage() >= qmana)
             {
                 PredictionOutput Qpredict = Q.GetPrediction(target);
@@ -212,6 +213,13 @@ namespace JustOlaf
                     Q.Cast(pred.CastPosition);
             }
          
+=======
+            if (Q.IsReady() && target.IsValidTarget(Q.Range) && player.ManaPercentage() >= qmana)
+                Q.CastIfHitchanceEquals(target, HitChance.High);
+
+            //var emana = Config.Item("emana").GetValue<Slider>().Value;
+
+>>>>>>> origin/master
             if (E.IsReady() && Config.Item("UseE").GetValue<bool>() && target.IsValidTarget(E.Range))
                 E.CastOnUnit(target);
 
@@ -283,6 +291,7 @@ namespace JustOlaf
                     var qDmg = Q.GetDamage(enemy);
                     var eDmg = E.GetDamage(enemy);
 
+<<<<<<< HEAD
                     if (Config.Item("ksQ").GetValue<bool>() && enemy.Health <= qDmg)
                     if (Q.IsReady())
                         {
@@ -298,6 +307,12 @@ namespace JustOlaf
                             if (pred.Hitchance >= (HitChance)Config.Item("hitQ").GetValue<Slider>().Value + 1)
                                 Q.Cast(pred.CastPosition);
                         }
+=======
+                    if (Config.Item("ksQ").GetValue<bool>() && enemy.IsValidTarget(Q.Range) && enemy.Health <= qDmg)
+                    {
+                        Q.CastIfHitchanceEquals(enemy, HitChance.High);
+                    }
+>>>>>>> origin/master
 
                     if (Config.Item("ksE").GetValue<bool>() && enemy.IsValidTarget(E.Range) && enemy.Health <= eDmg)
                     {
