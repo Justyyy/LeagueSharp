@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics.Eventing.Reader;
 using System.Drawing.Printing;
 using System.Linq;
@@ -68,7 +68,7 @@ namespace JustOlaf
 
             combo.SubMenu("[SBTW] ManaManager").AddItem(new MenuItem("qmana", "[Q] Mana %").SetValue(new Slider(10, 100, 0)));
             combo.SubMenu("[SBTW] ManaManager").AddItem(new MenuItem("wmana", "[W] Mana %").SetValue(new Slider(10, 100, 0)));
-            combo.SubMenu("[SBTW] ManaManager").AddItem(new MenuItem("emana", "[E] Mana %").SetValue(new Slider(10, 100, 0)));
+            //combo.SubMenu("[SBTW] ManaManager").AddItem(new MenuItem("emana", "[E] Mana %").SetValue(new Slider(10, 100, 0)));
             combo.SubMenu("[SBTW] ManaManager").AddItem(new MenuItem("rmana", "[R] Mana %").SetValue(new Slider(15, 100, 0)));
 
             combo.SubMenu("[Q] Settings").AddItem(new MenuItem("UseQ", "Use Q").SetValue(true));
@@ -115,7 +115,7 @@ namespace JustOlaf
             //KSMENU
             Config.SubMenu("[JO]: Killsteal Settings").AddItem(new MenuItem("ksQ", "Use Q For KS").SetValue(true));
             Config.SubMenu("[JO]: Killsteal Settings").AddItem(new MenuItem("ksE", "Use E For KS").SetValue(true));
-            
+
             drawing.AddItem(new MenuItem("Draw_Disabled", "Disable All Spell Drawings").SetValue(false));
             drawing.AddItem(new MenuItem("Qdraw", "Draw Q Range").SetValue(new Circle(true, Color.Orange)));
             drawing.AddItem(new MenuItem("Edraw", "Draw E Range").SetValue(new Circle(true, Color.AntiqueWhite)));
@@ -197,10 +197,9 @@ namespace JustOlaf
             if (Q.IsReady() && target.IsValidTarget(Q.Range) && player.ManaPercentage() >= qmana)
                 Q.CastIfHitchanceEquals(target, HitChance.High);
 
-            var emana = Config.Item("emana").GetValue<Slider>().Value;
+            //var emana = Config.Item("emana").GetValue<Slider>().Value;
 
-            if (E.IsReady() && Config.Item("UseE").GetValue<bool>() && target.IsValidTarget(E.Range)
-            && player.ManaPercentage() >= emana)
+            if (E.IsReady() && Config.Item("UseE").GetValue<bool>() && target.IsValidTarget(E.Range))
                 E.CastOnUnit(target);
 
             var wmana = Config.Item("wmana").GetValue<Slider>().Value;
@@ -213,7 +212,7 @@ namespace JustOlaf
 
             if (R.IsReady() && target.IsValidTarget(R.Range) && Config.Item("UseR").GetValue<bool>())
                 R.Cast();
-                        
+
             if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
                 items();
 
@@ -389,9 +388,7 @@ namespace JustOlaf
                 W.Cast();
 
             if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear
-                && Config.Item("laneE").GetValue<bool>()
-                && player.ManaPercentage() >= lanemana)
-
+                && Config.Item("laneE").GetValue<bool>())
                 E.CastOnUnit(minion);
 
         }
@@ -400,7 +397,7 @@ namespace JustOlaf
         private static void Jungleclear()
         {
             var jlanemana = Config.Item("jungleclearmana").GetValue<Slider>().Value;
-            var MinionsQ = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, Q.Range + Q.Width, 
+            var MinionsQ = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, Q.Range + Q.Width,
                 MinionTypes.All, MinionTeam.Neutral, MinionOrderTypes.MaxHealth);
 
             var Qfarmpos = Q.GetLineFarmLocation(MinionsQ, Q.Width);
@@ -420,9 +417,7 @@ namespace JustOlaf
                 Q.Cast(Qfarmpos.Position);
 
             if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear
-                && Config.Item("jungleE").GetValue<bool>()
-                && player.ManaPercentage() >= jlanemana)
-
+                && Config.Item("jungleE").GetValue<bool>())
                 E.CastOnUnit(minion);
 
         }
