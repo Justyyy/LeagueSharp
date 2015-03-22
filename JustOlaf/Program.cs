@@ -371,9 +371,9 @@ namespace JustOlaf
         private static void Laneclear()
         {
             var lanemana = Config.Item("laneclearmana").GetValue<Slider>().Value;
-            var allMinionsQ = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, W.Range + W.Width + 10);
+            var allMinionsQ = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, Q.Range + Q.Width);
 
-            var Qfarmpos = W.GetLineFarmLocation(allMinionsQ, W.Width);
+            var Qfarmpos = Q.GetLineFarmLocation(allMinionsQ, Q.Width);
 
 
             if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear
@@ -400,9 +400,10 @@ namespace JustOlaf
         private static void Jungleclear()
         {
             var jlanemana = Config.Item("jungleclearmana").GetValue<Slider>().Value;
-            var MinionsQ = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, W.Range + W.Width + 10, MinionTypes.All, MinionTeam.Neutral, MinionOrderTypes.MaxHealth);
+            var MinionsQ = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, Q.Range + Q.Width, 
+                MinionTypes.All, MinionTeam.Neutral, MinionOrderTypes.MaxHealth);
 
-            var Qfarmpos = W.GetLineFarmLocation(MinionsQ, Q.Width);
+            var Qfarmpos = Q.GetLineFarmLocation(MinionsQ, Q.Width);
 
 
             if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear
