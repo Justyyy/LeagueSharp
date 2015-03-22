@@ -64,14 +64,16 @@ namespace JustOlaf
 
             var combo = Config.AddSubMenu(new Menu("[JO]: Combo Settings", "Combo Settings"));
             var harass = Config.AddSubMenu(new Menu("JO]: Harass Settings", "Harass Settings"));
-            var drawing = Config.AddSubMenu(new Menu("[JO]: Draw Settings", "Draw"));
+            var drawing = Config.AddSubMenu(new Menu("[JO]: Draw Settings", "Draw Settings"));
 
             combo.SubMenu("[SBTW] ManaManager").AddItem(new MenuItem("qmana", "[Q] Mana %").SetValue(new Slider(10, 100, 0)));
             combo.SubMenu("[SBTW] ManaManager").AddItem(new MenuItem("wmana", "[W] Mana %").SetValue(new Slider(10, 100, 0)));
-            combo.SubMenu("[SBTW] ManaManager").AddItem(new MenuItem("emana", "[E] Mana %").SetValue(new Slider(10, 100, 0)));
+            //combo.SubMenu("[SBTW] ManaManager").AddItem(new MenuItem("emana", "[E] Mana %").SetValue(new Slider(10, 100, 0)));
             combo.SubMenu("[SBTW] ManaManager").AddItem(new MenuItem("rmana", "[R] Mana %").SetValue(new Slider(15, 100, 0)));
 
             combo.SubMenu("[Q] Settings").AddItem(new MenuItem("UseQ", "Use Q").SetValue(true));
+            combo.SubMenu("[Q] Settings").AddItem(new MenuItem("qr", "Mininum Distance to Q")).SetValue(new Slider(550, 0, (int)Q.Range));
+            combo.SubMenu("[Q] Settings").AddItem(new MenuItem("qr2", "Maximum Distance to Q")).SetValue(new Slider((int)Q.Range, 0, (int)Q.Range));
             combo.SubMenu("[W] Settings").AddItem(new MenuItem("UseW", "Use W").SetValue(true));
             combo.SubMenu("[E] Settings").AddItem(new MenuItem("UseE", "Use E").SetValue(true));
             combo.SubMenu("[R] Settings").AddItem(new MenuItem("UseR", "Use R (TOGGLE) ").SetValue(new KeyBind('K', KeyBindType.Toggle)));
@@ -115,7 +117,7 @@ namespace JustOlaf
             //KSMENU
             Config.SubMenu("[JO]: Killsteal Settings").AddItem(new MenuItem("ksQ", "Use Q For KS").SetValue(true));
             Config.SubMenu("[JO]: Killsteal Settings").AddItem(new MenuItem("ksE", "Use E For KS").SetValue(true));
-            
+
             drawing.AddItem(new MenuItem("Draw_Disabled", "Disable All Spell Drawings").SetValue(false));
             drawing.AddItem(new MenuItem("Qdraw", "Draw Q Range").SetValue(new Circle(true, Color.Orange)));
             drawing.AddItem(new MenuItem("Edraw", "Draw E Range").SetValue(new Circle(true, Color.AntiqueWhite)));
@@ -126,6 +128,7 @@ namespace JustOlaf
             harass.AddItem(new MenuItem("harassmana", "Mana Percentage").SetValue(new Slider(30, 100, 0)));
 
             Config.SubMenu("[JO]: Misc Settings").AddItem(new MenuItem("DrawD", "Damage Indicator").SetValue(true));
+            Config.SubMenu("[JO]: Misc Settings").AddItem(new MenuItem("hitQ", "Q Hitchance")).SetValue(new Slider(3, 1, 4));
 
             Drawing.OnDraw += OnDraw;
             Game.OnUpdate += Game_OnGameUpdate;
@@ -194,13 +197,22 @@ namespace JustOlaf
 
             var qmana = Config.Item("qmana").GetValue<Slider>().Value;
 
-            if (Q.IsReady() && target.IsValidTarget(Q.Range) && player.ManaPercentage() >= qmana)
-                Q.CastIfHitchanceEquals(target, HitChance.High);
-
-            var emana = Config.Item("emana").GetValue<Slider>().Value;
-
-            if (E.IsReady() && Config.Item("UseE").GetValue<bool>() && target.IsValidTarget(E.Range)
-            && player.ManaPercentage() >= emana)
+            if (Q.IsReady() && player.ManaPercentage() >= qmana)
+            {
+                PredictionOutput Qpredict = Q.GetPrediction(target);
+                var hithere = Qpredict.CastPosition.Extend(ObjectManager.Player.Position, -100);
+                if (player.Distance(target.ServerPosition) >= 350)
+                    if (target.Distance(player.ServerPosition) > Config.Item("qr").GetValue<Slider>().Value)
+                        Q.Cast(hithere);
+            }
+            else
+            {
+                var pred = Q.GetPrediction(target);
+                if (pred.Hitchance >= (HitChance)Config.Item("hitQ").GetValue<Slider>().Value + 1)
+                    Q.Cast(pred.CastPosition);
+            }
+         
+            if (E.IsReady() && Config.Item("UseE").GetValue<bool>() && target.IsValidTarget(E.Range))
                 E.CastOnUnit(target);
 
             var wmana = Config.Item("wmana").GetValue<Slider>().Value;
@@ -213,7 +225,7 @@ namespace JustOlaf
 
             if (R.IsReady() && target.IsValidTarget(R.Range) && Config.Item("UseR").GetValue<bool>())
                 R.Cast();
-                        
+
             if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
                 items();
 
@@ -228,7 +240,7 @@ namespace JustOlaf
             Ignite = player.GetSpellSlot("summonerdot");
 
             if (Ignite.IsReady())
-                damage += player.GetSummonerSpellDamage(target, Damage.SummonerSpell.Ignite);
+                damage += player.GetSummonerSpellDamage(target, Damage.SummonerSpell.Ignite); //ignitedmg
 
             if (Items.HasItem(3153) && Items.CanUseItem(3153))
                 damage += player.GetItemDamage(target, Damage.DamageItems.Botrk); //ITEM BOTRK
@@ -244,7 +256,7 @@ namespace JustOlaf
                 }
             }
 
-            if (Q.IsReady() && Config.Item("UseQ").GetValue<KeyBind>().Active) // rdamage
+            if (Q.IsReady() && Config.Item("UseQ").GetValue<bool>()) // qdamage
             {
 
                 damage += Q.GetDamage(target);
@@ -261,21 +273,36 @@ namespace JustOlaf
 
         private static void Killsteal()
         {
-            foreach (Obj_AI_Hero target in
-                ObjectManager.Get<Obj_AI_Hero>()
-                    .Where(hero => hero.IsValidTarget(Q.Range) && !hero.HasBuffOfType(BuffType.Invulnerability) && hero.IsEnemy)
-                )
             {
-                var qDmg = player.GetSpellDamage(target, SpellSlot.Q);
-                var eDmg = player.GetSpellDamage(target, SpellSlot.E);
-                if (Config.Item("ksQ").GetValue<bool>() && target.IsValidTarget(Q.Range) && target.Health <= qDmg)
+                foreach (var enemy in
+                    ObjectManager.Get<Obj_AI_Hero>()
+                        .Where(x => x.IsValidTarget(Q.Range))
+                        .Where(x => !x.IsZombie)
+                        .Where(x => !x.IsDead))
                 {
-                    Q.CastIfHitchanceEquals(target, HitChance.High);
-                }
+                    var qDmg = Q.GetDamage(enemy);
+                    var eDmg = E.GetDamage(enemy);
 
-                if (Config.Item("ksE").GetValue<bool>() && target.IsValidTarget(E.Range) && target.Health <= eDmg)
-                {
-                    E.Cast(target);
+                    if (Config.Item("ksQ").GetValue<bool>() && enemy.Health <= qDmg)
+                    if (Q.IsReady())
+                        {
+                            PredictionOutput Qpredict = Q.GetPrediction(enemy);
+                            var hithere = Qpredict.CastPosition.Extend(ObjectManager.Player.Position, -100);
+                            if (player.Distance(enemy.ServerPosition) >= 350)
+                                if (enemy.Distance(player.ServerPosition) > Config.Item("qr").GetValue<Slider>().Value)
+                                    Q.Cast(hithere);
+                        }
+                        else
+                        {
+                            var pred = Q.GetPrediction(enemy);
+                            if (pred.Hitchance >= (HitChance)Config.Item("hitQ").GetValue<Slider>().Value + 1)
+                                Q.Cast(pred.CastPosition);
+                        }
+
+                    if (Config.Item("ksE").GetValue<bool>() && enemy.IsValidTarget(E.Range) && enemy.Health <= eDmg)
+                    {
+                        E.Cast(enemy);
+                    }
                 }
             }
         }
@@ -344,15 +371,24 @@ namespace JustOlaf
                 return;
 
             if (Q.IsReady()
-                && Config.Item("hQ").GetValue<bool>()
-                && target.IsValidTarget(Q.Range)
-                && player.ManaPercentage() >= harassmana)
-
-                Q.CastIfHitchanceEquals(target, HitChance.High);
-
+                && Config.Item("hQ").GetValue<bool>() && player.ManaPercentage() >= harassmana)
+                {
+                    PredictionOutput Qpredict = Q.GetPrediction(target);
+                    var hithere = Qpredict.CastPosition.Extend(ObjectManager.Player.Position, -100);
+                    if (player.Distance(target.ServerPosition) >= 350)
+                        if (target.Distance(player.ServerPosition) > Config.Item("qr").GetValue<Slider>().Value)
+                            Q.Cast(hithere);
+                }
+                else
+                {
+                    var pred = Q.GetPrediction(target);
+                    if (pred.Hitchance >= (HitChance)Config.Item("hitQ").GetValue<Slider>().Value + 1)
+                        Q.Cast(pred.CastPosition);
+                }
+               
             if (W.IsReady()
                 && Config.Item("hW").GetValue<bool>()
-                && player.ManaPercentage() >= harassmana)
+                && player.ManaPercentage() >= harassmana && target.IsValidTarget(Orbwalking.GetRealAutoAttackRange(player)))
 
                 W.Cast();
 
@@ -367,16 +403,16 @@ namespace JustOlaf
         private static void Laneclear()
         {
             var lanemana = Config.Item("laneclearmana").GetValue<Slider>().Value;
-            var allMinionsQ = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, W.Range + W.Width + 10);
+            var allMinionsQ = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, Q.Range + Q.Width);
 
-            var Qfarmpos = W.GetLineFarmLocation(allMinionsQ, W.Width);
+            var Qfarmpos = Q.GetLineFarmLocation(allMinionsQ, Q.Width);
 
 
             if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear
                 && Qfarmpos.MinionsHit >= 2 && Config.Item("laneQ").GetValue<bool>()
                 && player.ManaPercentage() >= lanemana)
 
-                Q.Cast(minion);
+                Q.Cast(Qfarmpos.Position);
 
             if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear
                && Config.Item("laneW").GetValue<bool>()
@@ -385,9 +421,7 @@ namespace JustOlaf
                 W.Cast();
 
             if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear
-                && Config.Item("laneE").GetValue<bool>()
-                && player.ManaPercentage() >= lanemana)
-
+                && Config.Item("laneE").GetValue<bool>())
                 E.CastOnUnit(minion);
 
         }
@@ -396,9 +430,10 @@ namespace JustOlaf
         private static void Jungleclear()
         {
             var jlanemana = Config.Item("jungleclearmana").GetValue<Slider>().Value;
-            var MinionsQ = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, W.Range + W.Width + 10, MinionTypes.All, MinionTeam.Neutral, MinionOrderTypes.MaxHealth);
+            var MinionsQ = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, Q.Range + Q.Width,
+                MinionTypes.All, MinionTeam.Neutral, MinionOrderTypes.MaxHealth);
 
-            var Qfarmpos = W.GetLineFarmLocation(MinionsQ, W.Width + 100);
+            var Qfarmpos = Q.GetLineFarmLocation(MinionsQ, Q.Width);
 
 
             if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear
@@ -412,12 +447,10 @@ namespace JustOlaf
                 && Config.Item("jungleQ").GetValue<bool>()
                 && player.ManaPercentage() >= jlanemana)
 
-                Q.Cast(minion);
+                Q.Cast(Qfarmpos.Position);
 
             if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear
-                && Config.Item("jungleE").GetValue<bool>()
-                && player.ManaPercentage() >= jlanemana)
-
+                && Config.Item("jungleE").GetValue<bool>())
                 E.CastOnUnit(minion);
 
         }
