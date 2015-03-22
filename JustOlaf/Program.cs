@@ -228,7 +228,7 @@ namespace JustOlaf
             Ignite = player.GetSpellSlot("summonerdot");
 
             if (Ignite.IsReady())
-                damage += player.GetSummonerSpellDamage(target, Damage.SummonerSpell.Ignite);
+                damage += player.GetSummonerSpellDamage(target, Damage.SummonerSpell.Ignite); //ignitedmg
 
             if (Items.HasItem(3153) && Items.CanUseItem(3153))
                 damage += player.GetItemDamage(target, Damage.DamageItems.Botrk); //ITEM BOTRK
@@ -244,7 +244,7 @@ namespace JustOlaf
                 }
             }
 
-            if (Q.IsReady() && Config.Item("UseQ").GetValue<KeyBind>().Active) // rdamage
+            if (Q.IsReady() && Config.Item("UseQ").GetValue<bool>()) // qdamage
             {
 
                 damage += Q.GetDamage(target);
@@ -261,21 +261,25 @@ namespace JustOlaf
 
         private static void Killsteal()
         {
-            foreach (Obj_AI_Hero target in
-                ObjectManager.Get<Obj_AI_Hero>()
-                    .Where(hero => hero.IsValidTarget(Q.Range) && !hero.HasBuffOfType(BuffType.Invulnerability) && hero.IsEnemy)
-                )
             {
-                var qDmg = player.GetSpellDamage(target, SpellSlot.Q);
-                var eDmg = player.GetSpellDamage(target, SpellSlot.E);
-                if (Config.Item("ksQ").GetValue<bool>() && target.IsValidTarget(Q.Range) && target.Health <= qDmg)
+                foreach (var enemy in
+                    ObjectManager.Get<Obj_AI_Hero>()
+                        .Where(x => x.IsValidTarget(Q.Range))
+                        .Where(x => !x.IsZombie)
+                        .Where(x => !x.IsDead))
                 {
-                    Q.CastIfHitchanceEquals(target, HitChance.High);
-                }
+                    var qDmg = Q.GetDamage(enemy);
+                    var eDmg = E.GetDamage(enemy);
 
-                if (Config.Item("ksE").GetValue<bool>() && target.IsValidTarget(E.Range) && target.Health <= eDmg)
-                {
-                    E.Cast(target);
+                    if (Config.Item("ksQ").GetValue<bool>() && enemy.IsValidTarget(Q.Range) && enemy.Health <= qDmg)
+                    {
+                        Q.CastIfHitchanceEquals(enemy, HitChance.High);
+                    }
+
+                    if (Config.Item("ksE").GetValue<bool>() && enemy.IsValidTarget(E.Range) && enemy.Health <= eDmg)
+                    {
+                        E.Cast(enemy);
+                    }
                 }
             }
         }
@@ -352,7 +356,7 @@ namespace JustOlaf
 
             if (W.IsReady()
                 && Config.Item("hW").GetValue<bool>()
-                && player.ManaPercentage() >= harassmana)
+                && player.ManaPercentage() >= harassmana && target.IsValidTarget(Orbwalking.GetRealAutoAttackRange(player)))
 
                 W.Cast();
 
@@ -367,16 +371,16 @@ namespace JustOlaf
         private static void Laneclear()
         {
             var lanemana = Config.Item("laneclearmana").GetValue<Slider>().Value;
-            var allMinionsQ = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, W.Range + W.Width + 10);
+            var allMinionsQ = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, Q.Range + Q.Width);
 
-            var Qfarmpos = W.GetLineFarmLocation(allMinionsQ, W.Width);
+            var Qfarmpos = Q.GetLineFarmLocation(allMinionsQ, Q.Width);
 
 
             if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear
                 && Qfarmpos.MinionsHit >= 2 && Config.Item("laneQ").GetValue<bool>()
                 && player.ManaPercentage() >= lanemana)
 
-                Q.Cast(minion);
+                Q.Cast(Qfarmpos.Position);
 
             if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear
                && Config.Item("laneW").GetValue<bool>()
@@ -396,9 +400,10 @@ namespace JustOlaf
         private static void Jungleclear()
         {
             var jlanemana = Config.Item("jungleclearmana").GetValue<Slider>().Value;
-            var MinionsQ = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, W.Range + W.Width + 10, MinionTypes.All, MinionTeam.Neutral, MinionOrderTypes.MaxHealth);
+            var MinionsQ = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, Q.Range + Q.Width, 
+                MinionTypes.All, MinionTeam.Neutral, MinionOrderTypes.MaxHealth);
 
-            var Qfarmpos = W.GetLineFarmLocation(MinionsQ, W.Width + 100);
+            var Qfarmpos = Q.GetLineFarmLocation(MinionsQ, Q.Width);
 
 
             if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear
@@ -412,7 +417,7 @@ namespace JustOlaf
                 && Config.Item("jungleQ").GetValue<bool>()
                 && player.ManaPercentage() >= jlanemana)
 
-                Q.Cast(minion);
+                Q.Cast(Qfarmpos.Position);
 
             if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear
                 && Config.Item("jungleE").GetValue<bool>()

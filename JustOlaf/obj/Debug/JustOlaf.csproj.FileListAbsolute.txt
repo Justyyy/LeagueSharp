@@ -27,3 +27,11 @@ C:\Users\Koray\Documents\Visual Studio 2013\Projects\JustOlaf - Updated\bin\Debu
 C:\Users\Koray\Documents\Visual Studio 2013\Projects\JustOlaf - Updated\bin\Debug\clipper_library.dll
 C:\Users\Koray\Documents\Visual Studio 2013\Projects\JustOlaf - Updated\bin\Debug\LeagueSharp.xml
 C:\Users\Koray\Documents\Visual Studio 2013\Projects\JustOlaf - Updated\obj\Debug\JustOlaf.csprojResolveAssemblyReference.cache
+C:\Users\Dominic\Documents\GitHub\LeagueSharp\JustOlaf\bin\Debug\JustOlaf.exe.config
+C:\Users\Dominic\Documents\GitHub\LeagueSharp\JustOlaf\obj\Debug\JustOlaf.exe
+C:\Users\Dominic\Documents\GitHub\LeagueSharp\JustOlaf\obj\Debug\JustOlaf.pdb
+C:\Users\Dominic\Documents\GitHub\LeagueSharp\JustOlaf\bin\Debug\JustOlaf.exe
+C:\Users\Dominic\Documents\GitHub\LeagueSharp\JustOlaf\bin\Debug\JustOlaf.pdb
+C:\Users\Dominic\Documents\GitHub\LeagueSharp\JustOlaf\bin\Debug\clipper_library.dll
+C:\Users\Dominic\Documents\GitHub\LeagueSharp\JustOlaf\bin\Debug\LeagueSharp.xml
+C:\Users\Dominic\Documents\GitHub\LeagueSharp\JustOlaf\obj\Debug\JustOlaf.csprojResolveAssemblyReference.cache
