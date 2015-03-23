@@ -44,7 +44,7 @@ namespace JustOlaf
             if (player.ChampionName != ChampName)
                 return;
 
-            Notifications.AddNotification("JustOlaf - [V.1.0.0.0]", 8000);
+            Notifications.AddNotification("JustOlaf - [V.1.0.2.0]", 8000);
 
             Killsteal();
 
