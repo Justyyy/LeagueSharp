@@ -129,7 +129,9 @@ namespace JustOlaf
 
             Config.SubMenu("[JO]: Misc Settings").AddItem(new MenuItem("DrawD", "Damage Indicator").SetValue(true));
             Config.SubMenu("[JO]: Misc Settings").AddItem(new MenuItem("hitQ", "Q Hitchance")).SetValue(new Slider(3, 1, 4));
-
+            
+            Config.AddToMainMenu();
+            
             Drawing.OnDraw += OnDraw;
             Game.OnUpdate += Game_OnGameUpdate;
             Drawing.OnEndScene += OnEndScene;
