@@ -46,8 +46,6 @@ namespace JustOlaf
 
             Notifications.AddNotification("JustOlaf - [V.1.0.2.0]", 8000);
 
-            Killsteal();
-
             //Ability Information - Range - Variables.
             Q = new Spell(SpellSlot.Q, 1000);
             Q.SetSkillshot(0.25f, 75f, 1500f, false, SkillshotType.SkillshotLine);
@@ -131,7 +129,7 @@ namespace JustOlaf
             Config.SubMenu("[JO]: Misc Settings").AddItem(new MenuItem("hitQ", "Q Hitchance")).SetValue(new Slider(3, 1, 4));
             
             Config.AddToMainMenu();
-            
+            Killsteal();
             Drawing.OnDraw += OnDraw;
             Game.OnUpdate += Game_OnGameUpdate;
             Drawing.OnEndScene += OnEndScene;
