@@ -21,7 +21,7 @@ namespace JustOlaf
         public static Spell E;
         public static Spell R;
         public static Spell Smite;
-        public static int SpellRangeTick;
+        //public static int SpellRangeTick;
         //Credits to Kurisu for Smite Stuff :^)
         public static readonly int[] SmitePurple = { 3713, 3726, 3725, 3726, 3723 };
         public static readonly int[] SmiteGrey = { 3711, 3722, 3721, 3720, 3719 };
@@ -30,7 +30,7 @@ namespace JustOlaf
 
         private static SpellSlot Ignite;
         private static SpellSlot smiteSlot;
-        private static int LastCast;
+        //private static int LastCast;
         private static readonly Obj_AI_Hero player = ObjectManager.Player;
 
         private static void Main(string[] args)
@@ -44,7 +44,7 @@ namespace JustOlaf
             if (player.ChampionName != ChampName)
                 return;
 
-            Notifications.AddNotification("JustOlaf - [V.1.0.2.0]", 8000);
+            Notifications.AddNotification("JustOlaf - [V.1.0.5.0]", 8000);
 
             //Ability Information - Range - Variables.
             Q = new Spell(SpellSlot.Q, 1000);
@@ -60,22 +60,23 @@ namespace JustOlaf
 
             //COMBOMENU
 
-            var combo = Config.AddSubMenu(new Menu("[JO]: Combo Settings", "Combo Settings"));
-            var harass = Config.AddSubMenu(new Menu("JO]: Harass Settings", "Harass Settings"));
+            var combo = Config.AddSubMenu(new Menu("[JO]: Item Settings", "Item Settings"));
+           // var harass = Config.AddSubMenu(new Menu("JO]: Harass Settings", "Harass Settings"));
             var drawing = Config.AddSubMenu(new Menu("[JO]: Draw Settings", "Draw Settings"));
 
-            combo.SubMenu("[SBTW] ManaManager").AddItem(new MenuItem("qmana", "[Q] Mana %").SetValue(new Slider(10, 100, 0)));
-            combo.SubMenu("[SBTW] ManaManager").AddItem(new MenuItem("wmana", "[W] Mana %").SetValue(new Slider(10, 100, 0)));
+            //Config.SubMenu("[JO]: Combo Settings").AddItem(new MenuItem("qmana", "[Q] Mana %").SetValue(new Slider(10, 100, 0)));
+            //Config.SubMenu("[JO]: Combo Settings").AddItem(new MenuItem("wmana", "[W] Mana %").SetValue(new Slider(10, 100, 0)));
             //combo.SubMenu("[SBTW] ManaManager").AddItem(new MenuItem("emana", "[E] Mana %").SetValue(new Slider(10, 100, 0)));
-            combo.SubMenu("[SBTW] ManaManager").AddItem(new MenuItem("rmana", "[R] Mana %").SetValue(new Slider(15, 100, 0)));
+           // Config.SubMenu("[JO]: Combo Settings").AddItem(new MenuItem("rmana", "[R] Mana %").SetValue(new Slider(15, 100, 0)));
 
-            combo.SubMenu("[Q] Settings").AddItem(new MenuItem("UseQ", "Use Q").SetValue(true));
-            combo.SubMenu("[Q] Settings").AddItem(new MenuItem("qr", "Mininum Distance to Q")).SetValue(new Slider(550, 0, (int)Q.Range));
-            combo.SubMenu("[Q] Settings").AddItem(new MenuItem("qr2", "Maximum Distance to Q")).SetValue(new Slider((int)Q.Range, 0, (int)Q.Range));
-            combo.SubMenu("[W] Settings").AddItem(new MenuItem("UseW", "Use W").SetValue(true));
-            combo.SubMenu("[E] Settings").AddItem(new MenuItem("UseE", "Use E").SetValue(true));
-            combo.SubMenu("[R] Settings").AddItem(new MenuItem("UseR", "Use R (TOGGLE) ").SetValue(new KeyBind('K', KeyBindType.Toggle)));
-            combo.SubMenu("Smite Settings").AddItem(new MenuItem("useSmiteCombo", "Use Smite On Combo")).SetValue(true);
+            Config.SubMenu("[JO]: Combo Settings").AddItem(new MenuItem("qmana", "[Q] Mana %").SetValue(new Slider(10, 100, 0)));
+            Config.SubMenu("[JO]: Combo Settings").AddItem(new MenuItem("wmana", "[W] Mana %").SetValue(new Slider(10, 100, 0)));
+            Config.SubMenu("[JO]: Combo Settings").AddItem(new MenuItem("rmana", "[R] Mana %").SetValue(new Slider(15, 100, 0)));
+            Config.SubMenu("[JO]: Combo Settings").AddItem(new MenuItem("UseQCombo", "Use Q")).SetValue(true);
+            Config.SubMenu("[JO]: Combo Settings").AddItem(new MenuItem("UseWCombo", "Use W")).SetValue(true);
+            Config.SubMenu("[JO]: Combo Settings").AddItem(new MenuItem("UseECombo", "Use E")).SetValue(true);
+            Config.SubMenu("[JO]: Combo Settings").AddItem(new MenuItem("UseR", "Use R (TOGGLE) ").SetValue(new KeyBind('K', KeyBindType.Toggle)));
+            //Config.SubMenu("[JO]: Combo Settings").AddItem(new MenuItem("useSmiteCombo", "Use Smite On Combo")).SetValue(true);
             //combo.SubMenu("[R] Settings").AddItem(new MenuItem("manualr", "Cast R Manual").SetValue(new KeyBind('R', KeyBindType.Press)));
 
 
@@ -91,6 +92,7 @@ namespace JustOlaf
             combo.SubMenu("Item Settings")
                 .AddItem(new MenuItem("HLe", "  Enemy HP Percentage").SetValue(new Slider(80, 100, 0)));
             combo.SubMenu("Summoner Settings").AddItem(new MenuItem("UseIgnite", "Use Ignite").SetValue(true));
+
 
             //LANECLEARMENU
             Config.SubMenu("[JO]: Laneclear Settings")
@@ -120,14 +122,15 @@ namespace JustOlaf
             drawing.AddItem(new MenuItem("Qdraw", "Draw Q Range").SetValue(new Circle(true, Color.Orange)));
             drawing.AddItem(new MenuItem("Edraw", "Draw E Range").SetValue(new Circle(true, Color.AntiqueWhite)));
 
-            harass.AddItem(new MenuItem("harassQ", "Use Q").SetValue(true));
-            harass.AddItem(new MenuItem("harassW", "Use W").SetValue(true));
-            harass.AddItem(new MenuItem("harassE", "Use E").SetValue(true));
-            harass.AddItem(new MenuItem("harassmana", "Mana Percentage").SetValue(new Slider(30, 100, 0)));
+            
+            Config.SubMenu("[JO]: Harass Settings").AddItem(new MenuItem("hQ", "Use Q").SetValue(false));
+            Config.SubMenu("[JO]: Harass Settings").AddItem(new MenuItem("hW", "Use W").SetValue(true));
+            Config.SubMenu("[JO]: Harass Settings").AddItem(new MenuItem("hE", "Use E").SetValue(true));
+            Config.SubMenu("[JO]: Harass Settings").AddItem(new MenuItem("harassmana", "Mana Percentage").SetValue(new Slider(30, 100, 0)));
 
             Config.SubMenu("[JO]: Misc Settings").AddItem(new MenuItem("DrawD", "Damage Indicator").SetValue(true));
             Config.SubMenu("[JO]: Misc Settings").AddItem(new MenuItem("hitQ", "Q Hitchance")).SetValue(new Slider(3, 1, 4));
-            
+
             Config.AddToMainMenu();
             Killsteal();
             Drawing.OnDraw += OnDraw;
@@ -187,43 +190,28 @@ namespace JustOlaf
         private static void combo()
         {
             var target = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Physical);
-            if (target == null || !target.IsValidTarget()) //if there is no target or target isn't valid it will return; (It won't combo)
-                return;
 
-            if (Config.Item("useSmiteCombo").GetValue<bool>())
-            {
-                Smite.Cast(target);
-            }
-
-            var qmana = Config.Item("qmana").GetValue<Slider>().Value;
-
-            if (Q.IsReady() && player.ManaPercentage() >= qmana)
+            if (target.IsValidTarget() && Config.Item("UseQCombo").GetValue<bool>() && Q.IsReady() && player.Distance(target.ServerPosition) <= Q.Range)
             {
                 PredictionOutput Qpredict = Q.GetPrediction(target);
                 var hithere = Qpredict.CastPosition.Extend(ObjectManager.Player.Position, -100);
                 if (player.Distance(target.ServerPosition) >= 350)
-                    if (target.Distance(player.ServerPosition) > Config.Item("qr").GetValue<Slider>().Value)
-                        Q.Cast(hithere);
+                {
+                    Q.Cast(hithere);
+                }
+                else
+                    Q.Cast(Qpredict.CastPosition);
             }
-            else
-            {
-                var pred = Q.GetPrediction(target);
-                if (pred.Hitchance >= (HitChance)Config.Item("hitQ").GetValue<Slider>().Value + 1)
-                    Q.Cast(pred.CastPosition);
-            }
-         
-            if (E.IsReady() && Config.Item("UseE").GetValue<bool>() && target.IsValidTarget(E.Range))
+
+            if (target.IsValidTarget() && Config.Item("UseECombo").GetValue<bool>() && E.IsReady() && player.Distance(target.ServerPosition) <= E.Range)
+
                 E.CastOnUnit(target);
 
-            var wmana = Config.Item("wmana").GetValue<Slider>().Value;
+            if (target.IsValidTarget() && Config.Item("UseWCombo").GetValue<bool>() && W.IsReady() && player.Distance(target.ServerPosition) <= 225f)
 
-            if (W.IsReady() && target.IsValidTarget(Orbwalking.GetRealAutoAttackRange(player)) && Config.Item("UseW").GetValue<bool>())
                 W.Cast();
 
-            //W doesn't have range, because W enhances olaf's attacks you might wanna use it in basicattack range
-            //Orbwalking.GetRealAutoAttackRange(player)
-
-            if (R.IsReady() && target.IsValidTarget(R.Range) && Config.Item("UseR").GetValue<bool>())
+            if (R.IsReady() && Config.Item("UseR").GetValue<bool>())
                 R.Cast();
 
             if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
@@ -284,19 +272,17 @@ namespace JustOlaf
                     var eDmg = E.GetDamage(enemy);
 
                     if (Config.Item("ksQ").GetValue<bool>() && enemy.Health <= qDmg)
-                    if (Q.IsReady())
+                        if (enemy.IsValidTarget() && Q.IsReady() && player.Distance(enemy.ServerPosition) <= Q.Range)
                         {
                             PredictionOutput Qpredict = Q.GetPrediction(enemy);
                             var hithere = Qpredict.CastPosition.Extend(ObjectManager.Player.Position, -100);
                             if (player.Distance(enemy.ServerPosition) >= 350)
-                                if (enemy.Distance(player.ServerPosition) > Config.Item("qr").GetValue<Slider>().Value)
-                                    Q.Cast(hithere);
-                        }
-                        else
-                        {
-                            var pred = Q.GetPrediction(enemy);
-                            if (pred.Hitchance >= (HitChance)Config.Item("hitQ").GetValue<Slider>().Value + 1)
-                                Q.Cast(pred.CastPosition);
+                            {
+                                Q.Cast(hithere);
+                            }
+                            else
+                                if (Qpredict.Hitchance >= (HitChance)Config.Item("hitQ").GetValue<Slider>().Value + 1)
+                                    Q.Cast(Qpredict.CastPosition);
                         }
 
                     if (Config.Item("ksE").GetValue<bool>() && enemy.IsValidTarget(E.Range) && enemy.Health <= eDmg)
@@ -348,6 +334,10 @@ namespace JustOlaf
 
         private static void Game_OnGameUpdate(EventArgs args)
         {
+
+            if (player.IsDead) return;
+            Killsteal();
+            
             switch (Orbwalker.ActiveMode)
             {
                 case Orbwalking.OrbwalkingMode.Combo:
@@ -370,35 +360,28 @@ namespace JustOlaf
             if (target == null || !target.IsValidTarget())
                 return;
 
-            if (Q.IsReady()
-                && Config.Item("hQ").GetValue<bool>() && player.ManaPercentage() >= harassmana)
+            {
+                if (target.IsValidTarget() && Q.IsReady() && Config.Item("hQ").GetValue<bool>() &&
+                        player.Mana > harassmana && player.Distance(target.ServerPosition) <= Q.Range)
                 {
                     PredictionOutput Qpredict = Q.GetPrediction(target);
-                    var hithere = Qpredict.CastPosition.Extend(ObjectManager.Player.Position, -100);
-                    if (player.Distance(target.ServerPosition) >= 350)
-                        if (target.Distance(player.ServerPosition) > Config.Item("qr").GetValue<Slider>().Value)
-                            Q.Cast(hithere);
+                    var hithere = Qpredict.CastPosition.Extend(ObjectManager.Player.Position, -140);
+                    if (Qpredict.Hitchance >= HitChance.High)
+
+                        Q.Cast(hithere);
                 }
-                else
-                {
-                    var pred = Q.GetPrediction(target);
-                    if (pred.Hitchance >= (HitChance)Config.Item("hitQ").GetValue<Slider>().Value + 1)
-                        Q.Cast(pred.CastPosition);
-                }
-               
-            if (W.IsReady()
-                && Config.Item("hW").GetValue<bool>()
-                && player.ManaPercentage() >= harassmana && target.IsValidTarget(Orbwalking.GetRealAutoAttackRange(player)))
 
-                W.Cast();
+                if (target.IsValidTarget() && Config.Item("hW").GetValue<bool>() && W.IsReady() && player.Mana > harassmana && 
+                    player.Distance(target.ServerPosition) <= W.Range)
 
-            if (E.IsReady()
-                && Config.Item("hE").GetValue<bool>()
-                && target.IsValidTarget(E.Range)
-                && player.ManaPercentage() >= harassmana)
+                    W.Cast();
 
-                E.CastOnUnit(target);
+                if (E.IsReady() && Config.Item("hE").GetValue<bool>() && player.Mana > harassmana &&
+                    player.Distance(target.ServerPosition) <= E.Range)
+                    E.CastOnUnit(target);
+            }
         }
+        
 
         private static void Laneclear()
         {
