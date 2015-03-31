@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Diagnostics.Eventing.Reader;
 using System.Drawing.Printing;
 using System.Linq;
@@ -44,7 +44,7 @@ namespace JustTrundle
             if (player.ChampionName != ChampName)
                 return;
 
-            Notifications.AddNotification("JustTrundle - [V.1.0.0.0]", 8000);
+            Notifications.AddNotification("JustTrundle - [V.1.0.1.0]", 8000);
 
             Killsteal();
             GetSmiteSlot();
@@ -62,16 +62,15 @@ namespace JustTrundle
             TargetSelector.AddToMenu(Config.AddSubMenu(new Menu("[JT]: Target Selector", "Target Selector")));
 
             //COMBOMENU
+            var manam = new Menu("[JT]: Mana Settings", "Mana Settings");
+            manam.AddItem(new MenuItem("qmana", "[Q] Mana %").SetValue(new Slider(10, 100, 0)));
+            manam.AddItem(new MenuItem("wmana", "[W] Mana %").SetValue(new Slider(10, 100, 0)));
+            manam.AddItem(new MenuItem("emana", "[E] Mana %").SetValue(new Slider(10, 100, 0)));
+            manam.AddItem(new MenuItem("rmana", "[R] Mana %").SetValue(new Slider(15, 100, 0)));
 
-            var combo = Config.AddSubMenu(new Menu("[JT]: Combo Settings", "Combo Settings"));
-            var harass = Config.AddSubMenu(new Menu("JT]: Harass Settings", "Harass Settings"));
-            var drawing = Config.AddSubMenu(new Menu("[JT]: Draw Settings", "Draw Settings"));
+            Config.AddSubMenu(manam);
 
-            combo.SubMenu("[SBTW] ManaManager").AddItem(new MenuItem("qmana", "[Q] Mana %").SetValue(new Slider(10, 100, 0)));
-            combo.SubMenu("[SBTW] ManaManager").AddItem(new MenuItem("wmana", "[W] Mana %").SetValue(new Slider(10, 100, 0)));
-            combo.SubMenu("[SBTW] ManaManager").AddItem(new MenuItem("emana", "[E] Mana %").SetValue(new Slider(10, 100, 0)));
-            combo.SubMenu("[SBTW] ManaManager").AddItem(new MenuItem("rmana", "[R] Mana %").SetValue(new Slider(15, 100, 0)));
-
+            var combo = new Menu("[JT]: Combo Settings", "Combo Settings");
             combo.SubMenu("[Q] Settings").AddItem(new MenuItem("UseQ", "Use Q").SetValue(true));
             combo.SubMenu("[W] Settings").AddItem(new MenuItem("UseW", "Use W").SetValue(true));
             combo.SubMenu("[E] Settings").AddItem(new MenuItem("UseE", "Use E").SetValue(true));
@@ -86,52 +85,57 @@ namespace JustTrundle
             combo.SubMenu("[R] Settings").AddItem(new MenuItem("sep1", "===L#==="));
             combo.SubMenu("Smite Settings").AddItem(new MenuItem("useSmiteCombo", "Use Smite On Combo")).SetValue(true);
 
+            Config.AddSubMenu(combo);
 
-            combo.SubMenu("Item Settings")
+            Config.SubMenu("Item Settings")
                 .AddItem(new MenuItem("useGhostblade", "Use Youmuu's Ghostblade").SetValue(true));
-            combo.SubMenu("Item Settings")
+            Config.SubMenu("Item Settings")
                 .AddItem(new MenuItem("UseBOTRK", "Use Blade of the Ruined King").SetValue(true));
-            combo.SubMenu("Item Settings")
+            Config.SubMenu("Item Settings")
                 .AddItem(new MenuItem("eL", "  Enemy HP Percentage").SetValue(new Slider(80, 100, 0)));
-            combo.SubMenu("Item Settings")
+            Config.SubMenu("Item Settings")
                 .AddItem(new MenuItem("oL", "  Own HP Percentage").SetValue(new Slider(65, 100, 0)));
-            combo.SubMenu("Item Settings").AddItem(new MenuItem("UseBilge", "Use Bilgewater Cutlass").SetValue(true));
-            combo.SubMenu("Item Settings")
+            Config.SubMenu("Item Settings").AddItem(new MenuItem("UseBilge", "Use Bilgewater Cutlass").SetValue(true));
+            Config.SubMenu("Item Settings")
                 .AddItem(new MenuItem("HLe", "  Enemy HP Percentage").SetValue(new Slider(80, 100, 0)));
-            combo.SubMenu("Summoner Settings").AddItem(new MenuItem("UseIgnite", "Use Ignite").SetValue(true));
+            Config.SubMenu("Summoner Settings").AddItem(new MenuItem("UseIgnite", "Use Ignite").SetValue(true));
 
-            //LANECLEARMENU
-            Config.SubMenu("[JT]: Laneclear Settings")
-                .AddItem(new MenuItem("laneQ", "Use Q").SetValue(true));
-            Config.SubMenu("[JT]: Laneclear Settings")
-                .AddItem(new MenuItem("laneW", "Use W").SetValue(true));
-            Config.SubMenu("[JT]: Laneclear Settings")
-                .AddItem(new MenuItem("laneclearmana", "Mana Percentage").SetValue(new Slider(30, 100, 0)));
+            var ljc = new Menu("[JT]: Clear Settings", "Clear Settings");
+            ljc.AddItem(new MenuItem("laneQ", "Use Q").SetValue(true));
+            ljc.AddItem(new MenuItem("laneW", "Use W").SetValue(true));
+            ljc.AddItem(new MenuItem("laneclearmana", "Mana Percentage").SetValue(new Slider(30, 100, 0)));
+            ljc.AddItem(new MenuItem("jungleQ", "Use Q").SetValue(true));
+            ljc.AddItem(new MenuItem("jungleW", "Use W").SetValue(true));
+            ljc.AddItem(new MenuItem("jungleclearmana", "Mana Percentage").SetValue(new Slider(30, 100, 0)));
 
-            //JUNGLEFARMMENU
-            Config.SubMenu("[JT]: Jungle Settings")
-                .AddItem(new MenuItem("jungleQ", "Use Q").SetValue(true));
-            Config.SubMenu("[JT]: Jungle Settings")
-                .AddItem(new MenuItem("jungleW", "Use W").SetValue(true));
-            Config.SubMenu("[JT]: Jungle Settings")
-                .AddItem(new MenuItem("jungleclearmana", "Mana Percentage").SetValue(new Slider(30, 100, 0)));
+            Config.AddSubMenu(ljc);
 
             //KSMENU
             Config.SubMenu("[JT]: Killsteal Settings").AddItem(new MenuItem("ksQ", "Use Q For KS").SetValue(true));
 
-            drawing.AddItem(new MenuItem("Draw_Disabled", "Disable All Spell Drawings").SetValue(false));
-            drawing.AddItem(new MenuItem("Qdraw", "Draw Q Range").SetValue(new Circle(true, Color.Orange)));
-            drawing.AddItem(new MenuItem("Edraw", "Draw E Range").SetValue(new Circle(true, Color.AntiqueWhite)));
-            drawing.AddItem(new MenuItem("Rdraw", "Draw R Range").SetValue(new Circle(true, Color.Red)));
+            var drawm = new Menu("[JT]: Draw Settings", "Draw Settings");
+            drawm.AddItem(new MenuItem("Draw_Disabled", "Disable All Spell Drawings").SetValue(false));
+            drawm.AddItem(new MenuItem("Qdraw", "Draw Q Range").SetValue(new Circle(true, Color.Orange)));
+            drawm.AddItem(new MenuItem("Edraw", "Draw E Range").SetValue(new Circle(true, Color.AntiqueWhite)));
+            drawm.AddItem(new MenuItem("Rdraw", "Draw R Range").SetValue(new Circle(true, Color.Red)));
 
-            harass.AddItem(new MenuItem("harassQ", "Use Q").SetValue(true));
-            harass.AddItem(new MenuItem("harassW", "Use W").SetValue(true));
-            harass.AddItem(new MenuItem("harassE", "Use E").SetValue(true));
-            harass.AddItem(new MenuItem("harassmana", "Mana Percentage").SetValue(new Slider(30, 100, 0)));
+            Config.AddSubMenu(drawm);
 
-            Config.SubMenu("[JT]: Misc Settings").AddItem(new MenuItem("DrawD", "Damage Indicator").SetValue(true));
-            Config.SubMenu("[JT]: Misc Settings").AddItem(new MenuItem("interrupt", "Interrupt Spells").SetValue(true));
-            Config.SubMenu("[JT]: Misc Settings").AddItem(new MenuItem("antigap", "AntiGapCloser").SetValue(true));
+            var hgw = new Menu("[JT]: Harass Settings", "Harass Settings");
+            hgw.AddItem(new MenuItem("harassQ", "Use Q").SetValue(true));
+            hgw.AddItem(new MenuItem("harassW", "Use W").SetValue(true));
+            hgw.AddItem(new MenuItem("harassE", "Use E").SetValue(true));
+            hgw.AddItem(new MenuItem("harassmana", "Mana Percentage").SetValue(new Slider(30, 100, 0)));
+
+            Config.AddSubMenu(hgw);
+
+            var mis = new Menu("[JT]: Misc Settings", "Misc Settings");
+            mis.AddItem(new MenuItem("DrawD", "Damage Indicator").SetValue(true));
+            mis.AddItem(new MenuItem("interrupt", "Interrupt Spells").SetValue(true));
+            mis.AddItem(new MenuItem("antigap", "AntiGapCloser").SetValue(true));
+
+            Config.AddSubMenu(mis);
+
 
             Config.AddToMainMenu();
             Drawing.OnDraw += OnDraw;
@@ -505,8 +509,4 @@ namespace JustTrundle
         public static Obj_AI_Base minion { get; set; }
     }
 }
-<<<<<<< HEAD
     
-=======
-    
->>>>>>> origin/master
