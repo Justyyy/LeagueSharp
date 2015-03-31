@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics.Eventing.Reader;
 using System.Drawing.Printing;
 using System.Linq;
@@ -505,4 +505,8 @@ namespace JustTrundle
         public static Obj_AI_Base minion { get; set; }
     }
 }
+<<<<<<< HEAD
     
+=======
+    
+>>>>>>> origin/master
