@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics.Eventing.Reader;
 using System.Drawing.Printing;
 using System.Linq;
@@ -21,7 +21,7 @@ namespace JustTrundle
         public static Spell E;
         public static Spell R;
         public static Spell Smite;
-        public static int SpellRangeTick;
+        public static SpellSlot smiteSlot = SpellSlot.Unknown;
         //Credits to Kurisu for Smite Stuff :^)
         public static readonly int[] SmitePurple = { 3713, 3726, 3725, 3726, 3723 };
         public static readonly int[] SmiteGrey = { 3711, 3722, 3721, 3720, 3719 };
@@ -29,8 +29,8 @@ namespace JustTrundle
         public static readonly int[] SmiteBlue = { 3706, 3710, 3709, 3708, 3707 };
 
         private static SpellSlot Ignite;
-        private static SpellSlot smiteSlot;
-        private static int LastCast;
+       // private static SpellSlot smiteSlot;
+        //private static int LastCast;
         private static readonly Obj_AI_Hero player = ObjectManager.Player;
 
         private static void Main(string[] args)
@@ -47,6 +47,7 @@ namespace JustTrundle
             Notifications.AddNotification("JustTrundle - [V.1.0.0.0]", 8000);
 
             Killsteal();
+            GetSmiteSlot();
 
             //Ability Information - Range - Variables.
             Q = new Spell(SpellSlot.Q, 125f);
@@ -84,8 +85,8 @@ namespace JustTrundle
             }
             combo.SubMenu("[R] Settings").AddItem(new MenuItem("sep1", "===L#==="));
             combo.SubMenu("Smite Settings").AddItem(new MenuItem("useSmiteCombo", "Use Smite On Combo")).SetValue(true);
-            
-            
+
+
             combo.SubMenu("Item Settings")
                 .AddItem(new MenuItem("useGhostblade", "Use Youmuu's Ghostblade").SetValue(true));
             combo.SubMenu("Item Settings")
@@ -117,7 +118,7 @@ namespace JustTrundle
 
             //KSMENU
             Config.SubMenu("[JT]: Killsteal Settings").AddItem(new MenuItem("ksQ", "Use Q For KS").SetValue(true));
-           
+
             drawing.AddItem(new MenuItem("Draw_Disabled", "Disable All Spell Drawings").SetValue(false));
             drawing.AddItem(new MenuItem("Qdraw", "Draw Q Range").SetValue(new Circle(true, Color.Orange)));
             drawing.AddItem(new MenuItem("Edraw", "Draw E Range").SetValue(new Circle(true, Color.AntiqueWhite)));
@@ -132,6 +133,7 @@ namespace JustTrundle
             Config.SubMenu("[JT]: Misc Settings").AddItem(new MenuItem("interrupt", "Interrupt Spells").SetValue(true));
             Config.SubMenu("[JT]: Misc Settings").AddItem(new MenuItem("antigap", "AntiGapCloser").SetValue(true));
 
+            Config.AddToMainMenu();
             Drawing.OnDraw += OnDraw;
             Game.OnUpdate += Game_OnGameUpdate;
             Drawing.OnEndScene += OnEndScene;
@@ -179,20 +181,6 @@ namespace JustTrundle
             return "summonersmite";
         }
 
-        public static void GetSmiteSlot()
-        {
-            foreach (
-                var spell in
-                    ObjectManager.Player.Spellbook.Spells.Where(
-                        spell => String.Equals(spell.Name, GetSmiteType(), StringComparison.CurrentCultureIgnoreCase)))
-            {
-                smiteSlot = spell.Slot;
-                Smite = new Spell(smiteSlot, 700);
-                return;
-            }
-        }
-
-
         private static void OnEndScene(EventArgs args)
         {
             if (Config.SubMenu("[JT]: Misc Settings").Item("DrawD").GetValue<bool>())
@@ -214,28 +202,28 @@ namespace JustTrundle
 
             if (Config.Item("useSmiteCombo").GetValue<bool>())
             {
-                Smite.Cast(target);
+                UseSmiteOnChamp(target);
             }
 
             var wmana = Config.Item("wmana").GetValue<Slider>().Value;
-
+           
             if (W.IsReady() && target.IsValidTarget(Orbwalking.GetRealAutoAttackRange(player)) && Config.Item("UseW").GetValue<bool>())
                 W.Cast();
 
             var emana = Config.Item("emana").GetValue<Slider>().Value;
 
-            if (E.IsReady() && target.IsValidTarget(E.Range) && player.ManaPercentage() >= emana)
+            if (E.IsReady() && target.IsValidTarget(E.Range) && player.ManaPercent >= emana)
                 E.CastIfHitchanceEquals(target, HitChance.High);
 
             var qmana = Config.Item("qmana").GetValue<Slider>().Value;
 
             if (Q.IsReady() && Config.Item("UseQ").GetValue<bool>() && target.IsValidTarget(Orbwalking.GetRealAutoAttackRange(player))
-            && player.ManaPercentage() >= qmana)
+            && player.ManaPercent >= qmana)
                 Q.CastOnUnit(target);
 
             if (Config.Item("manualr").GetValue<KeyBind>().Active && R.IsReady())
                 R.CastOnUnit(target);
-            
+
             if (R.IsReady() && target.IsValidTarget(R.Range) && Config.Item("UseR").GetValue<bool>())
             {
                 if (Config.Item("DontUlt" + target.BaseSkinName) != null &&
@@ -301,7 +289,38 @@ namespace JustTrundle
                     Q.CastOnUnit(target);
                 }
             }
-         }
+        }
+
+        private static void AfterAttack(AttackableUnit sender, AttackableUnit target)
+        {
+            if (sender.IsMe)
+            {
+                switch (Orbwalker.ActiveMode)
+                {
+                    case Orbwalking.OrbwalkingMode.Combo:
+                        if (Q.IsReady() && ObjectManager.Player.Distance(target) <= Orbwalking.GetRealAutoAttackRange(target))
+                        {
+                            Q.Cast();
+                            Orbwalking.ResetAutoAttackTimer();
+                        }
+                        break;
+                    case Orbwalking.OrbwalkingMode.Mixed:
+                        if (Q.IsReady() && ObjectManager.Player.Distance(target) <= Orbwalking.GetRealAutoAttackRange(target) && target.Type == GameObjectType.obj_AI_Hero)
+                        {
+                            Q.Cast();
+                            Orbwalking.ResetAutoAttackTimer();
+                        }
+                        break;
+                    case Orbwalking.OrbwalkingMode.LaneClear:
+                        if (Q.IsReady() && ObjectManager.Player.Distance(target) <= Orbwalking.GetRealAutoAttackRange(target) && Config.Item("UseQ").GetValue<bool>())
+                        {
+                            Q.Cast();
+                            Orbwalking.ResetAutoAttackTimer();
+                        }
+                        break;
+                }
+            }
+        }
 
         private static void items()
         {
@@ -315,19 +334,19 @@ namespace JustTrundle
             var cutlass = ItemData.Bilgewater_Cutlass.GetItem();
 
             if (botrk.IsReady() && botrk.IsOwned(player) && botrk.IsInRange(target)
-            && target.HealthPercentage() <= Config.Item("eL").GetValue<Slider>().Value
+            && target.HealthPercent <= Config.Item("eL").GetValue<Slider>().Value
             && Config.Item("UseBOTRK").GetValue<bool>())
 
                 botrk.Cast(target);
 
             if (botrk.IsReady() && botrk.IsOwned(player) && botrk.IsInRange(target)
-                && player.HealthPercentage() <= Config.Item("oL").GetValue<Slider>().Value
+                && target.HealthPercent <= Config.Item("oL").GetValue<Slider>().Value
                 && Config.Item("UseBOTRK").GetValue<bool>())
 
                 botrk.Cast(target);
 
             if (cutlass.IsReady() && cutlass.IsOwned(player) && cutlass.IsInRange(target) &&
-                target.HealthPercentage() <= Config.Item("HLe").GetValue<Slider>().Value
+                target.HealthPercent <= Config.Item("HLe").GetValue<Slider>().Value
                 && Config.Item("UseBilge").GetValue<bool>())
 
                 cutlass.Cast(target);
@@ -369,43 +388,43 @@ namespace JustTrundle
             if (Q.IsReady()
                 && Config.Item("hQ").GetValue<bool>()
                 && target.IsValidTarget(Q.Range)
-                && player.ManaPercentage() >= harassmana)
+                && player.ManaPercent >= harassmana)
 
                 Q.CastOnUnit(target);
 
             if (W.IsReady()
                 && Config.Item("hW").GetValue<bool>()
-                && player.ManaPercentage() >= harassmana)
+                && player.ManaPercent >= harassmana)
 
                 W.Cast();
 
             if (E.IsReady()
                 && Config.Item("hE").GetValue<bool>()
                 && target.IsValidTarget(E.Range)
-                && player.ManaPercentage() >= harassmana)
+                && player.ManaPercent >= harassmana)
 
-               E.CastIfHitchanceEquals(target, HitChance.High);
+                E.CastIfHitchanceEquals(target, HitChance.High);
         }
 
         private static void Laneclear()
         {
             var lanemana = Config.Item("laneclearmana").GetValue<Slider>().Value;
-            
+
             if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear
                 && Config.Item("laneQ").GetValue<bool>()
-                && player.ManaPercentage() >= lanemana)
+                && player.ManaPercent >= lanemana)
 
                 Q.Cast(minion);
 
             if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear
                && Config.Item("laneW").GetValue<bool>()
-               && player.ManaPercentage() >= lanemana)
+               && player.ManaPercent >= lanemana)
 
                 W.Cast();
 
             if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear
                 && Config.Item("laneE").GetValue<bool>()
-                && player.ManaPercentage() >= lanemana)
+                && player.ManaPercent >= lanemana)
 
                 E.CastOnUnit(minion);
 
@@ -415,19 +434,19 @@ namespace JustTrundle
         private static void Jungleclear()
         {
             var jlanemana = Config.Item("jungleclearmana").GetValue<Slider>().Value;
-            
+
             if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear
                 && Config.Item("jungleW").GetValue<bool>()
-                && player.ManaPercentage() >= jlanemana)
+                && player.ManaPercent >= jlanemana)
 
                 W.Cast();
 
             if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear
                 && Config.Item("jungleQ").GetValue<bool>()
-                && player.ManaPercentage() >= jlanemana)
+                && player.ManaPercent >= jlanemana)
 
                 Q.CastOnUnit(minion);
-           }
+        }
 
         private static void OnDraw(EventArgs args)
         {
@@ -439,7 +458,7 @@ namespace JustTrundle
             var pos = Drawing.WorldToScreen(ObjectManager.Player.Position);
 
             //if (Config.Item("UseR").GetValue<KeyBind>().Active)
-                Drawing.DrawText(pos.X - 50, pos.Y + 50, Color.Gold, "[R] is Enabled!");
+            Drawing.DrawText(pos.X - 50, pos.Y + 50, Color.Gold, "[R] is Enabled!");
 
 
             if (Config.Item("Draw_Disabled").GetValue<bool>())
@@ -459,7 +478,31 @@ namespace JustTrundle
         }
 
 
+        public static void UseSmiteOnChamp(Obj_AI_Hero target)
+        {
+            if (target.IsValidTarget(E.Range) && smiteSlot != SpellSlot.Unknown &&
+                ObjectManager.Player.Spellbook.CanUseSpell((smiteSlot)) == SpellState.Ready &&
+                (GetSmiteType() == "s5_summonersmiteplayerganker" ||
+                 GetSmiteType() == "s5_summonersmiteduel"))
+            {
+                ObjectManager.Player.Spellbook.CastSpell(smiteSlot, target);
+            }
+        }
+    
+        public static void GetSmiteSlot()
+        {
+            foreach (
+                var spell in
+                    ObjectManager.Player.Spellbook.Spells.Where(
+                        spell => String.Equals(spell.Name, GetSmiteType(), StringComparison.CurrentCultureIgnoreCase)))
+            {
+                smiteSlot = spell.Slot;
+                Smite = new Spell(smiteSlot, 700);
+                return;
+            }
+        }
 
         public static Obj_AI_Base minion { get; set; }
     }
 }
+    
