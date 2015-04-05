@@ -73,7 +73,7 @@ namespace JustTrundle
             cMenu.AddItem(new MenuItem("UseE", "Use E").SetValue(true));
             cMenu.AddItem(new MenuItem("manualr", "Cast R Manual").SetValue(new KeyBind('R', KeyBindType.Press)));
             cMenu.AddItem(new MenuItem("Rkil", "Cancel Ult If Target Killable"));
-            //cMenu.AddItem(new MenuItem("Renem", "Min Enemies for R").SetValue(new Slider(2, 1, 5)));
+            cMenu.AddItem(new MenuItem("Rene", "Min Enemies for R").SetValue(new Slider(2, 1, 5)));
             cMenu.AddItem(new MenuItem("useSmiteCombo", "Use Smite").SetValue(true));
             
             Config.AddSubMenu(cMenu);
@@ -229,7 +229,7 @@ namespace JustTrundle
             var rmana = Config.Item("rmana").GetValue<Slider>().Value;
             if (R.IsReady() && Config.Item("UseR").GetValue<bool>() && target.IsValidTarget(R.Range) && player.ManaPercent >= rmana)
 
-                R.Cast();
+                Ult();
 
             var rDmg = player.GetSpellDamage(target, SpellSlot.R);
             if (Config.Item("Rkill").GetValue<bool>() && target.HealthPercent >= rDmg)
@@ -246,14 +246,19 @@ namespace JustTrundle
 
         }
 
-        //private static void GGetRDmg()
-      //  {
-   //         var target = TargetSelector.GetTarget(E.Range, TargetSelector.DamageType.Magical);
-     //       var damage = R.Level - 1 + 0.5 * player.FlatMagicDamageMod + R.Instance.Ammo;
-     //           damage += R.GetDamage(target);
-    //    }
-        
+        private static void Ult()
+        {
+            int enemys = Utility.CountEnemiesInRange(650);
 
+            var rmana = Config.Item("rmana").GetValue<Slider>().Value;
+            var PR = player.Mana * 100 / player.MaxMana;
+
+            if (Config.Item("Rene").GetValue<Slider>().Value <= enemys && PR >= rmana)
+            {
+                R.Cast();
+            }
+
+        }
 
         private static int CalcDamage(Obj_AI_Base target)
         {
@@ -298,6 +303,16 @@ namespace JustTrundle
             if (Ignite == SpellSlot.Unknown || player.Spellbook.CanUseSpell(Ignite) != SpellState.Ready)
                 return 0f;
             return (float)player.GetSummonerSpellDamage(target, Damage.SummonerSpell.Ignite);
+        }
+
+        private static void UnderTower()
+        {
+            var Target = TargetSelector.GetTarget(W.Range + W.Width, TargetSelector.DamageType.Magical);
+
+            if (Utility.UnderTurret(Target, false) && W.IsReady() && Config.Item("UnderTower").GetValue<bool>())
+            {
+                W.Cast(Target);
+            }
         }
 
         private static void Killsteal()
