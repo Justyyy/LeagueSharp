@@ -1,0 +1,11 @@
+c:\users\koray\documents\visual studio 2013\Projects\JustMaokai\JustMaokai\bin\Debug\JustMaokai.exe.config
+c:\users\koray\documents\visual studio 2013\Projects\JustMaokai\JustMaokai\bin\Debug\JustMaokai.exe
+c:\users\koray\documents\visual studio 2013\Projects\JustMaokai\JustMaokai\bin\Debug\JustMaokai.pdb
+c:\users\koray\documents\visual studio 2013\Projects\JustMaokai\JustMaokai\bin\Debug\LeagueSharp.Common.dll
+c:\users\koray\documents\visual studio 2013\Projects\JustMaokai\JustMaokai\bin\Debug\LeagueSharp.dll
+c:\users\koray\documents\visual studio 2013\Projects\JustMaokai\JustMaokai\bin\Debug\SharpDX.Direct3D9.dll
+c:\users\koray\documents\visual studio 2013\Projects\JustMaokai\JustMaokai\bin\Debug\SharpDX.dll
+c:\users\koray\documents\visual studio 2013\Projects\JustMaokai\JustMaokai\bin\Debug\clipper_library.dll
+c:\users\koray\documents\visual studio 2013\Projects\JustMaokai\JustMaokai\bin\Debug\LeagueSharp.xml
+c:\users\koray\documents\visual studio 2013\Projects\JustMaokai\JustMaokai\obj\Debug\JustMaokai.exe
+c:\users\koray\documents\visual studio 2013\Projects\JustMaokai\JustMaokai\obj\Debug\JustMaokai.pdb
