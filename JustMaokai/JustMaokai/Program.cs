@@ -8,7 +8,7 @@ using LeagueSharp.Common.Data;
 using Color = System.Drawing.Color;
 using JustOlaf;
 
-namespace JustTrundle
+namespace JustMaokai
 {
     internal class Program
     {
