@@ -42,8 +42,7 @@ namespace JustMaokai
 
             Killsteal();
             GetSmiteSlot();
-           // GGetRDmg();
-
+           
             //Ability Information - Range - Variables.
             Q = new Spell(SpellSlot.Q, 600);
             Q.SetSkillshot(0.50f, 110f, 1200f, false, SkillshotType.SkillshotLine);
@@ -53,7 +52,7 @@ namespace JustMaokai
             R = new Spell(SpellSlot.R, 625);
 
             //Menu
-            Config = new Menu("JustTrundle", "JustTrundle", true);
+            Config = new Menu("JustTrundle", "Menu", true);
             Orbwalker = new Orbwalking.Orbwalker(Config.AddSubMenu(new Menu("[JT]: Orbwalker", "Orbwalker")));
             TargetSelector.AddToMenu(Config.AddSubMenu(new Menu("[JT]: Target Selector", "Target Selector")));
 
@@ -138,6 +137,7 @@ namespace JustMaokai
             Config.AddSubMenu(mMenu);
 
             Config.AddToMainMenu();
+            Console.WriteLine("Menu Loaded");
             Drawing.OnDraw += OnDraw;
             Game.OnUpdate += Game_OnGameUpdate;
             Drawing.OnEndScene += OnEndScene;

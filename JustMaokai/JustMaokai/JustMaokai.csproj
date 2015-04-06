@@ -37,19 +37,19 @@
   <ItemGroup>
     <Reference Include="clipper_library, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>F:\LeagueSharp2\System\clipper_library.dll</HintPath>
+      <HintPath>I:\LeagueSharp\System\clipper_library.dll</HintPath>
     </Reference>
     <Reference Include="LeagueSharp">
-      <HintPath>F:\LeagueSharp2\System\LeagueSharp.dll</HintPath>
+      <HintPath>I:\LeagueSharp\System\LeagueSharp.dll</HintPath>
     </Reference>
     <Reference Include="LeagueSharp.Common">
-      <HintPath>F:\LeagueSharp2\System\LeagueSharp.Common.dll</HintPath>
+      <HintPath>I:\LeagueSharp\System\LeagueSharp.Common.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX">
-      <HintPath>F:\LeagueSharp2\System\SharpDX.dll</HintPath>
+      <HintPath>I:\LeagueSharp\System\SharpDX.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX.Direct3D9">
-      <HintPath>F:\LeagueSharp2\System\SharpDX.Direct3D9.dll</HintPath>
+      <HintPath>I:\LeagueSharp\System\SharpDX.Direct3D9.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
