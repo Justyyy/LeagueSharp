@@ -199,7 +199,6 @@ namespace JustMalphite
 
         private static int CalcDamage(Obj_AI_Base target)
         {
-            //The only dmg spells olaf has are E and Q (Added those and removed R/W)
             var aa = player.GetAutoAttackDamage(target, true) * (1 + player.Crit);
             var damage = aa;
             Ignite = player.GetSpellSlot("summonerdot");
