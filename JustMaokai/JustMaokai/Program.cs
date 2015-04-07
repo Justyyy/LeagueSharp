@@ -38,7 +38,7 @@ namespace JustMaokai
             if (player.ChampionName != ChampName)
                 return;
 
-            Notifications.AddNotification("JustMaokai - [V.1.0.0.0]", 8000);
+            Notifications.AddNotification("JustMaokai - [V.1.0.1.0]", 8000);
 
             Killsteal();
             GetSmiteSlot();
@@ -51,120 +51,99 @@ namespace JustMaokai
             E.SetSkillshot(1f, 250f, 1500f, false, SkillshotType.SkillshotCircle);
             R = new Spell(SpellSlot.R, 625);
 
-            //Menu
-            Config = new Menu("JustTrundle", "Menu", true);
-            Orbwalker = new Orbwalking.Orbwalker(Config.AddSubMenu(new Menu("[JT]: Orbwalker", "Orbwalker")));
-            TargetSelector.AddToMenu(Config.AddSubMenu(new Menu("[JT]: Target Selector", "Target Selector")));
+            Config = new Menu(player.ChampionName, player.ChampionName, true);
+            Config.AddSubMenu(new Menu("Orbwalking", "Orbwalking"));
+
+            var targetSelectorMenu = new Menu("Target Selector", "Target Selector");
+            TargetSelector.AddToMenu(targetSelectorMenu);
+            Config.AddSubMenu(targetSelectorMenu);
+
+            Orbwalker = new Orbwalking.Orbwalker(Config.SubMenu("Orbwalking"));
 
             //Mana
-            var manaMenu = new Menu("Mana Manager", "Mana Manager");
-            manaMenu.AddItem(new MenuItem("qmana", "[Q] Mana %").SetValue(new Slider(10, 100, 0)));
-            manaMenu.AddItem(new MenuItem("wmana", "[W] Mana %").SetValue(new Slider(10, 100, 0)));
-            manaMenu.AddItem(new MenuItem("emana", "[E] Mana %").SetValue(new Slider(10, 100, 0)));
-            manaMenu.AddItem(new MenuItem("rmana", "[R] Mana %").SetValue(new Slider(15, 100, 0)));
-
-            Config.AddSubMenu(manaMenu);
-
-            //Combo
-            var cMenu = new Menu("Combo", "Combo");
-            cMenu.AddItem(new MenuItem("UseQ", "Use Q").SetValue(true));
-            cMenu.AddItem(new MenuItem("UseW", "Use W").SetValue(true));
-            cMenu.AddItem(new MenuItem("UseE", "Use E").SetValue(true));
-            cMenu.AddItem(new MenuItem("manualr", "Cast R Manual").SetValue(new KeyBind('R', KeyBindType.Press)));
-            cMenu.AddItem(new MenuItem("Rkil", "Cancel Ult If Target Killable"));
-            cMenu.AddItem(new MenuItem("Rene", "Min Enemies for R").SetValue(new Slider(2, 1, 5)));
-            cMenu.AddItem(new MenuItem("useSmiteCombo", "Use Smite").SetValue(true));
+            Config.AddSubMenu(new Menu("Mana", "Mana"));
+            Config.SubMenu("Mana").AddItem(new MenuItem("qmana", "[Q] Mana %").SetValue(new Slider(10, 100, 0)));
+            Config.SubMenu("Mana").AddItem(new MenuItem("wmana", "[W] Mana %").SetValue(new Slider(10, 100, 0)));
+            Config.SubMenu("Mana").AddItem(new MenuItem("emana", "[E] Mana %").SetValue(new Slider(10, 100, 0)));
+            Config.SubMenu("Mana").AddItem(new MenuItem("rmana", "[R] Mana %").SetValue(new Slider(15, 100, 0)));
             
-            Config.AddSubMenu(cMenu);
-
+            //Combo
+            Config.AddSubMenu(new Menu("Combo", "Combo"));
+            Config.SubMenu("Combo").AddItem(new MenuItem("UseQ", "Use Q").SetValue(true));
+            Config.SubMenu("Combo").AddItem(new MenuItem("UseW", "Use W").SetValue(true));
+            Config.SubMenu("Combo").AddItem(new MenuItem("UseE", "Use E").SetValue(true));
+            Config.SubMenu("Combo").AddItem(new MenuItem("manualr", "Cast R Manual").SetValue(new KeyBind('R', KeyBindType.Press)));
+            Config.SubMenu("Combo").AddItem(new MenuItem("Rkil", "Cancel Ult If Target Killable"));
+            Config.SubMenu("Combo").AddItem(new MenuItem("Rene", "Min Enemies for R").SetValue(new Slider(2, 1, 5)));
+            Config.SubMenu("Combo").AddItem(new MenuItem("useSmiteCombo", "Use Smite").SetValue(true));
+           
             //Harass
-            var hMenu = new Menu("Harass", "Harass");
-            hMenu.AddItem(new MenuItem("hQ", "Use Q").SetValue(true));
-            hMenu.AddItem(new MenuItem("hW", "Use W").SetValue(true));
-            hMenu.AddItem(new MenuItem("hE", "Use E").SetValue(true));
-            hMenu.AddItem(new MenuItem("harassmana", "Mana Percentage").SetValue(new Slider(30, 100, 0)));
-
-            Config.AddSubMenu(hMenu);
+            Config.AddSubMenu(new Menu("Harass", "Harass"));
+            Config.SubMenu("Harass").AddItem(new MenuItem("hQ", "Use Q").SetValue(true));
+            Config.SubMenu("Harass").AddItem(new MenuItem("hW", "Use W").SetValue(true));
+            Config.SubMenu("Harass").AddItem(new MenuItem("hE", "Use E").SetValue(true));
+            Config.SubMenu("Harass").AddItem(new MenuItem("harassmana", "Mana Percentage").SetValue(new Slider(30, 100, 0)));
 
             //Item
-            var iMenu = new Menu("Item Settings", "Item Settings");
-            iMenu.AddItem(new MenuItem("useGhostblade", "Use Youmuu's Ghostblade").SetValue(true));
-            iMenu.AddItem(new MenuItem("UseBOTRK", "Use Blade of the Ruined King").SetValue(true));
-            iMenu.AddItem(new MenuItem("eL", "  Enemy HP Percentage").SetValue(new Slider(80, 100, 0)));
-            iMenu.AddItem(new MenuItem("oL", "  Own HP Percentage").SetValue(new Slider(65, 100, 0)));
-            iMenu.AddItem(new MenuItem("UseBilge", "Use Bilgewater Cutlass").SetValue(true));
-            iMenu.AddItem(new MenuItem("HLe", "  Enemy HP Percentage").SetValue(new Slider(80, 100, 0)));
-            iMenu.AddItem(new MenuItem("UseIgnite", "Use Ignite").SetValue(true));
-
-            Config.AddSubMenu(iMenu);
+            Config.AddSubMenu(new Menu("Item", "Item"));
+            Config.SubMenu("Item").AddItem(new MenuItem("useGhostblade", "Use Youmuu's Ghostblade").SetValue(true));
+            Config.SubMenu("Item").AddItem(new MenuItem("UseBOTRK", "Use Blade of the Ruined King").SetValue(true));
+            Config.SubMenu("Item").AddItem(new MenuItem("eL", "  Enemy HP Percentage").SetValue(new Slider(80, 100, 0)));
+            Config.SubMenu("Item").AddItem(new MenuItem("oL", "  Own HP Percentage").SetValue(new Slider(65, 100, 0)));
+            Config.SubMenu("Item").AddItem(new MenuItem("UseBilge", "Use Bilgewater Cutlass").SetValue(true));
+            Config.SubMenu("Item").AddItem(new MenuItem("HLe", "  Enemy HP Percentage").SetValue(new Slider(80, 100, 0)));
+            Config.SubMenu("Item").AddItem(new MenuItem("UseIgnite", "Use Ignite").SetValue(true));
 
             //Laneclear
-            var lMenu = new Menu("Laneclear", "Laneclear");
-            lMenu.AddItem(new MenuItem("laneQ", "Use Q").SetValue(true));
-            lMenu.AddItem(new MenuItem("laneW", "Use W").SetValue(true));
-            lMenu.AddItem(new MenuItem("laneE", "Use E").SetValue(true));
-            lMenu.AddItem(new MenuItem("laneclearmana", "Mana Percentage").SetValue(new Slider(30, 100, 0)));
-
-            Config.AddSubMenu(lMenu);
-
+            Config.AddSubMenu(new Menu("Laneclear", "Laneclear"));
+            Config.SubMenu("Laneclear").AddItem(new MenuItem("laneQ", "Use Q").SetValue(true));
+            Config.SubMenu("Laneclear").AddItem(new MenuItem("laneW", "Use W").SetValue(true));
+            Config.SubMenu("Laneclear").AddItem(new MenuItem("laneE", "Use E").SetValue(true));
+            Config.SubMenu("Laneclear").AddItem(new MenuItem("laneclearmana", "Mana Percentage").SetValue(new Slider(30, 100, 0)));
+                        
             //JungleClear
-            var jMenu = new Menu("Jungle Settings", "Jungle Settings");
-            jMenu.AddItem(new MenuItem("jungleQ", "Use Q").SetValue(true));
-            jMenu.AddItem(new MenuItem("jungleW", "Use W").SetValue(true));
-            jMenu.AddItem(new MenuItem("jungleE", "Use E").SetValue(true));
-            jMenu.AddItem(new MenuItem("jungleclearmana", "Mana Percentage").SetValue(new Slider(30, 100, 0)));
-
-            Config.AddSubMenu(jMenu);
+            Config.AddSubMenu(new Menu("Jungleclear", "Jungleclear"));
+            Config.SubMenu("Jungleclear").AddItem(new MenuItem("jungleQ", "Use Q").SetValue(true));
+            Config.SubMenu("Jungleclear").AddItem(new MenuItem("jungleW", "Use W").SetValue(true));
+            Config.SubMenu("Jungleclear").AddItem(new MenuItem("jungleE", "Use E").SetValue(true));
+            Config.SubMenu("Jungleclear").AddItem(new MenuItem("jungleclearmana", "Mana Percentage").SetValue(new Slider(30, 100, 0)));
 
             //Draw
-            var dMenu = new Menu("Draw", "Draw");
-            dMenu.AddItem(new MenuItem("Draw_Disabled", "Disable All Spell Drawings").SetValue(false));
-            dMenu.AddItem(new MenuItem("Qdraw", "Draw Q Range").SetValue(new Circle(true, Color.Orange)));
-            dMenu.AddItem(new MenuItem("Wdraw", "Draw W Range").SetValue(new Circle(true, Color.AntiqueWhite)));
-            dMenu.AddItem(new MenuItem("Edraw", "Draw E Range").SetValue(new Circle(true, Color.Green)));
-            dMenu.AddItem(new MenuItem("Rdraw", "Draw R Range").SetValue(new Circle(true, Color.Red)));
-
-            Config.AddSubMenu(dMenu);
-
+            Config.AddSubMenu(new Menu("Draw", "Draw"));
+            Config.SubMenu("Draw").AddItem(new MenuItem("Draw_Disabled", "Disable All Spell Drawings").SetValue(false));
+            Config.SubMenu("Draw").AddItem(new MenuItem("Qdraw", "Draw Q Range").SetValue(new Circle(true, Color.Orange)));
+            Config.SubMenu("Draw").AddItem(new MenuItem("Wdraw", "Draw W Range").SetValue(new Circle(true, Color.AntiqueWhite)));
+            Config.SubMenu("Draw").AddItem(new MenuItem("Edraw", "Draw E Range").SetValue(new Circle(true, Color.Green)));
+            Config.SubMenu("Draw").AddItem(new MenuItem("Rdraw", "Draw R Range").SetValue(new Circle(true, Color.Red)));
+            
             //Misc
-            var mMenu = new Menu("Draw", "Draw");
-            mMenu.AddItem(new MenuItem("Ksq", "Killsteal with Q").SetValue(false));
-            mMenu.AddItem(new MenuItem("Ksq", "Killsteal with W").SetValue(false));
-            mMenu.AddItem(new MenuItem("DrawD", "Damage Indicator").SetValue(true));
-            mMenu.AddItem(new MenuItem("interrupt", "Interrupt Spells").SetValue(true));
-            mMenu.AddItem(new MenuItem("antigap", "AntiGapCloser").SetValue(true));
-
-            Config.AddSubMenu(mMenu);
-
+            Config.AddSubMenu(new Menu("Misc", "Misc"));
+            Config.SubMenu("Misc").AddItem(new MenuItem("Ksq", "Killsteal with Q").SetValue(false));
+            Config.SubMenu("Misc").AddItem(new MenuItem("Ksq", "Killsteal with W").SetValue(false));
+            Config.SubMenu("Misc").AddItem(new MenuItem("DrawD", "Damage Indicator").SetValue(true));
+            Config.SubMenu("Misc").AddItem(new MenuItem("interrupt", "Interrupt Spells").SetValue(true));
+            Config.SubMenu("Misc").AddItem(new MenuItem("antigap", "AntiGapCloser").SetValue(true));
+            
             Config.AddToMainMenu();
-            Console.WriteLine("Menu Loaded");
             Drawing.OnDraw += OnDraw;
             Game.OnUpdate += Game_OnGameUpdate;
             Drawing.OnEndScene += OnEndScene;
-            Interrupter2.OnInterruptableTarget += Interrupter_OnPosibleToInterrupt;
-            AntiGapcloser.OnEnemyGapcloser += AntiGapCloser_OnEnemyGapcloser;
+            Interrupter2.OnInterruptableTarget += Interrupter2_OnInterruptableTarget;
+            AntiGapcloser.OnEnemyGapcloser += AntiGapcloser_OnEnemyGapcloser;
+            }
 
-
-        }
-
-        private static void Interrupter_OnPosibleToInterrupt(Obj_AI_Hero sender, Interrupter2.InterruptableTargetEventArgs args)
+        static void Interrupter2_OnInterruptableTarget(Obj_AI_Hero sender, Interrupter2.InterruptableTargetEventArgs args)
         {
-            throw new NotImplementedException();
+            if (W.IsReady() && sender.IsValidTarget(W.Range) && Config.Item("interrupt").GetValue<bool>())
+                W.CastOnUnit(sender);
         }
 
-        private static void Interrupter_OnPosibleToInterrupt(Obj_AI_Hero unit, InterruptableSpell spell)
-        {
-            if (W.IsReady() && unit.IsValidTarget(W.Range) && Config.Item("interrupt").GetValue<bool>())
-                W.CastOnUnit(unit);
-        }
-
-        private static void AntiGapCloser_OnEnemyGapcloser(ActiveGapcloser gapcloser)
+        static void AntiGapcloser_OnEnemyGapcloser(ActiveGapcloser gapcloser)
         {
             if (Q.IsReady() && gapcloser.Sender.IsValidTarget(Q.Range) && Config.Item("antigap").GetValue<bool>())
                 Q.CastIfHitchanceEquals(gapcloser.Sender, HitChance.High);
         }
-
-       
+                       
         public static string GetSmiteType()
         {
             if (SmiteBlue.Any(id => Items.HasItem(id)))
@@ -188,7 +167,7 @@ namespace JustMaokai
 
         private static void OnEndScene(EventArgs args)
         {
-            if (Config.SubMenu("[JT]: Misc Settings").Item("DrawD").GetValue<bool>())
+            if (Config.SubMenu("Draw").Item("DrawD").GetValue<bool>())
             {
                 foreach (var enemy in
                     ObjectManager.Get<Obj_AI_Hero>().Where(ene => !ene.IsDead && ene.IsEnemy && ene.IsVisible))
@@ -211,45 +190,36 @@ namespace JustMaokai
             }
 
             var wmana = Config.Item("wmana").GetValue<Slider>().Value;
-
             if (W.IsReady() && target.IsValidTarget(W.Range) && Config.Item("UseW").GetValue<bool>())
                 W.CastOnUnit(target);
 
             var emana = Config.Item("emana").GetValue<Slider>().Value;
-
             if (E.IsReady() && target.IsValidTarget(E.Range) && player.ManaPercent >= emana)
                 E.CastIfHitchanceEquals(target, HitChance.High);
 
             var qmana = Config.Item("qmana").GetValue<Slider>().Value;
-
             if (Q.IsReady() && Config.Item("UseQ").GetValue<bool>() && target.IsValidTarget(Q.Range)
             && player.ManaPercent >= qmana)
-                Q.CastOnUnit(target);
+                Q.CastIfHitchanceEquals(target, HitChance.High);
            
             var rmana = Config.Item("rmana").GetValue<Slider>().Value;
             if (R.IsReady() && Config.Item("UseR").GetValue<bool>() && target.IsValidTarget(R.Range) && player.ManaPercent >= rmana)
-
-                Ult();
+            Ult();
 
             var rDmg = player.GetSpellDamage(target, SpellSlot.R);
-            if (Config.Item("Rkill").GetValue<bool>() && target.HealthPercent >= rDmg)
-            
-                R.Cast();
+            if (Config.Item("Rkill").GetValue<bool>() && target.HealthPercent <= rDmg)
+            R.Cast();
             
             if (Config.Item("manualr").GetValue<KeyBind>().Active && R.IsReady())
-               
-                R.Cast();
+            R.Cast();
 
             if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
                 items();
-
-
-        }
+            }
 
         private static void Ult()
         {
             int enemys = Utility.CountEnemiesInRange(650);
-
             var rmana = Config.Item("rmana").GetValue<Slider>().Value;
             var PR = player.Mana * 100 / player.MaxMana;
 
@@ -288,6 +258,12 @@ namespace JustMaokai
             {
 
                 damage += Q.GetDamage(target);
+            }
+
+            if (E.IsReady() && Config.Item("UseE").GetValue<KeyBind>().Active) // edamage
+            {
+
+                damage += E.GetDamage(target);
             }
 
             if (W.IsReady() && Config.Item("UseW").GetValue<KeyBind>().Active) // wdamage
@@ -377,6 +353,8 @@ namespace JustMaokai
 
         private static void Game_OnGameUpdate(EventArgs args)
         {
+            Killsteal();
+
             switch (Orbwalker.ActiveMode)
             {
                 case Orbwalking.OrbwalkingMode.Combo:
@@ -399,18 +377,18 @@ namespace JustMaokai
             if (target == null || !target.IsValidTarget())
                 return;
 
-            if (Q.IsReady()
-                && Config.Item("hQ").GetValue<bool>()
-                && target.IsValidTarget(Q.Range)
-                && player.ManaPercent >= harassmana)
-
-                Q.CastIfHitchanceEquals(target, HitChance.High);
-
-            if (W.IsReady()
+           if (W.IsReady()
                 && Config.Item("hW").GetValue<bool>()
                 && player.ManaPercent >= harassmana)
 
                 W.CastOnUnit(target);
+          
+            if (Q.IsReady()
+               && Config.Item("hQ").GetValue<bool>()
+               && target.IsValidTarget(Q.Range)
+               && player.ManaPercent >= harassmana)
+
+               Q.CastIfHitchanceEquals(target, HitChance.High);
 
             if (E.IsReady()
                 && Config.Item("hE").GetValue<bool>()
@@ -473,13 +451,6 @@ namespace JustMaokai
             {
 
             }
-
-            //Draw If R is enabled
-            //var pos = Drawing.WorldToScreen(ObjectManager.Player.Position);
-
-            //if (Config.Item("UseR").GetValue<KeyBind>().Active)
-            // Drawing.DrawText(pos.X - 50, pos.Y + 50, Color.Gold, "[R] is Enabled!");
-
 
             if (Config.Item("Draw_Disabled").GetValue<bool>())
                 return;
