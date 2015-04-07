@@ -29,8 +29,6 @@ namespace JustTrundle
         public static readonly int[] SmiteBlue = { 3706, 3710, 3709, 3708, 3707 };
 
         private static SpellSlot Ignite;
-       // private static SpellSlot smiteSlot;
-        //private static int LastCast;
         private static readonly Obj_AI_Hero player = ObjectManager.Player;
 
         private static void Main(string[] args)
@@ -90,9 +88,9 @@ namespace JustTrundle
 
            //Harass
             var hMenu = new Menu("Harass", "Harass");
-            hMenu.AddItem(new MenuItem("hQ", "Use Q").SetValue(true));
-            hMenu.AddItem(new MenuItem("hW", "Use W").SetValue(true));
-            hMenu.AddItem(new MenuItem("hE", "Use E").SetValue(true));
+            hMenu.AddItem(new MenuItem("ElJayce.Harass.Q", "Use Q").SetValue(true));
+            hMenu.AddItem(new MenuItem("ElJayce.Harass.W", "Use W").SetValue(true));
+            hMenu.AddItem(new MenuItem("ElJayce.Harass.E", "Use E").SetValue(true));
             hMenu.AddItem(new MenuItem("harassmana", "Mana Percentage").SetValue(new Slider(30, 100, 0)));
 
             Config.AddSubMenu(hMenu);
@@ -149,19 +147,17 @@ namespace JustTrundle
              Drawing.OnEndScene += OnEndScene;
              Interrupter2.OnInterruptableTarget += Interrupter_OnPosibleToInterrupt;
              AntiGapcloser.OnEnemyGapcloser += AntiGapCloser_OnEnemyGapcloser;
-
-
-        }
+             }
 
         private static void Interrupter_OnPosibleToInterrupt(Obj_AI_Hero sender, Interrupter2.InterruptableTargetEventArgs args)
         {
             throw new NotImplementedException();
         }
 
-        private static void Interrupter_OnPosibleToInterrupt(Obj_AI_Hero unit, InterruptableSpell spell)
+        private static void Interrupter_OnPossibleToInterrupt(Obj_AI_Base unit, InterruptableSpell spell)
         {
-            if (E.IsReady() && unit.IsValidTarget(E.Range) && Config.Item("interrupt").GetValue<bool>())
-                E.CastIfHitchanceEquals(unit, HitChance.Medium);
+            if (Config.Item("interrupt").GetValue<bool>()) return;
+            E.CastIfHitchanceEquals(unit, HitChance.Medium);
         }
 
         private static void AntiGapCloser_OnEnemyGapcloser(ActiveGapcloser gapcloser)
@@ -424,7 +420,7 @@ namespace JustTrundle
                 && Config.Item("laneQ").GetValue<bool>()
                 && player.ManaPercent >= lanemana)
 
-                Q.Cast(minion);
+                Q.CastOnUnit(minion);
 
             if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear
                && Config.Item("laneW").GetValue<bool>()
@@ -464,13 +460,7 @@ namespace JustTrundle
 
             }
 
-            //Draw If R is enabled
-            //var pos = Drawing.WorldToScreen(ObjectManager.Player.Position);
-
-            //if (Config.Item("UseR").GetValue<KeyBind>().Active)
-           // Drawing.DrawText(pos.X - 50, pos.Y + 50, Color.Gold, "[R] is Enabled!");
-
-
+            
             if (Config.Item("Draw_Disabled").GetValue<bool>())
                 return;
 

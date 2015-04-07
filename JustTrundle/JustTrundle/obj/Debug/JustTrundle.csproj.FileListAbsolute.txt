@@ -6,7 +6,7 @@ C:\Users\Koray\Documents\Visual Studio 2013\Projects\JustTrundle\JustTrundle\bin
 C:\Users\Koray\Documents\Visual Studio 2013\Projects\JustTrundle\JustTrundle\bin\Release\SharpDX.Direct3D9.dll
 C:\Users\Koray\Documents\Visual Studio 2013\Projects\JustTrundle\JustTrundle\bin\Release\SharpDX.dll
 C:\Users\Koray\Documents\Visual Studio 2013\Projects\JustTrundle\JustTrundle\bin\Release\clipper_library.dll
+C:\Users\Koray\Documents\Visual Studio 2013\Projects\JustTrundle\JustTrundle\bin\Release\LeagueSharp.Sandbox.dll
 C:\Users\Koray\Documents\Visual Studio 2013\Projects\JustTrundle\JustTrundle\bin\Release\LeagueSharp.xml
-C:\Users\Koray\Documents\Visual Studio 2013\Projects\JustTrundle\JustTrundle\obj\Debug\JustTrundle.csprojResolveAssemblyReference.cache
 C:\Users\Koray\Documents\Visual Studio 2013\Projects\JustTrundle\JustTrundle\obj\Debug\JustTrundle.exe
 C:\Users\Koray\Documents\Visual Studio 2013\Projects\JustTrundle\JustTrundle\obj\Debug\JustTrundle.pdb
