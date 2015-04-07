@@ -88,9 +88,9 @@ namespace JustTrundle
 
            //Harass
             var hMenu = new Menu("Harass", "Harass");
-            hMenu.AddItem(new MenuItem("ElJayce.Harass.Q", "Use Q").SetValue(true));
-            hMenu.AddItem(new MenuItem("ElJayce.Harass.W", "Use W").SetValue(true));
-            hMenu.AddItem(new MenuItem("ElJayce.Harass.E", "Use E").SetValue(true));
+            hMenu.AddItem(new MenuItem("hQ", "Use Q").SetValue(true));
+            hMenu.AddItem(new MenuItem("hW", "Use W").SetValue(true));
+            hMenu.AddItem(new MenuItem("hE", "Use E").SetValue(true));
             hMenu.AddItem(new MenuItem("harassmana", "Mana Percentage").SetValue(new Slider(30, 100, 0)));
 
             Config.AddSubMenu(hMenu);
