@@ -42,7 +42,7 @@ namespace JustMalphite
             if (player.ChampionName != ChampName)
                 return;
 
-            Notifications.AddNotification("JustMalphite - [V.1.0.1.0]", 8000);
+            Notifications.AddNotification("JustMalphite - [V.1.0.2.0]", 8000);
 
             //Ability Information - Range - Variables.
             Q = new Spell(SpellSlot.Q, 625);
@@ -84,6 +84,9 @@ namespace JustMalphite
             Config.SubMenu("Harass").AddItem(new MenuItem("hW", "Use W").SetValue(false));
             Config.SubMenu("Harass").AddItem(new MenuItem("hE", "Use E").SetValue(true));
             Config.SubMenu("Harass").AddItem(new MenuItem("harassmana", "Mana Percentage").SetValue(new Slider(30, 100, 0)));
+            Config.SubMenu("Harass").AddItem(new MenuItem("AutoHarass", "Auto Harass", true).SetValue(new KeyBind("T".ToCharArray()[0], KeyBindType.Toggle)));
+            Config.SubMenu("Harass").AddItem(new MenuItem("AutoHarass.Q", "Use Q for Auto").SetValue(true));
+            Config.SubMenu("Harass").AddItem(new MenuItem("AutoHarass.E", "Use E for Auto").SetValue(true));
 
             //Farming menu:
             Config.AddSubMenu(new Menu("Clear", "Clear"));
@@ -170,32 +173,37 @@ namespace JustMalphite
         private static void combo()
         {
             var target = TargetSelector.GetTarget(R.Range, TargetSelector.DamageType.Magical);
-            if (target == null || !target.IsValidTarget()) //if there is no target or target isn't valid it will return; (It won't combo)
+            if (target == null || !target.IsValidTarget())
                 return;
-            
+
             var qmana = Config.Item("qmana").GetValue<Slider>().Value;
             if (Q.IsReady() && Config.Item("UseQ").GetValue<bool>() && target.IsValidTarget(Q.Range) && player.ManaPercent >= qmana)
-            Q.CastOnUnit(target);
-            
+                Q.Cast(target);
+
             var wmana = Config.Item("wmana").GetValue<Slider>().Value;
             if (W.IsReady() && player.ManaPercent >= wmana && target.IsValidTarget(W.Range) && Config.Item("UseW").GetValue<bool>())
                 W.Cast();
 
             var emana = Config.Item("emana").GetValue<Slider>().Value;
             if (E.IsReady() && target.IsValidTarget(E.Range) && player.ManaPercent >= emana && Config.Item("UseE").GetValue<bool>())
-            E.Cast(target);
+                E.Cast();
 
-            var Rhitt = Config.Item("Rhit").GetValue<Slider>().Value;
+            var countEnemies = Config.Item("Rhit").GetValue<Slider>().Value;
+            var rTarget = TargetSelector.GetTarget(R.Range, TargetSelector.DamageType.Magical);
             var rmana = Config.Item("rmana").GetValue<Slider>().Value;
-            if (R.IsReady() && Config.Item("UseR").GetValue<bool>() && target.IsValidTarget(R.Range) && target.CountEnemiesInRange(1000) >= Rhitt && player.ManaPercent >= rmana)
-            R.CastIfHitchanceEquals(target, HitChance.High);
-           
-            if (Config.Item("manualr").GetValue<KeyBind>().Active && R.IsReady())
-            R.Cast(target);
+            if (R.IsReady() && Config.Item("UseR").GetValue<bool>() && target.IsValidTarget(R.Range) && rTarget != null && player.ManaPercent >= rmana)
+            {
+                var pred = R.GetPrediction(target).Hitchance;
+                if (pred >= HitChance.High)
+                R.CastIfWillHit(rTarget, countEnemies);
+            }
+
+            if (Config.Item("manualr").GetValue<KeyBind>().Active && rTarget != null && R.IsReady())
+                R.Cast(rTarget);
 
             if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
                 items();
-           }
+        }
 
         private static int CalcDamage(Obj_AI_Base target)
         {
@@ -247,7 +255,9 @@ namespace JustMalphite
 
             if (Utility.UnderTurret(Target, false) && R.IsReady() && Config.Item("tower").GetValue<bool>())
             {
-                R.CastIfHitchanceEquals(Target, HitChance.High);
+                var pred = R.GetPrediction(Target).Hitchance;
+                if (pred >= HitChance.High)
+                    R.Cast(Target);
             }
         }
 
@@ -266,11 +276,13 @@ namespace JustMalphite
                 var rDmg = player.GetSpellDamage(target, SpellSlot.R);
                 if (Config.Item("ksR").GetValue<bool>() && target.IsValidTarget(R.Range) && target.Health <= rDmg)
                 {
-                    R.CastIfHitchanceEquals(target, HitChance.High);
+                    var pred = R.GetPrediction(target).Hitchance;
+                    if (pred >= HitChance.High)
+                        R.Cast(target);
                 }
             }
         }
-        
+
         private static void items()
         {
             Ignite = player.GetSpellSlot("summonerdot");
@@ -312,7 +324,7 @@ namespace JustMalphite
 
         private static void Game_OnGameUpdate(EventArgs args)
         {
-            
+
             Killsteal();
 
             switch (Orbwalker.ActiveMode)
@@ -327,6 +339,37 @@ namespace JustMalphite
                     Laneclear();
                     Jungleclear();
                     break;
+            }
+
+            var autoHarass = Config.Item("AutoHarass", true).GetValue<KeyBind>().Active;
+            if (autoHarass)
+                AutoHarass();
+
+        }
+
+        private static void AutoHarass()
+        {
+            var qTarget = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Magical);
+            var eTarget = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Magical);
+
+            if (qTarget == null || !qTarget.IsValid)
+                return;
+
+            var useQ = Config.Item("AutoHarass.Q").GetValue<bool>();
+            var useE = Config.Item("AutoHarass.E").GetValue<bool>();
+            var playerMana = Config.Item("harassmana").GetValue<Slider>().Value;
+
+            if (player.Mana < playerMana)
+                return;
+
+            if (useQ && Q.IsReady() && Q.IsInRange(qTarget))
+            {
+                Q.Cast(qTarget);
+            }
+
+            if (useE && E.IsReady() && E.IsInRange(eTarget) && eTarget != null)
+            {
+                E.Cast();
             }
         }
 
@@ -373,13 +416,13 @@ namespace JustMalphite
                && Config.Item("cW").GetValue<bool>()
                && player.ManaPercent >= lanemana)
 
-                W.Cast();
+                W.Cast(player);
 
             if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear
                 && Config.Item("cE").GetValue<bool>()
                 && player.ManaPercent >= lanemana)
 
-                E.Cast(minion);
+                E.Cast();
         }
 
 
@@ -391,13 +434,13 @@ namespace JustMalphite
                 && Config.Item("cW").GetValue<bool>()
                 && player.ManaPercent >= jlanemana)
 
-                W.Cast();
+                W.Cast(player);
 
             if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear
                 && Config.Item("cE").GetValue<bool>()
                 && player.ManaPercent >= jlanemana)
 
-                E.Cast(minion);
+                E.Cast();
 
             if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear
                 && Config.Item("cQ").GetValue<bool>()
@@ -412,7 +455,7 @@ namespace JustMalphite
 
             }
 
-           if (Config.Item("Draw_Disabled").GetValue<bool>())
+            if (Config.Item("Draw_Disabled").GetValue<bool>())
                 return;
 
             if (Config.Item("Qdraw").GetValue<Circle>().Active)
@@ -423,16 +466,16 @@ namespace JustMalphite
                 if (E.Level > 0)
                     Render.Circle.DrawCircle(ObjectManager.Player.Position, E.Range - 1,
                         E.IsReady() ? Config.Item("Edraw").GetValue<Circle>().Color : Color.Red);
-            
+
             if (Config.Item("Wdraw").GetValue<Circle>().Active)
                 if (E.Level > 0)
                     Render.Circle.DrawCircle(ObjectManager.Player.Position, E.Range - 1,
                         E.IsReady() ? Config.Item("Wdraw").GetValue<Circle>().Color : Color.Red);
-            
+
             if (Config.Item("Rdraw").GetValue<Circle>().Active)
-                if (E.Level > 0)
-                    Render.Circle.DrawCircle(ObjectManager.Player.Position, E.Range - 1,
-                        E.IsReady() ? Config.Item("Rdraw").GetValue<Circle>().Color : Color.Red);
+                if (R.Level > 0)
+                    Render.Circle.DrawCircle(ObjectManager.Player.Position, R.Range,
+                        R.IsReady() ? Config.Item("Rdraw").GetValue<Circle>().Color : Color.Red);
 
             var orbtarget = Orbwalker.GetTarget();
             Render.Circle.DrawCircle(orbtarget.Position, 100, Color.DarkOrange, 10);
