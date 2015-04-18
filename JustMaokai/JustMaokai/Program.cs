@@ -57,7 +57,7 @@ namespace JustMaokai
             Config.SubMenu("Combo").AddItem(new MenuItem("UseE", "Use E").SetValue(true));
             Config.SubMenu("Combo").AddItem(new MenuItem("UseR", "Use R").SetValue(true));
             Config.SubMenu("Combo").AddItem(new MenuItem("Rkil", "Cancel Ult If Target Killable").SetValue(true));
-            Config.SubMenu("Combo").AddItem(new MenuItem("Rmana", "Cancel Ult If Mana").SetValue(new Slider(30, 100, 0)));
+            Config.SubMenu("Combo").AddItem(new MenuItem("Rmana", "Cancel Ult If Mana").SetValue(new Slider(30, 0, 100)));
             Config.SubMenu("Combo").AddItem(new MenuItem("Rene", "Min Enemies for R").SetValue(new Slider(2, 1, 5)));
 
             //Harass
@@ -65,16 +65,16 @@ namespace JustMaokai
             Config.SubMenu("Harass").AddItem(new MenuItem("hQ", "Use Q").SetValue(true));
             Config.SubMenu("Harass").AddItem(new MenuItem("hW", "Use W").SetValue(true));
             Config.SubMenu("Harass").AddItem(new MenuItem("hE", "Use E").SetValue(true));
-            Config.SubMenu("Harass").AddItem(new MenuItem("harassmana", "Mana Percentage").SetValue(new Slider(30, 100, 0)));
+            Config.SubMenu("Harass").AddItem(new MenuItem("harassmana", "Mana Percentage").SetValue(new Slider(30, 0, 100)));
 
             //Item
             Config.AddSubMenu(new Menu("Item", "Item"));
             Config.SubMenu("Item").AddItem(new MenuItem("useGhostblade", "Use Youmuu's Ghostblade").SetValue(true));
             Config.SubMenu("Item").AddItem(new MenuItem("UseBOTRK", "Use Blade of the Ruined King").SetValue(true));
-            Config.SubMenu("Item").AddItem(new MenuItem("eL", "  Enemy HP Percentage").SetValue(new Slider(80, 100, 0)));
-            Config.SubMenu("Item").AddItem(new MenuItem("oL", "  Own HP Percentage").SetValue(new Slider(65, 100, 0)));
+            Config.SubMenu("Item").AddItem(new MenuItem("eL", "  Enemy HP Percentage").SetValue(new Slider(80, 0, 100)));
+            Config.SubMenu("Item").AddItem(new MenuItem("oL", "  Own HP Percentage").SetValue(new Slider(65, 0, 100)));
             Config.SubMenu("Item").AddItem(new MenuItem("UseBilge", "Use Bilgewater Cutlass").SetValue(true));
-            Config.SubMenu("Item").AddItem(new MenuItem("HLe", "  Enemy HP Percentage").SetValue(new Slider(80, 100, 0)));
+            Config.SubMenu("Item").AddItem(new MenuItem("HLe", "  Enemy HP Percentage").SetValue(new Slider(80, 0, 100)));
             Config.SubMenu("Item").AddItem(new MenuItem("UseIgnite", "Use Ignite").SetValue(true));
 
             //Laneclear
@@ -82,7 +82,7 @@ namespace JustMaokai
             Config.SubMenu("Clear").AddItem(new MenuItem("laneQ", "Use Q").SetValue(true));
             Config.SubMenu("Clear").AddItem(new MenuItem("laneW", "Use W").SetValue(true));
             Config.SubMenu("Clear").AddItem(new MenuItem("laneE", "Use E").SetValue(true));
-            Config.SubMenu("Clear").AddItem(new MenuItem("laneclearmana", "Mana Percentage").SetValue(new Slider(30, 100, 0)));
+            Config.SubMenu("Clear").AddItem(new MenuItem("laneclearmana", "Mana Percentage").SetValue(new Slider(30, 0, 100)));
 
             //Draw
             Config.AddSubMenu(new Menu("Draw", "Draw"));
@@ -144,18 +144,8 @@ namespace JustMaokai
 
             var rmana = Config.Item("Rmana").GetValue<Slider>().Value;
             var enemys = Config.Item("Rene").GetValue<Slider>().Value;
-            bool enoughEnemies = Config.Item("Rene").GetValue<Slider>().Value <= player.CountEnemiesInRange(R.Range);
-            if (R.IsReady())
-            {
-                if (player.HasBuff("MaokaiDrain3") && (R.GetDamage(target) > target.Health || player.ManaPercent < Config.Item("Rmana").GetValue<Slider>().Value || (!enoughEnemies && R.IsInRange(target))))
-                {
-                    R.Cast();
-                }
-                if (!player.HasBuff("MaokaiDrain3") && player.ManaPercent < Config.Item("Rmana").GetValue<Slider>().Value && (enoughEnemies || R.IsInRange(target)))
-                {
-                    R.Cast();
-                }
-            }
+            if (R.IsReady() && Config.Item("UseR").GetValue<bool>() && target.IsValidTarget(R.Range) && player.ManaPercent >= rmana && (Config.Item("Rene").GetValue<Slider>().Value <= enemys))
+                R.Cast();
 
             if (W.IsReady() && target.IsValidTarget(W.Range) && Config.Item("UseW").GetValue<bool>())
                 W.CastOnUnit(target);
