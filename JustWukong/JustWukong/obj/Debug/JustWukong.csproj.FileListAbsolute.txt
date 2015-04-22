@@ -1,0 +1,12 @@
+C:\Users\Koray\Documents\Visual Studio 2013\Projects\JustWukong\JustWukong\bin\Release\JustWukong.exe.config
+C:\Users\Koray\Documents\Visual Studio 2013\Projects\JustWukong\JustWukong\bin\Release\JustWukong.exe
+C:\Users\Koray\Documents\Visual Studio 2013\Projects\JustWukong\JustWukong\bin\Release\JustWukong.pdb
+C:\Users\Koray\Documents\Visual Studio 2013\Projects\JustWukong\JustWukong\bin\Release\LeagueSharp.Common.dll
+C:\Users\Koray\Documents\Visual Studio 2013\Projects\JustWukong\JustWukong\bin\Release\LeagueSharp.dll
+C:\Users\Koray\Documents\Visual Studio 2013\Projects\JustWukong\JustWukong\bin\Release\SharpDX.Direct3D9.dll
+C:\Users\Koray\Documents\Visual Studio 2013\Projects\JustWukong\JustWukong\bin\Release\SharpDX.dll
+C:\Users\Koray\Documents\Visual Studio 2013\Projects\JustWukong\JustWukong\bin\Release\clipper_library.dll
+C:\Users\Koray\Documents\Visual Studio 2013\Projects\JustWukong\JustWukong\bin\Release\LeagueSharp.Sandbox.dll
+C:\Users\Koray\Documents\Visual Studio 2013\Projects\JustWukong\JustWukong\bin\Release\LeagueSharp.xml
+C:\Users\Koray\Documents\Visual Studio 2013\Projects\JustWukong\JustWukong\obj\Debug\JustWukong.exe
+C:\Users\Koray\Documents\Visual Studio 2013\Projects\JustWukong\JustWukong\obj\Debug\JustWukong.pdb
