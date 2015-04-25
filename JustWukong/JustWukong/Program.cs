@@ -39,7 +39,7 @@ namespace JustWukong
             if (player.ChampionName != ChampName)
                 return;
 
-            Notifications.AddNotification("JustWukong - [V.1.0.0.0]", 8000);
+            Notifications.AddNotification("JustWukong - [V.1.0.1.0]", 8000);
 
             //Ability Information - Range - Variables.
             Q = new Spell(SpellSlot.Q, 375f);
@@ -91,6 +91,7 @@ namespace JustWukong
             Config.AddSubMenu(new Menu("Clear", "Clear"));
             Config.SubMenu("Clear").AddItem(new MenuItem("laneQ", "Use Q").SetValue(true));
             Config.SubMenu("Clear").AddItem(new MenuItem("laneE", "Use E").SetValue(true));
+            Config.SubMenu("Clear").AddItem(new MenuItem("emin", "Min Minion for E").SetValue(new Slider(2, 1, 5)));
             Config.SubMenu("Clear").AddItem(new MenuItem("laneclearmana", "Mana Percentage").SetValue(new Slider(30, 0, 100)));
 
             //Draw
@@ -119,6 +120,7 @@ namespace JustWukong
             Config.AddToMainMenu();
             Drawing.OnDraw += OnDraw;
             Game.OnUpdate += Game_OnGameUpdate;
+            Spellbook.OnCastSpell += OnCastSpell;
             Game.PrintChat(
                 "<font color=\"#FFCC00\">JustWukong - <font color=\"#FFFFFF\"> Latest Version Successfully Loaded.</font>");
             Drawing.OnEndScene += OnEndScene;
@@ -171,6 +173,15 @@ namespace JustWukong
                     Hpi.unit = enemy;
                     Hpi.drawDmg(CalcDamage(enemy), Color.Green);
                 }
+            }
+        }
+
+        private static void OnCastSpell(Spellbook sender, SpellbookCastSpellEventArgs args)
+        {
+            if (sender.Owner.IsMe && (args.Slot == SpellSlot.Q || args.Slot == SpellSlot.W || args.Slot == SpellSlot.E))
+            {
+                if (player.HasBuff("MonkeyKingSpinToWin"))
+                args.Process = false;
             }
         }
 
@@ -372,7 +383,7 @@ namespace JustWukong
                 return;
             }
 
-            if (minionObj.Count > 1)
+            if (minionObj.Count > Config.Item("emin").GetValue<Slider>().Value)
             {
                 var minions = minionObj[2];
                 if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear && Config.Item("laneE").GetValue<bool>())
