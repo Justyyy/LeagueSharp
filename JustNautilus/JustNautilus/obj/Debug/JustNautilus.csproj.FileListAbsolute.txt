@@ -1,0 +1,12 @@
+c:\users\koray\documents\visual studio 2013\Projects\JustNautilus\JustNautilus\bin\Release\JustNautilus.exe.config
+c:\users\koray\documents\visual studio 2013\Projects\JustNautilus\JustNautilus\bin\Release\JustNautilus.exe
+c:\users\koray\documents\visual studio 2013\Projects\JustNautilus\JustNautilus\bin\Release\JustNautilus.pdb
+c:\users\koray\documents\visual studio 2013\Projects\JustNautilus\JustNautilus\bin\Release\clipper_library.dll
+c:\users\koray\documents\visual studio 2013\Projects\JustNautilus\JustNautilus\bin\Release\LeagueSharp.Common.dll
+c:\users\koray\documents\visual studio 2013\Projects\JustNautilus\JustNautilus\bin\Release\LeagueSharp.dll
+c:\users\koray\documents\visual studio 2013\Projects\JustNautilus\JustNautilus\bin\Release\SharpDX.Direct3D9.dll
+c:\users\koray\documents\visual studio 2013\Projects\JustNautilus\JustNautilus\bin\Release\SharpDX.dll
+c:\users\koray\documents\visual studio 2013\Projects\JustNautilus\JustNautilus\bin\Release\LeagueSharp.Sandbox.dll
+c:\users\koray\documents\visual studio 2013\Projects\JustNautilus\JustNautilus\bin\Release\LeagueSharp.xml
+c:\users\koray\documents\visual studio 2013\Projects\JustNautilus\JustNautilus\obj\Debug\JustNautilus.exe
+c:\users\koray\documents\visual studio 2013\Projects\JustNautilus\JustNautilus\obj\Debug\JustNautilus.pdb
