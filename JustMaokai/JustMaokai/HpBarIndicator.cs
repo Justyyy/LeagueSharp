@@ -3,7 +3,7 @@ using LeagueSharp;
 using SharpDX;
 using SharpDX.Direct3D9;
 
-namespace JustMalphite
+namespace JustOlaf
 {
     class HpBarIndicator
     {
