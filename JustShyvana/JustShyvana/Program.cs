@@ -38,7 +38,7 @@ namespace JustShyvana
             if (player.ChampionName != ChampName)
                 return;
 
-            Notifications.AddNotification("JusShyvana - [V.1.0.0.0]", 8000);
+            Notifications.AddNotification("JustShyvana - [V.1.0.0.0]", 8000);
 
             //Ability Information - Range - Variables.
             Q = new Spell(SpellSlot.Q, 125);
