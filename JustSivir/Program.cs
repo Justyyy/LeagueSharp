@@ -9,7 +9,7 @@ using Color = System.Drawing.Color;
 using JustSivir;
 using SharpDX;
 
-namespace JustWukong
+namespace JustSivir
 {
     internal class Program
     {
