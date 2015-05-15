@@ -124,6 +124,7 @@ namespace JustBlitz
                 .AddItem(new MenuItem("qmana", "Auto Q Mana Percentage").SetValue(new Slider(30, 0, 100)));
             Config.SubMenu("Misc").AddItem(new MenuItem("antigap", "AntiGapCloser with W").SetValue(false));
             Config.SubMenu("Misc").AddItem(new MenuItem("interruptq", "Interrupt with Q").SetValue(true));
+            Config.SubMenu("Misc").AddItem(new MenuItem("interrupte", "Interrupt with E").SetValue(true));
             Config.SubMenu("Misc").AddItem(new MenuItem("interruptr", "Interrupt with R").SetValue(true));
             Config.SubMenu("Misc").AddItem(new MenuItem("autolevel", "Auto Level Spells").SetValue(false));
 
@@ -150,6 +151,10 @@ namespace JustBlitz
             
             if (R.IsReady() && sender.IsValidTarget(R.Range) && Config.Item("interruptr").GetValue<bool>())
                 R.Cast();
+
+            if (E.IsReady() && sender.IsValidTarget(E.Range) && Config.Item("interrupte").GetValue<bool>())
+                E.Cast();
+                player.IssueOrder(GameObjectOrder.AttackUnit, sender);
         }
 
         private static void AntiGapcloser_OnEnemyGapcloser(ActiveGapcloser gapcloser)
@@ -182,6 +187,7 @@ namespace JustBlitz
 
             if (E.IsReady() && target.IsValidTarget(E.Range) && Config.Item("UseE").GetValue<bool>())
                 E.Cast();
+                player.IssueOrder(GameObjectOrder.AttackUnit, target);
            
             var enemys = Config.Item("Rene").GetValue<Slider>().Value;
             if (R.IsReady() && Config.Item("UseR").GetValue<bool>() && target.IsValidTarget(R.Range))
@@ -412,6 +418,7 @@ namespace JustBlitz
             if (E.IsReady() && target.IsValidTarget(E.Range) && player.ManaPercent >= harassmana &&
                Config.Item("hE").GetValue<bool>())
                 E.Cast();
+                player.IssueOrder(GameObjectOrder.AttackUnit, target);
            
         }
 
