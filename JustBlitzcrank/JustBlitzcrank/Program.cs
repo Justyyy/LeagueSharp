@@ -45,7 +45,7 @@ namespace JustBlitz
             if (player.ChampionName != ChampName)
                 return;
 
-            Notifications.AddNotification("JustBlitzcrank Loaded - [V.1.0.0.0]", 8000);
+            Notifications.AddNotification("JustBlitzcrank Loaded - [V.1.0.2.0]", 8000);
 
             //Ability Information - Range - Variables.
             Q = new Spell(SpellSlot.Q, 925);
@@ -66,9 +66,17 @@ namespace JustBlitz
 
             Orbwalker = new Orbwalking.Orbwalker(Config.SubMenu("Orbwalking"));
 
+            //Blacklist
+            
+
             //Combo
             Config.AddSubMenu(new Menu("Combo", "Combo"));
             Config.SubMenu("Combo").AddItem(new MenuItem("UseQ", "Use Q").SetValue(true));
+            foreach (var obj in ObjectManager.Get<Obj_AI_Hero>().Where(obj => obj.Team != player.Team))
+            {
+                Config.AddItem(new MenuItem("grapop" + obj.ChampionName, obj.ChampionName))
+                    .SetValue(new StringList(new[] { "Don't Grab ", "Grab "}, 1));
+            }
             Config.SubMenu("Combo").AddItem(new MenuItem("qhit", "Q Hitchance 1-Low, 4-Very High")).SetValue(new Slider(4, 1, 4));
             Config.SubMenu("Combo").AddItem(new MenuItem("UseW", "Use W").SetValue(true));
             Config.SubMenu("Combo").AddItem(new MenuItem("UseE", "Use E").SetValue(true));
@@ -93,6 +101,7 @@ namespace JustBlitz
             Config.SubMenu("Item")
                 .AddItem(new MenuItem("HLe", "  Enemy HP Percentage").SetValue(new Slider(80, 0, 100)));
             Config.SubMenu("Item").AddItem(new MenuItem("UseIgnite", "Use Ignite").SetValue(true));
+
 
             //Laneclear
             Config.AddSubMenu(new Menu("Clear", "Clear"));
@@ -137,7 +146,7 @@ namespace JustBlitz
 
         static void Interrupter2_OnInterruptableTarget(Obj_AI_Hero sender, Interrupter2.InterruptableTargetEventArgs args)
         {
-            if (Q.IsReady() && sender.IsValidTarget(Q.Range) && Config.Item("interruptq").GetValue<bool>())
+            if (Q.IsReady() && Config.Item("grapop" + sender.ChampionName).GetValue<StringList>().SelectedIndex == 2 && sender.IsValidTarget(Q.Range) && Config.Item("interruptq").GetValue<bool>())
             {
                 Q.CastIfHitchanceEquals(sender, HitChance.Dashing, true);
                 Q.CastIfHitchanceEquals(sender, HitChance.Immobile, true);
@@ -149,17 +158,17 @@ namespace JustBlitz
                 }
             }
             
-            if (R.IsReady() && sender.IsValidTarget(R.Range) && Config.Item("interruptr").GetValue<bool>())
+            if (R.IsReady() && Config.Item("grapop" + sender.ChampionName).GetValue<StringList>().SelectedIndex == 2 && sender.IsValidTarget(R.Range) && Config.Item("interruptr").GetValue<bool>())
                 R.Cast();
 
-            if (E.IsReady() && sender.IsValidTarget(E.Range) && Config.Item("interrupte").GetValue<bool>())
+            if (E.IsReady() && Config.Item("grapop" + sender.ChampionName).GetValue<StringList>().SelectedIndex == 2 && sender.IsValidTarget(E.Range) && Config.Item("interrupte").GetValue<bool>())
                 E.Cast();
                 player.IssueOrder(GameObjectOrder.AttackUnit, sender);
         }
 
         private static void AntiGapcloser_OnEnemyGapcloser(ActiveGapcloser gapcloser)
         {
-            if (W.IsReady() && gapcloser.Sender.IsValidTarget(400) && Config.Item("antigap").GetValue<bool>())
+            if (W.IsReady() && Config.Item("grapop" + gapcloser.Sender.ChampionName).GetValue<StringList>().SelectedIndex == 2 && gapcloser.Sender.IsValidTarget(400) && Config.Item("antigap").GetValue<bool>())
                 W.Cast();
         }
 
@@ -173,7 +182,7 @@ namespace JustBlitz
                 W.Cast();
 
             var qrange = Config.Item("qrange").GetValue<Slider>().Value;
-            if (Q.IsReady() && Config.Item("UseQ").GetValue<bool>() && target.IsValidTarget(qrange))
+            if (Q.IsReady() && Config.Item("grapop" + target.ChampionName).GetValue<StringList>().SelectedIndex == 2 && Config.Item("UseQ").GetValue<bool>() && target.IsValidTarget(qrange))
             {
                 Q.CastIfHitchanceEquals(target, HitChance.Dashing, true);
                 Q.CastIfHitchanceEquals(target, HitChance.Immobile, true);
@@ -214,7 +223,7 @@ namespace JustBlitz
                 if (target != null)
                 {
                     var qmana = Config.Item("qmana").GetValue<Slider>().Value;
-                    if (Config.Item("AutoQ").GetValue<bool>() && Q.CanCast(target) && Q.GetPrediction(target).Hitchance >= HitChance.Immobile && player.ManaPercent >= qmana)
+                    if (Config.Item("AutoQ").GetValue<bool>() && Config.Item("grapop" + target.ChampionName).GetValue<StringList>().SelectedIndex == 2 && Q.CanCast(target) && Q.GetPrediction(target).Hitchance >= HitChance.Immobile && player.ManaPercent >= qmana)
                     {
                         Q.CastIfHitchanceEquals(target, HitChance.Dashing, true);
                         Q.CastIfHitchanceEquals(target, HitChance.Immobile, true);
@@ -228,7 +237,7 @@ namespace JustBlitz
                 }
                 {
                     var qmana = Config.Item("qmana").GetValue<Slider>().Value;
-                    if (Config.Item("AutoQ2").GetValue<bool>() && Q.CanCast(target) && Q.GetPrediction(target).Hitchance >= HitChance.Dashing && player.ManaPercent >= qmana)
+                    if (Config.Item("AutoQ2").GetValue<bool>() && Config.Item("grapop" + target.ChampionName).GetValue<StringList>().SelectedIndex == 2 && Q.CanCast(target) && Q.GetPrediction(target).Hitchance >= HitChance.Dashing && player.ManaPercent >= qmana)
                     {
                         Q.CastIfHitchanceEquals(target, HitChance.Dashing, true);
                         Q.CastIfHitchanceEquals(target, HitChance.Immobile, true);
@@ -403,7 +412,7 @@ namespace JustBlitz
                Config.Item("hW").GetValue<bool>())
                 W.Cast();
 
-            if (target.Distance(player.ServerPosition) > Config.Item("qrange").GetValue<Slider>().Value && Config.Item("hQ").GetValue<bool>() && player.ManaPercent >= harassmana)
+            if (target.Distance(player.ServerPosition) > Config.Item("qrange").GetValue<Slider>().Value && Config.Item("grapop" + target.ChampionName).GetValue<StringList>().SelectedIndex == 2 && Config.Item("hQ").GetValue<bool>() && player.ManaPercent >= harassmana)
             {
                 Q.CastIfHitchanceEquals(target, HitChance.Dashing, true);
                 Q.CastIfHitchanceEquals(target, HitChance.Immobile, true);
