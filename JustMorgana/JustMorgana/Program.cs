@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.Eventing.Reader;
 using System.Drawing.Printing;
@@ -48,11 +48,11 @@ namespace JustMorgana
             Notifications.AddNotification("JustMorgana Loaded - [V.1.0.0.0]", 8000);
 
             //Ability Information - Range - Variables.
-            Q = new Spell(SpellSlot.Q, 1175);
+            Q = new Spell(SpellSlot.Q, 1175f);
             Q.SetSkillshot(0.25f, 75f, 1200f, true, SkillshotType.SkillshotLine);
-            W = new Spell(SpellSlot.W, 900);
+            W = new Spell(SpellSlot.W, 900f);
             W.SetSkillshot(0.25f, 175f, float.MaxValue, false, SkillshotType.SkillshotCircle);
-            R = new Spell(SpellSlot.R, 600);
+            R = new Spell(SpellSlot.R, 600f);
             
             abilitySequence = new int[] { 1, 2, 3, 1, 1, 4, 1, 3, 1, 3, 4, 3, 3, 2, 2, 4, 2, 2 };
 
@@ -70,7 +70,7 @@ namespace JustMorgana
             Config.SubMenu("Combo").AddItem(new MenuItem("UseQ", "Use Q").SetValue(true));
             Config.SubMenu("Combo").AddItem(new MenuItem("qhit", "Q Hitchance 1-Low, 4-Very High")).SetValue(new Slider(3, 1, 4));
             Config.SubMenu("Combo").AddItem(new MenuItem("UseW", "Use W").SetValue(true));
-            Config.SubMenu("Combo").AddItem(new MenuItem("UseWe", "Use W only if target stunned").SetValue(true));
+            Config.SubMenu("Combo").AddItem(new MenuItem("WonlySnare", "Use W only if target stunned").SetValue(true));
             Config.SubMenu("Combo").AddItem(new MenuItem("UseR", "Use R").SetValue(true));
             Config.SubMenu("Combo").AddItem(new MenuItem("Rene", "Min Enemies for R").SetValue(new Slider(2, 1, 5)));
 
@@ -115,8 +115,8 @@ namespace JustMorgana
             Config.SubMenu("Misc")
                 .AddItem(new MenuItem("qrange", "Mininum Distance to Q"))
                 .SetValue(new Slider(1000, 0, (int)Q.Range));
-            Config.SubMenu("Misc").AddItem(new MenuItem("AutoQ", "Autocast Q On Immobile Targets", true).SetValue(true));
-            Config.SubMenu("Misc").AddItem(new MenuItem("AutoQ2", "Autocast Q On Dashing Targets", true).SetValue(true));
+            Config.SubMenu("Misc").AddItem(new MenuItem("AutoQ", "Autocast Q On Immobile Targets").SetValue(true));
+            Config.SubMenu("Misc").AddItem(new MenuItem("AutoQ2", "Autocast Q On Dashing Targets").SetValue(true));
             Config.SubMenu("Misc")
                 .AddItem(new MenuItem("qmana", "Auto Q Mana Percentage").SetValue(new Slider(30, 0, 100)));
             Config.SubMenu("Misc").AddItem(new MenuItem("antigap", "AntiGapCloser with Q").SetValue(false));
@@ -147,8 +147,7 @@ namespace JustMorgana
         {
             var target = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Magical);
             if (target == null || !target.IsValidTarget())
-                return;
-
+                  return;
             var qrange = Config.Item("qrange").GetValue<Slider>().Value;
             if (Q.IsReady() && Config.Item("UseQ").GetValue<bool>() && target.IsValidTarget(qrange))
             {
@@ -161,23 +160,25 @@ namespace JustMorgana
                     Q.Cast(qpred.CastPosition);
                 }
             }
-
-            if (W.IsReady() && target.IsValidTarget(W.Range))
+            if (W.IsReady() && Config.Item("UseW").GetValue<bool>() && target.IsValidTarget(W.Range))
             {
-                if (Config.Item("UseWE").GetValue<bool>() && target.HasBuffOfType(BuffType.Snare))
-                    W.CastIfHitchanceEquals(target, HitChance.High);
-                else
+                if (Config.Item("WonlySnare").GetValue<bool>() && target.HasBuffOfType(BuffType.Snare))
                 {
-                    if (Config.Item("UseW").GetValue<bool>() && !Config.Item("UseWE").GetValue<bool>())
-                        W.CastIfHitchanceEquals(target, HitChance.High);
+                    W.CastIfHitchanceEquals(target, HitChance.High);
+                }
+                else if (!Config.Item("WonlySnare").GetValue<bool>())
+                {
+                    W.CastIfHitchanceEquals(target, HitChance.High);
                 }
             }
-
-            var enemys = Config.Item("Rene").GetValue<Slider>().Value;
+            var enemys = player.CountEnemiesInRange(R.Range);
             if (R.IsReady() && Config.Item("UseR").GetValue<bool>() && target.IsValidTarget(R.Range))
+            {
                 if (Config.Item("Rene").GetValue<Slider>().Value <= enemys)
+                {
                     R.Cast();
-
+                }
+            } 
             if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
                 items();
         }
@@ -195,8 +196,7 @@ namespace JustMorgana
                     HeroManager.Enemies.Where(
                         x => x.IsValidTarget(Q.Range) && !x.HasBuffOfType(BuffType.Invulnerability)))
             {
-                if (target != null)
-                {
+
                     var qmana = Config.Item("qmana").GetValue<Slider>().Value;
                     if (Config.Item("AutoQ").GetValue<bool>() && Q.CanCast(target) && Q.GetPrediction(target).Hitchance >= HitChance.Immobile && player.ManaPercent >= qmana)
                     {
@@ -209,9 +209,7 @@ namespace JustMorgana
                             Q.Cast(qpred.CastPosition);
                         }
                     }
-                }
-                {
-                     var qmana = Config.Item("qmana").GetValue<Slider>().Value;
+
                      if (Config.Item("AutoQ2").GetValue<bool>() && Q.CanCast(target) && Q.GetPrediction(target).Hitchance >= HitChance.Dashing && player.ManaPercent >= qmana)
                     {
                         Q.CastIfHitchanceEquals(target, HitChance.Dashing, true);
@@ -223,7 +221,6 @@ namespace JustMorgana
                             Q.Cast(qpred.CastPosition);
                         }
                     }
-                }
             }
         }
 
@@ -398,11 +395,11 @@ namespace JustMorgana
             if (W.IsReady() && target.IsValidTarget(W.Range) &&
                 player.ManaPercent >= harassmana)
             {
-                if (Config.Item("UseWE").GetValue<bool>() && target.HasBuffOfType(BuffType.Snare))
+                if (Config.Item("WonlySnare").GetValue<bool>() && target.HasBuffOfType(BuffType.Snare))
                     W.CastIfHitchanceEquals(target, HitChance.High);
                 else
                 {
-                    if (Config.Item("UseW").GetValue<bool>() && !Config.Item("UseWE").GetValue<bool>())
+                    if (Config.Item("UseW").GetValue<bool>() && !Config.Item("WonlySnare").GetValue<bool>())
                         W.CastIfHitchanceEquals(target, HitChance.High);
                 }
             }
@@ -419,7 +416,7 @@ namespace JustMorgana
                 return;
             }
 
-            if (player.ManaPercent >= lanemana)
+            if (player.ManaPercent >= lanemana && minionObj.Count()>=3)
             {
                 var minions = minionObj[2];
                 if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear && Config.Item("laneQ").GetValue<bool>())
@@ -429,7 +426,7 @@ namespace JustMorgana
             }
 
             if (minionObj.Count > Config.Item("wmin").GetValue<Slider>().Value && player.ManaPercent >= lanemana)
-                if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear && Config.Item("laneW").GetValue<bool>())
+                if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear && Config.Item("laneW").GetValue<bool>() && minionObj.Count() >= 2)
                 {
                     var minions = minionObj[1];
                     {
@@ -451,6 +448,7 @@ namespace JustMorgana
                 Render.Circle.DrawCircle(player.Position, W.Range, System.Drawing.Color.White, 3);
             if (Config.Item("Rdraw").GetValue<bool>())
                 Render.Circle.DrawCircle(player.Position, R.Range, System.Drawing.Color.White, 3);
+            if (Target == null)return;
             if (Config.Item("combodamage").GetValue<bool>() && Q.IsInRange(Target))
             {
                 float[] Positions = GetLength();
