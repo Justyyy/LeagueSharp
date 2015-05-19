@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.Eventing.Reader;
 using System.Drawing.Printing;
@@ -62,7 +62,7 @@ namespace JustRyze
             W = new Spell(SpellSlot.W, 600f);
             E = new Spell(SpellSlot.E, 600f);
             R = new Spell(SpellSlot.R);
-            Q.SetSkillshot(0.46f, 50f, 1399f, true, SkillshotType.SkillshotCircle);
+            Q.SetSkillshot(0.46f, 50f, 1399f, true, SkillshotType.SkillshotLine);
 
 
             abilitySequence = new int[] {3, 1, 2, 3, 3, 4, 3, 1, 3, 1, 4, 1, 1, 2, 2, 4, 2, 2};
@@ -160,9 +160,9 @@ namespace JustRyze
 
        private static void combo()
         {
-            var enemys = Config.Item("Rene").GetValue<Slider>().Value;
             var t = TargetSelector.GetTarget(ObjectManager.Player.AttackRange, TargetSelector.DamageType.Magical);
             var target = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Magical);
+            var enemys = target.CountEnemiesInRange(200);
             if (target == null || !target.IsValidTarget())
                 return;
 
@@ -215,8 +215,9 @@ namespace JustRyze
 
         private static void Combo2()
         {
-            var enemys = Config.Item("Rene").GetValue<Slider>().Value;
+            
             var target = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Magical);
+            var enemys = target.CountEnemiesInRange(200);
             var t = TargetSelector.GetTarget(ObjectManager.Player.AttackRange, TargetSelector.DamageType.Magical);
             if (target == null || !target.IsValidTarget())
                 return;
@@ -587,27 +588,27 @@ namespace JustRyze
                 return;
             }
 
-            if (player.ManaPercent >= lanemana && Q.IsReady())
+            if (player.ManaPercent >= lanemana && Q.IsReady() && minionObj.Count>=3)
             {
-                if (TearoftheGoddess.IsOwned(player) || TearoftheGoddessCrystalScar.IsOwned(player) || ArchangelsStaff.IsOwned(player) || ArchangelsStaffCrystalScar.IsOwned(player) || Manamune.IsOwned(player) || ManamuneCrystalScar.IsOwned(player) && Config.Item("UseQ").GetValue<StringList>().SelectedIndex == 3)
-                if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear && Config.Item("laneQ").GetValue<bool>())
+                if (TearoftheGoddess.IsOwned(player) || TearoftheGoddessCrystalScar.IsOwned(player) || ArchangelsStaff.IsOwned(player) || ArchangelsStaffCrystalScar.IsOwned(player) || Manamune.IsOwned(player) || ManamuneCrystalScar.IsOwned(player) && Config.Item("laneQ").GetValue<StringList>().SelectedIndex != 0)
+                if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear)
                 {
                     var minionsss = minionObj[2];
-                    Q.CastOnUnit(minionsss);
+                    Q.Cast(minionsss);
                 }
             }
 
-            if (player.ManaPercent >= lanemana && Q.IsReady())
+            if (player.ManaPercent >= lanemana && Q.IsReady() && minionObj.Count >= 3)
             {
-                if (Config.Item("UseQ").GetValue<StringList>().SelectedIndex == 3)
-                    if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear && Config.Item("laneQ").GetValue<bool>())
+                if (Config.Item("laneQ").GetValue<StringList>().SelectedIndex == 1)
+                    if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear)
                     {
                         var minionsss = minionObj[2];
-                        Q.CastOnUnit(minionsss);
+                        Q.Cast(minionsss);
                     }
             }
 
-            if (E.IsReady() && Config.Item("laneE").GetValue<bool>() && player.ManaPercent >= lanemana)
+            if (E.IsReady() && Config.Item("laneE").GetValue<bool>() && player.ManaPercent >= lanemana && minionObj.Count >= 3)
             {
                 var emino = Config.Item("emin").GetValue<Slider>().Value;
                 var allMinionsE = MinionManager.GetMinions(player.Position, E.Range, MinionTypes.All, MinionTeam.Enemy);
@@ -625,7 +626,7 @@ namespace JustRyze
 
                 if (player.ManaPercent >= lanemana)
                     if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear &&
-                        Config.Item("laneW").GetValue<bool>())
+                        Config.Item("laneW").GetValue<bool>() && minionObj.Count >= 2)
                     {
                         var minionss = minionObj[1];
                         {
@@ -648,7 +649,8 @@ namespace JustRyze
                 Render.Circle.DrawCircle(player.Position, W.Range, System.Drawing.Color.White, 3);
             if (Config.Item("Edraw").GetValue<bool>())
                 Render.Circle.DrawCircle(player.Position, E.Range, System.Drawing.Color.White, 3);
-            if (Config.Item("combodamage").GetValue<bool>() && Q.IsInRange(Target))
+
+            if (Config.Item("combodamage").GetValue<bool>() && Target != null && Q.IsInRange(Target))
             {
                 float[] Positions = GetLength();
                 Drawing.DrawLine
