@@ -62,12 +62,12 @@ namespace JustRyze
             W = new Spell(SpellSlot.W, 600f);
             E = new Spell(SpellSlot.E, 600f);
             R = new Spell(SpellSlot.R);
-            Q.SetSkillshot(0.46f, 50f, 1399f, true, SkillshotType.SkillshotCircle);
+            Q.SetSkillshot(0.46f, 50f, 1399f, true, SkillshotType.SkillshotLine);
 
 
-            abilitySequence = new int[] {3, 1, 2, 3, 3, 4, 3, 1, 3, 1, 4, 1, 1, 2, 2, 4, 2, 2};
+            abilitySequence = new int[] { 3, 1, 2, 3, 3, 4, 3, 1, 3, 1, 4, 1, 1, 2, 2, 4, 2, 2 };
 
-            
+
             Config = new Menu(Menuname, Menuname, true);
             Config.AddSubMenu(new Menu("Orbwalking", "Orbwalking"));
 
@@ -85,7 +85,7 @@ namespace JustRyze
             Config.SubMenu("Combo").AddItem(new MenuItem("UseE", "Use E").SetValue(true));
             Config.SubMenu("Combo").AddItem(new MenuItem("UseR", "Use R").SetValue(true));
             Config.SubMenu("Combo").AddItem(new MenuItem("Rene", "Min Enemies for R").SetValue(new Slider(2, 1, 5)));
-            
+
             //Harass
             Config.AddSubMenu(new Menu("Harass", "Harass"));
             Config.SubMenu("Harass").AddItem(new MenuItem("hQ", "Use Q").SetValue(true));
@@ -113,7 +113,7 @@ namespace JustRyze
             Config.SubMenu("Clear")
                 .AddItem(
                     new MenuItem("laneQ", "Use Q").SetValue(
-                        new StringList(new[] {"Don't Cast ", "Always", "Only If Tears"}, 1)));
+                        new StringList(new[] { "Don't Cast ", "Always", "Only If Tears" }, 1)));
             Config.SubMenu("Clear").AddItem(new MenuItem("laneW", "Use W").SetValue(true));
             Config.SubMenu("Clear").AddItem(new MenuItem("laneE", "Use E").SetValue(true));
             Config.SubMenu("Clear").AddItem(new MenuItem("emin", "Min Minion for E").SetValue(new Slider(3, 1, 5)));
@@ -150,7 +150,7 @@ namespace JustRyze
             Drawing.OnDraw += OnDraw;
             Game.OnUpdate += Game_OnGameUpdate;
             AntiGapcloser.OnEnemyGapcloser += AntiGapcloser_OnEnemyGapcloser;
-            }
+        }
 
         private static void AntiGapcloser_OnEnemyGapcloser(ActiveGapcloser gapcloser)
         {
@@ -158,66 +158,11 @@ namespace JustRyze
                 W.CastOnUnit(gapcloser.Sender);
         }
 
-       private static void combo()
+        private static void combo()
         {
-            var enemys = Config.Item("Rene").GetValue<Slider>().Value;
             var t = TargetSelector.GetTarget(ObjectManager.Player.AttackRange, TargetSelector.DamageType.Magical);
             var target = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Magical);
-            if (target == null || !target.IsValidTarget())
-                return;
-
-           switch (Config.Item("UseAA").GetValue<StringList>().SelectedIndex)
-                {
-                    case 0:
-                        {
-                           if (t.IsValidTarget() && (!E.IsReady() || (!E.IsReady() && (!Q.IsReady() && !W.IsReady() && player.Distance(t) < (Q.Range / 4)))))
-                                Orbwalking.Attack = true;
-                            else
-                                Orbwalking.Attack = false;
-                            break;
-                        }
-                    case 1:
-                        {
-                            if (t.IsValidTarget() && ObjectManager.Player.GetAutoAttackDamage(t) > t.Health)
-                                Orbwalking.Attack = true;
-                            else
-                                Orbwalking.Attack = false;
-                            break;
-                        }
-                   }
-
-           if (Q.IsReady() && Config.Item("UseQ").GetValue<bool>() && target.IsValidTarget(Q.Range))
-               {
-                   Q.CastIfHitchanceEquals(target, HitChance.Dashing, true);
-                   Q.CastIfHitchanceEquals(target, HitChance.Immobile, true);
-                   var qpred = Q.GetPrediction(target);
-                   if (qpred.Hitchance >= HitChance.VeryHigh &&
-                       qpred.CollisionObjects.Count(h => h.IsEnemy && !h.IsDead && h is Obj_AI_Minion) < 2)
-                   {
-                       Q.Cast(qpred.CastPosition);
-                   }
-               }
-
-               if (R.IsReady() && Config.Item("UseR").GetValue<bool>() && target.IsValidTarget(R.Range))
-                   if (Config.Item("Rene").GetValue<Slider>().Value <= enemys)
-                      R.Cast();
-               
-               if (W.IsReady() && target.IsValidTarget(W.Range - 10) && Config.Item("UseW").GetValue<bool>())
-                   W.CastOnUnit(target);
-               
-               if (E.IsReady() && target.IsValidTarget(E.Range) && Config.Item("UseE").GetValue<bool>())
-                   E.CastOnUnit(target);
-              
-           
-          if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
-                items();
-        }
-
-        private static void Combo2()
-        {
-            var enemys = Config.Item("Rene").GetValue<Slider>().Value;
-            var target = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Magical);
-            var t = TargetSelector.GetTarget(ObjectManager.Player.AttackRange, TargetSelector.DamageType.Magical);
+            var enemys = target.CountEnemiesInRange(200);
             if (target == null || !target.IsValidTarget())
                 return;
 
@@ -225,7 +170,7 @@ namespace JustRyze
             {
                 case 0:
                     {
-                        if (t.IsValidTarget() && (!E.IsReady() || (!E.IsReady() && (!Q.IsReady() && !W.IsReady() && player.Distance(t) < (Q.Range / 4)))))
+                        if (t.IsValidTarget() && (!E.IsReady() && (!Q.IsReady() && !W.IsReady() && !R.IsReady())))
                             Orbwalking.Attack = true;
                         else
                             Orbwalking.Attack = false;
@@ -240,7 +185,63 @@ namespace JustRyze
                         break;
                     }
             }
-            
+
+            if (Q.IsReady() && Config.Item("UseQ").GetValue<bool>() && target.IsValidTarget(Q.Range))
+            {
+                Q.CastIfHitchanceEquals(target, HitChance.Dashing, true);
+                Q.CastIfHitchanceEquals(target, HitChance.Immobile, true);
+                var qpred = Q.GetPrediction(target);
+                if (qpred.Hitchance >= HitChance.VeryHigh &&
+                    qpred.CollisionObjects.Count(h => h.IsEnemy && !h.IsDead && h is Obj_AI_Minion) < 2)
+                {
+                    Q.Cast(qpred.CastPosition);
+                }
+            }
+
+            if (R.IsReady() && Config.Item("UseR").GetValue<bool>() && target.IsValidTarget(R.Range))
+                if (Config.Item("Rene").GetValue<Slider>().Value <= enemys)
+                    R.Cast();
+
+            if (W.IsReady() && target.IsValidTarget(W.Range - 10) && Config.Item("UseW").GetValue<bool>())
+                W.CastOnUnit(target);
+
+            if (E.IsReady() && target.IsValidTarget(E.Range) && Config.Item("UseE").GetValue<bool>())
+                E.CastOnUnit(target);
+
+
+            if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
+                items();
+        }
+
+        private static void Combo2()
+        {
+
+            var target = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Magical);
+            var enemys = target.CountEnemiesInRange(200);
+            var t = TargetSelector.GetTarget(ObjectManager.Player.AttackRange, TargetSelector.DamageType.Magical);
+            if (target == null || !target.IsValidTarget())
+                return;
+
+            switch (Config.Item("UseAA").GetValue<StringList>().SelectedIndex)
+            {
+                case 0:
+                    {
+                        if (t.IsValidTarget() && (!E.IsReady() && (!Q.IsReady() && !W.IsReady())))
+                            Orbwalking.Attack = true;
+                        else
+                            Orbwalking.Attack = false;
+                        break;
+                    }
+                case 1:
+                    {
+                        if (t.IsValidTarget() && ObjectManager.Player.GetAutoAttackDamage(t) > t.Health)
+                            Orbwalking.Attack = true;
+                        else
+                            Orbwalking.Attack = false;
+                        break;
+                    }
+            }
+
             {
                 if (Q.IsReady() && Config.Item("UseQ").GetValue<bool>() && target.IsValidTarget(Q.Range))
                 {
@@ -287,7 +288,7 @@ namespace JustRyze
 
                 if (E.IsReady() && target.IsValidTarget(2000) && Config.Item("UseE").GetValue<bool>())
                     E.Cast();
-                
+
                 if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
                     items();
             }
@@ -356,7 +357,7 @@ namespace JustRyze
                     }
                 }
             }
-            
+
             if (Config.Item("ksW").GetValue<bool>() && W.IsReady())
             {
                 var target =
@@ -429,7 +430,7 @@ namespace JustRyze
             {
                 return;
             }
-            
+
             if (Config.Item("stacktear").GetValue<bool>() && Q.IsReady() && ObjectManager.Player.InFountain() &&
                 (TearoftheGoddess.IsOwned(player) || TearoftheGoddessCrystalScar.IsOwned(player) || ArchangelsStaff.IsOwned(player) || ArchangelsStaffCrystalScar.IsOwned(player) || Manamune.IsOwned(player) || ManamuneCrystalScar.IsOwned(player)))
                 Q.Cast(ObjectManager.Player, true, true);
@@ -448,7 +449,7 @@ namespace JustRyze
                     Clear();
                     break;
             }
-           
+
             if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo &&
                 player.Buffs.Count(buf => buf.Name == "RyzePassiveStack") == 4)
                 Combo2();
@@ -465,12 +466,11 @@ namespace JustRyze
         {
             var minions = MinionManager.GetMinions(player.ServerPosition, Q.Range);
             if (minions.Count <= 0)
-                    return;
-            
+                return;
+
             var lastmana = Config.Item("lastmana").GetValue<Slider>().Value;
 
             if (Q.IsReady() && Config.Item("fQ").GetValue<bool>() && player.ManaPercent >= lastmana)
-               
             {
                 var qtarget = minions.Where(x => x.Distance(player) < Q.Range && Q.GetPrediction(x).Hitchance >= HitChance.High && (x.Health < player.GetSpellDamage(x, SpellSlot.Q) && !(x.Health < player.GetAutoAttackDamage(x)))).OrderByDescending(x => x.Health).FirstOrDefault();
                 if (HealthPrediction.GetHealthPrediction(qtarget, (int)0.25) <= player.GetSpellDamage(qtarget, SpellSlot.Q))
@@ -551,7 +551,7 @@ namespace JustRyze
             var harassmana = Config.Item("harassmana").GetValue<Slider>().Value;
             if (target == null || !target.IsValidTarget())
                 return;
-           
+
             if (Config.Item("hQ").GetValue<bool>() && target.IsValidTarget(Q.Range) &&
                 player.ManaPercent >= harassmana)
             {
@@ -564,22 +564,22 @@ namespace JustRyze
                     Q.Cast(qpred.CastPosition);
                 }
             }
-            
+
             if (W.IsReady() && target.IsValidTarget(W.Range) && player.ManaPercent >= harassmana &&
                Config.Item("hW").GetValue<bool>())
                 W.CastOnUnit(target);
-           
+
             if (E.IsReady() && player.ManaPercent >= harassmana &&
                Config.Item("hE").GetValue<bool>())
                 E.CastOnUnit(target);
-           }
+        }
 
         private static void Clear()
         {
             var minionObj = MinionManager.GetMinions(Q.Range, MinionTypes.All, MinionTeam.NotAlly,
                 MinionOrderTypes.MaxHealth);
             var lanemana = Config.Item("lanemana").GetValue<Slider>().Value;
-            var minions = MinionManager.GetMinions(player.Position, Q.Range, MinionTypes.All, MinionTeam.Enemy,
+            var minions = MinionManager.GetMinions(player.Position, E.Range, MinionTypes.All, MinionTeam.Enemy,
                    MinionOrderTypes.MaxHealth);
 
             if (!minionObj.Any())
@@ -587,45 +587,45 @@ namespace JustRyze
                 return;
             }
 
-            if (player.ManaPercent >= lanemana && Q.IsReady())
+            if (player.ManaPercent >= lanemana && Q.IsReady() && minionObj.Count >= 1)
             {
-                if (TearoftheGoddess.IsOwned(player) || TearoftheGoddessCrystalScar.IsOwned(player) || ArchangelsStaff.IsOwned(player) || ArchangelsStaffCrystalScar.IsOwned(player) || Manamune.IsOwned(player) || ManamuneCrystalScar.IsOwned(player) && Config.Item("UseQ").GetValue<StringList>().SelectedIndex == 3)
-                if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear && Config.Item("laneQ").GetValue<bool>())
-                {
-                    var minionsss = minionObj[2];
-                    Q.CastOnUnit(minionsss);
-                }
-            }
-
-            if (player.ManaPercent >= lanemana && Q.IsReady())
-            {
-                if (Config.Item("UseQ").GetValue<StringList>().SelectedIndex == 3)
-                    if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear && Config.Item("laneQ").GetValue<bool>())
+                if (TearoftheGoddess.IsOwned(player) || TearoftheGoddessCrystalScar.IsOwned(player) || ArchangelsStaff.IsOwned(player) || ArchangelsStaffCrystalScar.IsOwned(player) || Manamune.IsOwned(player) || ManamuneCrystalScar.IsOwned(player) && Config.Item("laneQ").GetValue<StringList>().SelectedIndex != 0)
+                    if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear)
                     {
                         var minionsss = minionObj[2];
-                        Q.CastOnUnit(minionsss);
+                        Q.Cast(minionsss);
                     }
             }
 
-            if (E.IsReady() && Config.Item("laneE").GetValue<bool>() && player.ManaPercent >= lanemana)
+            if (player.ManaPercent >= lanemana && Q.IsReady() && minionObj.Count >= 1)
+            {
+                if (Config.Item("laneQ").GetValue<StringList>().SelectedIndex == 1)
+                    if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear)
+                    {
+                        var minionsss = minionObj[2];
+                        Q.Cast(minionsss);
+                    }
+            }
+
+            if (E.IsReady() && Config.Item("laneE").GetValue<bool>() && player.ManaPercent >= lanemana && minionObj.Count >= 3)
             {
                 var emino = Config.Item("emin").GetValue<Slider>().Value;
                 var allMinionsE = MinionManager.GetMinions(player.Position, E.Range, MinionTypes.All, MinionTeam.Enemy);
 
-                if (allMinionsE.Any())
+                if (minions.Any())
                 {
-                    var farmAll = E.GetCircularFarmLocation(allMinionsE, E.Range);
+                    var farmAll = E.GetCircularFarmLocation(minions, E.Range);
                     if (farmAll.MinionsHit >= emino)
                     {
                         var inions = minionObj[2];
-                        E.Cast(farmAll.Position, true);
+                        E.CastOnUnit(inions, true);
                         return;
                     }
                 }
 
                 if (player.ManaPercent >= lanemana)
                     if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear &&
-                        Config.Item("laneW").GetValue<bool>())
+                        Config.Item("laneW").GetValue<bool>() && minionObj.Count >= 2)
                     {
                         var minionss = minionObj[1];
                         {
@@ -648,7 +648,8 @@ namespace JustRyze
                 Render.Circle.DrawCircle(player.Position, W.Range, System.Drawing.Color.White, 3);
             if (Config.Item("Edraw").GetValue<bool>())
                 Render.Circle.DrawCircle(player.Position, E.Range, System.Drawing.Color.White, 3);
-            if (Config.Item("combodamage").GetValue<bool>() && Q.IsInRange(Target))
+
+            if (Config.Item("combodamage").GetValue<bool>() && Target != null && Q.IsInRange(Target))
             {
                 float[] Positions = GetLength();
                 Drawing.DrawLine
