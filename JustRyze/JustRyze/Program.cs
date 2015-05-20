@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Eventing.Reader;
 using System.Drawing.Printing;
@@ -215,11 +215,7 @@ namespace JustRyze
 
         private static void Combo2()
         {
-<<<<<<< HEAD
 
-=======
-            
->>>>>>> origin/master
             var target = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Magical);
             var enemys = target.CountEnemiesInRange(200);
             var t = TargetSelector.GetTarget(ObjectManager.Player.AttackRange, TargetSelector.DamageType.Magical);
@@ -591,7 +587,6 @@ namespace JustRyze
                 return;
             }
 
-<<<<<<< HEAD
             if (player.ManaPercent >= lanemana && Q.IsReady() && minionObj.Count >= 1)
             {
                 if (TearoftheGoddess.IsOwned(player) || TearoftheGoddessCrystalScar.IsOwned(player) || ArchangelsStaff.IsOwned(player) || ArchangelsStaffCrystalScar.IsOwned(player) || Manamune.IsOwned(player) || ManamuneCrystalScar.IsOwned(player) && Config.Item("laneQ").GetValue<StringList>().SelectedIndex != 0)
@@ -603,19 +598,6 @@ namespace JustRyze
             }
 
             if (player.ManaPercent >= lanemana && Q.IsReady() && minionObj.Count >= 1)
-=======
-            if (player.ManaPercent >= lanemana && Q.IsReady() && minionObj.Count>=3)
-            {
-                if (TearoftheGoddess.IsOwned(player) || TearoftheGoddessCrystalScar.IsOwned(player) || ArchangelsStaff.IsOwned(player) || ArchangelsStaffCrystalScar.IsOwned(player) || Manamune.IsOwned(player) || ManamuneCrystalScar.IsOwned(player) && Config.Item("laneQ").GetValue<StringList>().SelectedIndex != 0)
-                if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear)
-                {
-                    var minionsss = minionObj[2];
-                    Q.Cast(minionsss);
-                }
-            }
-
-            if (player.ManaPercent >= lanemana && Q.IsReady() && minionObj.Count >= 3)
->>>>>>> origin/master
             {
                 if (Config.Item("laneQ").GetValue<StringList>().SelectedIndex == 1)
                     if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear)
