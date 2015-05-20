@@ -132,6 +132,7 @@ namespace JustRyze
             //Draw
             Config.AddSubMenu(new Menu("LastHit", "LastHit"));
             Config.SubMenu("LastHit").AddItem(new MenuItem("fQ", "Last Hit Q").SetValue(false));
+            Config.SubMenu("LastHit").AddItem(new MenuItem("fQA", "Auto Hit Q").SetValue(false));
             Config.SubMenu("LastHit").AddItem(new MenuItem("fW", "Last Hit W").SetValue(false));
             Config.SubMenu("LastHit").AddItem(new MenuItem("fE", "Last Hit E").SetValue(false));
             Config.SubMenu("LastHit")
@@ -431,6 +432,8 @@ namespace JustRyze
                 return;
             }
 
+            Orbwalking.Attack = true;
+
             if (Config.Item("stacktear").GetValue<bool>() && Q.IsReady() && ObjectManager.Player.InFountain() &&
                 (TearoftheGoddess.IsOwned(player) || TearoftheGoddessCrystalScar.IsOwned(player) || ArchangelsStaff.IsOwned(player) || ArchangelsStaffCrystalScar.IsOwned(player) || Manamune.IsOwned(player) || ManamuneCrystalScar.IsOwned(player)))
                 Q.Cast(ObjectManager.Player, true, true);
@@ -457,6 +460,9 @@ namespace JustRyze
             if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo &&
                 player.Buffs.Count(buf => buf.Name == "RyzePassiveStack") < 4)
                 combo();
+
+            if (Config.Item("fQA").GetValue<bool>())
+                Lasthit2();
 
             Killsteal();
             AutoHarass();
@@ -491,6 +497,30 @@ namespace JustRyze
                     E.CastOnUnit(etarget);
             }
 
+        }
+
+        private static void Lasthit2()
+        {
+            var min = MinionManager.GetMinions(player.ServerPosition, Q.Range);
+            if (min.Count <= 0)
+                return;
+
+            var lastmana = Config.Item("lastmana").GetValue<Slider>().Value;
+
+            if (Q.IsReady() && player.ManaPercent >= lastmana)
+            {
+                var qtarget =
+                    min.Where(
+                        x =>
+                            x.Distance(player) < Q.Range && Q.GetPrediction(x).Hitchance >= HitChance.High &&
+                            (x.Health < player.GetSpellDamage(x, SpellSlot.Q) &&
+                             !(x.Health < player.GetAutoAttackDamage(x))))
+                        .OrderByDescending(x => x.Health)
+                        .FirstOrDefault();
+                if (HealthPrediction.GetHealthPrediction(qtarget, (int) 0.25) <=
+                    player.GetSpellDamage(qtarget, SpellSlot.Q))
+                    Q.Cast(qtarget);
+            }
         }
 
         private static void AutoHarass()
@@ -617,7 +647,7 @@ namespace JustRyze
                     var farmAll = E.GetCircularFarmLocation(minions, E.Range);
                     if (farmAll.MinionsHit >= emino)
                     {
-                        var inions = minionObj[2];
+                        var inions = minionObj.OrderBy(minion => minion.Distance(farmAll.Position)).FirstOrDefault();
                         E.CastOnUnit(inions, true);
                         return;
                     }
