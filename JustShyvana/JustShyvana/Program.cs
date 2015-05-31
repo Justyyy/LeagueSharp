@@ -7,6 +7,7 @@ using LeagueSharp.Common;
 using LeagueSharp.Common.Data;
 using Color = System.Drawing.Color;
 using JustShyvana;
+using SharpDX;
 
 namespace JustShyvana
 {
@@ -38,13 +39,13 @@ namespace JustShyvana
             if (player.ChampionName != ChampName)
                 return;
 
-            Notifications.AddNotification("JustShyvana - [V.1.0.0.0]", 8000);
+            Notifications.AddNotification("JusShyvana - [V.1.0.0.0]", 8000);
 
             //Ability Information - Range - Variables.
-            Q = new Spell(SpellSlot.Q, 125);
+            Q = new Spell(SpellSlot.Q, player.AttackRange);
             W = new Spell(SpellSlot.W, 350f);
             E = new Spell(SpellSlot.E, 925f);
-            E.SetSkillshot(0.25f, 60f, 1700, false, SkillshotType.SkillshotLine);
+            E.SetSkillshot(0.25f, 60f, 1500, false, SkillshotType.SkillshotLine);
             R = new Spell(SpellSlot.R, 1000f);
             R.SetSkillshot(0.25f, 150f, 1500, false, SkillshotType.SkillshotLine);
 
@@ -105,7 +106,7 @@ namespace JustShyvana
             Config.AddSubMenu(new Menu("Misc", "Misc"));
             Config.SubMenu("Misc").AddItem(new MenuItem("KsQ", "Killsteal with Q").SetValue(false));
             Config.SubMenu("Misc").AddItem(new MenuItem("KsE", "Killsteal with E").SetValue(false));
-            Config.SubMenu("Misc").AddItem(new MenuItem("DrawD", "Damage Indicator").SetValue(true));
+            Config.SubMenu("Misc").AddItem(new MenuItem("combodamage", "Damage Indicator").SetValue(true));
             Config.SubMenu("Misc").AddItem(new MenuItem("interrupt", "Interrupt Spells").SetValue(true));
             Config.SubMenu("Misc").AddItem(new MenuItem("antigap", "AntiGapCloser").SetValue(true));
 
@@ -114,7 +115,6 @@ namespace JustShyvana
             Game.OnUpdate += Game_OnGameUpdate;
             Game.PrintChat(
                 "<font color=\"#FF003C\">JustShyvana - <font color=\"#FFFFFF\"> Latest Version Successfully Loaded.</font>");
-            Drawing.OnEndScene += OnEndScene;
             Interrupter2.OnInterruptableTarget += Interrupter2_OnInterruptableTarget;
             AntiGapcloser.OnEnemyGapcloser += AntiGapcloser_OnEnemyGapcloser;
         }
@@ -130,6 +130,40 @@ namespace JustShyvana
         {
             if (W.IsReady() && gapcloser.Sender.IsValidTarget(Q.Range) && Config.Item("antigap").GetValue<bool>())
                 W.Cast();
+        }
+
+        private static float GetComboDamage(Obj_AI_Hero Target)
+        {
+            if (Target != null)
+            {
+                float ComboDamage = new float();
+
+                ComboDamage += Q.IsReady() ? Q.GetDamage(Target) : 0;
+                ComboDamage += W.IsReady() ? W.GetDamage(Target) : 0;
+                ComboDamage += E.IsReady() ? E.GetDamage(Target) : 0;
+                ComboDamage += _smite.IsReady() ? GetSmiteDmg() : 0;
+                ComboDamage += Ignite.IsReady() ? IgniteDamage(Target) : 0;
+                ComboDamage += player.TotalAttackDamage;
+                return ComboDamage;
+            }
+            return 0;
+        }
+
+        private static float[] GetLength()
+        {
+            var Target = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Physical);
+            if (Target != null)
+            {
+                float[] Length =
+                {
+                    GetComboDamage(Target) > Target.Health
+                        ? 0
+                        : (Target.Health - GetComboDamage(Target))/Target.MaxHealth,
+                    Target.Health/Target.MaxHealth
+                };
+                return Length;
+            }
+            return new float[] { 0, 0 };
         }
 
         public static string Smitetype()
@@ -152,21 +186,7 @@ namespace JustShyvana
             }
             return "summonersmite";
         }
-
-
-        private static void OnEndScene(EventArgs args)
-        {
-            if (Config.SubMenu("Draw").Item("DrawD").GetValue<bool>())
-            {
-                foreach (var enemy in
-                    ObjectManager.Get<Obj_AI_Hero>().Where(ene => !ene.IsDead && ene.IsEnemy && ene.IsVisible))
-                {
-                    Hpi.unit = enemy;
-                    Hpi.drawDmg(CalcDamage(enemy), Color.Green);
-                }
-            }
-        }
-
+        
         private static void combo()
         {
             var target = TargetSelector.GetTarget(R.Range, TargetSelector.DamageType.Magical);
@@ -185,16 +205,15 @@ namespace JustShyvana
                 W.Cast();
 
             if (E.IsReady() && target.IsValidTarget(E.Range) && Config.Item("UseE").GetValue<bool>())
-                E.CastIfHitchanceEquals(target, HitChance.High);
+                E.CastIfHitchanceEquals(target, HitChance.VeryHigh);
 
-            if (Q.IsReady() && Config.Item("UseQ").GetValue<bool>() && target.IsValidTarget(Q.Range))
+            if (Q.IsReady() && Config.Item("UseQ").GetValue<bool>() & target.IsValidTarget(player.AttackRange))
                 Q.Cast();
 
             if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
                 items();
         }
-
-
+        
         private static int CalcDamage(Obj_AI_Base target)
         {
             var aa = player.GetAutoAttackDamage(target, true)*(1 + player.Crit);
@@ -261,14 +280,14 @@ namespace JustShyvana
                 )
             {
                 var qDmg = player.GetSpellDamage(target, SpellSlot.Q);
-                if (Config.Item("ksQ").GetValue<bool>() && target.IsValidTarget(Q.Range) && target.Health <= qDmg)
+                if (Config.Item("ksQ").GetValue<bool>() && target.IsValidTarget(player.AttackRange) && target.Health <= qDmg)
                 {
                     Q.Cast();
                 }
                 var eDmg = player.GetSpellDamage(target, SpellSlot.E);
                 if (Config.Item("ksE").GetValue<bool>() && target.IsValidTarget(E.Range) && target.Health <= eDmg)
                 {
-                    E.CastIfHitchanceEquals(target, HitChance.High);
+                    E.CastIfHitchanceEquals(target, HitChance.VeryHigh);
                 }
             }
         }
@@ -357,62 +376,51 @@ namespace JustShyvana
             if (W.IsReady() && Config.Item("hW").GetValue<bool>() && target.IsValidTarget(W.Range))
                W.Cast();
 
-            if (Q.IsReady() && Config.Item("hQ").GetValue<bool>() && target.IsValidTarget(Q.Range))
+            if (Q.IsReady() && Config.Item("hQ").GetValue<bool>() && target.IsValidTarget(player.AttackRange))
                 Q.Cast();
 
             if (E.IsReady() && Config.Item("hE").GetValue<bool>() && target.IsValidTarget(E.Range))
-                E.CastIfHitchanceEquals(target, HitChance.High);
+                E.CastIfHitchanceEquals(target, HitChance.VeryHigh);
         }
 
         private static void Clear()
         {
             var minionObj = MinionManager.GetMinions(E.Range, MinionTypes.All, MinionTeam.NotAlly,
                 MinionOrderTypes.MaxHealth);
-            
+            var minionss = minionObj[2];
+           
             if (!minionObj.Any())
             {
                 return;
             }
 
-            if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear && Config.Item("laneE").GetValue<bool>()
-                &&
-                (minionObj.Count > 2 || minionObj.Any(i => i.MaxHealth >= 1200)))
-            {
-                var pos = E.GetLineFarmLocation(minionObj);
-                if (pos.MinionsHit > 0 && E.Cast(pos.Position))
-                {
-                    return;
-                }
-            }
-
             if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear && Config.Item("laneQ").GetValue<bool>())
-                
             {
-                var pos = Q.GetLineFarmLocation(minionObj.Where(i => Q.IsInRange(i)).ToList());
-                if (pos.MinionsHit > 0 && Q.Cast())
                 {
-                    return;
+                    Q.Cast();
                 }
             }
 
-            if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear
-                && Config.Item("laneW").GetValue<bool>())
-                {
-                var obj = minionObj.Where(i => W.IsInRange(i)).FirstOrDefault(i => i.MaxHealth >= 1200);
-                if (obj == null)
-                {
-                    obj = minionObj.Where(i => W.IsInRange(i)).MinOrDefault(i => i.Health);
-                }
-                if (obj != null)
+           {
+                if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear && Config.Item("laneW").GetValue<bool>() && minionss.IsValidTarget(W.Range))
                 {
                     W.Cast();
                 }
             }
-        }
 
+            {
+                if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear && Config.Item("laneE").GetValue<bool>())
+                {
+                    var minionsss = minionObj[2];
+                    E.Cast(minionsss);
+                }
+            }
+
+            }
 
         private static void OnDraw(EventArgs args)
         {
+            var Target = TargetSelector.GetTarget(R.Range, TargetSelector.DamageType.Physical);
             if (Config.Item("Draw_Disabled").GetValue<bool>())
                 return;
             
@@ -424,6 +432,17 @@ namespace JustShyvana
                 Render.Circle.DrawCircle(player.Position, E.Range, System.Drawing.Color.White, 3);
             if (Config.Item("Rdraw").GetValue<bool>())
                 Render.Circle.DrawCircle(player.Position, R.Range, System.Drawing.Color.White, 3);
+            if (Config.Item("combodamage").GetValue<bool>() && Q.IsInRange(Target))
+            {
+                float[] Positions = GetLength();
+                Drawing.DrawLine
+                    (
+                        new Vector2(Target.HPBarPosition.X + 10 + Positions[0] * 104, Target.HPBarPosition.Y + 20),
+                        new Vector2(Target.HPBarPosition.X + 10 + Positions[1] * 104, Target.HPBarPosition.Y + 20),
+                        9,
+                        Color.Orange
+                    );
+            }
         }
 
         //Credits to metaphorce
