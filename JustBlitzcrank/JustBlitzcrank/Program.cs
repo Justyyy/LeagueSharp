@@ -162,8 +162,11 @@ namespace JustBlitz
                 R.Cast();
 
             if (E.IsReady() && sender.IsValidTarget(E.Range) && Config.Item("interrupte").GetValue<bool>())
+            {
+                Orbwalker.ForceTarget(sender);
                 E.Cast();
             }
+        }
 
         private static void AntiGapcloser_OnEnemyGapcloser(ActiveGapcloser gapcloser)
         {
