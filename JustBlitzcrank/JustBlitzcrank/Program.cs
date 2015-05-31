@@ -196,8 +196,7 @@ namespace JustBlitz
 
             if (E.IsReady() && target.IsValidTarget(E.Range) && Config.Item("UseE").GetValue<bool>())
                 E.Cast();
-                player.IssueOrder(GameObjectOrder.AttackUnit, target);
-           
+                
             var enemys = Config.Item("Rene").GetValue<Slider>().Value;
             if (R.IsReady() && Config.Item("UseR").GetValue<bool>() && target.IsValidTarget(R.Range))
                 if (Config.Item("Rene").GetValue<Slider>().Value <= enemys)
@@ -426,9 +425,7 @@ namespace JustBlitz
             if (E.IsReady() && target.IsValidTarget(E.Range) && player.ManaPercent >= harassmana &&
                Config.Item("hE").GetValue<bool>())
                 E.Cast();
-                player.IssueOrder(GameObjectOrder.AttackUnit, target);
-           
-        }
+            }
 
         private static void Clear()
         {
