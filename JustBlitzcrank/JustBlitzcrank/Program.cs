@@ -158,13 +158,12 @@ namespace JustBlitz
                 }
             }
             
-            if (R.IsReady() && Config.Item("grapop" + sender.ChampionName).GetValue<StringList>().SelectedIndex == 1 && sender.IsValidTarget(R.Range) && Config.Item("interruptr").GetValue<bool>())
+            if (R.IsReady() && sender.IsValidTarget(R.Range) && Config.Item("interruptr").GetValue<bool>())
                 R.Cast();
 
-            if (E.IsReady() && Config.Item("grapop" + sender.ChampionName).GetValue<StringList>().SelectedIndex == 1 && sender.IsValidTarget(E.Range) && Config.Item("interrupte").GetValue<bool>())
+            if (E.IsReady() && sender.IsValidTarget(E.Range) && Config.Item("interrupte").GetValue<bool>())
                 E.Cast();
-                player.IssueOrder(GameObjectOrder.AttackUnit, sender);
-        }
+            }
 
         private static void AntiGapcloser_OnEnemyGapcloser(ActiveGapcloser gapcloser)
         {
