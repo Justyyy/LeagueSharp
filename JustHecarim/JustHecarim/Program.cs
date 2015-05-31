@@ -194,6 +194,7 @@ namespace JustHecarim
 
                 ComboDamage = Q.IsReady() ? Q.GetDamage(Target) : 0;
                 ComboDamage += W.IsReady() ? W.GetDamage(Target) : 0;
+                ComboDamage += R.IsReady() ? R.GetDamage(Target) : 0;
                 ComboDamage += player.TotalAttackDamage;
                 return ComboDamage;
             }
@@ -237,6 +238,19 @@ namespace JustHecarim
                 {
                     Q.Cast();
                     player.IssueOrder(GameObjectOrder.AttackUnit, target);
+                }
+            }
+
+            if (Config.Item("ksR").GetValue<bool>() && R.IsReady())
+            {
+                var target =
+                    ObjectManager.Get<Obj_AI_Hero>()
+                        .FirstOrDefault(
+                            enemy =>
+                                enemy.IsValidTarget(R.Range) && enemy.Health < player.GetSpellDamage(enemy, SpellSlot.R));
+                if (target.IsValidTarget(R.Range))
+                {
+                    R.CastIfHitchanceEquals(target, HitChance.High);
                 }
             }
         }
