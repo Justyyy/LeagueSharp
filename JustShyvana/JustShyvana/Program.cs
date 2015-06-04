@@ -190,10 +190,10 @@ namespace JustShyvana
         private static void combo()
         {
             var target = TargetSelector.GetTarget(R.Range, TargetSelector.DamageType.Magical);
+            var enemys = Config.Item("Rene").GetValue<Slider>().Value;
             if (target == null || !target.IsValidTarget())
                 return;
 
-            var enemys = Config.Item("Rene").GetValue<Slider>().Value;
             if (R.IsReady() && Config.Item("UseR").GetValue<bool>() && target.IsValidTarget(R.Range))
                 if (!target.HasBuff("JudicatorIntervention") && !target.HasBuff("Undying Rage") &&
                 (Config.Item("Rene").GetValue<Slider>().Value <= enemys))
