@@ -55,7 +55,7 @@ namespace JustRyze
             if (player.ChampionName != ChampName)
                 return;
 
-            Notifications.AddNotification("JustRyze Loaded - [V.1.0.0.0]", 8000);
+            Notifications.AddNotification("JustRyze Loaded - [V.1.0.1.0]", 8000);
 
             //Ability Information - Range - Variables.
             Q = new Spell(SpellSlot.Q, 900f);
