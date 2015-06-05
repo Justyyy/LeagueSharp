@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.Eventing.Reader;
 using System.Drawing.Printing;
@@ -102,7 +102,7 @@ namespace JustHecarim
             Config.SubMenu("Draw").AddItem(new MenuItem("Wdraw", "Draw W Range").SetValue(true));
             Config.SubMenu("Draw").AddItem(new MenuItem("Rdraw", "Draw R Range").SetValue(true));
             Config.SubMenu("Draw").AddItem(new MenuItem("combodamage", "Damage on HPBar")).SetValue(true);
-            
+
             //Misc
             Config.AddSubMenu(new Menu("Misc", "Misc"));
             Config.SubMenu("Misc").AddItem(new MenuItem("ksQ", "Killsteal with Q").SetValue(true));
@@ -145,9 +145,9 @@ namespace JustHecarim
         {
             if (!R.IsReady() || !Config.Item("AutoR").GetValue<bool>())
                 return;
-           
+
             var target = TargetSelector.GetTarget(R.Range, TargetSelector.DamageType.Physical);
-            
+
             var enemys = target.CountEnemiesInRange(R.Range);
             if (R.IsReady() && Config.Item("UseR").GetValue<bool>() && target.IsValidTarget(R.Range))
             {
@@ -160,17 +160,17 @@ namespace JustHecarim
 
         private static void combo()
         {
-            var enemys = player.CountEnemiesInrange(R.Range);
             var target = TargetSelector.GetTarget(R.Range, TargetSelector.DamageType.Physical);
+            var enemys = target.CountEnemiesInRange(R.Range);
             if (target == null || !target.IsValidTarget())
                 return;
 
             if (E.IsReady() && target.IsValidTarget(2000) && Config.Item("UseE").GetValue<bool>())
                 E.Cast();
-                
+
             if (W.IsReady() && target.IsValidTarget(W.Range) && Config.Item("UseW").GetValue<bool>())
                 W.Cast();
-                player.IssueOrder(GameObjectOrder.AttackUnit, target);
+            player.IssueOrder(GameObjectOrder.AttackUnit, target);
 
             if (Q.IsReady() && Config.Item("UseQ").GetValue<bool>() && target.IsValidTarget(Q.Range))
             {
@@ -340,7 +340,7 @@ namespace JustHecarim
                              !(x.Health < player.GetAutoAttackDamage(x))))
                         .OrderByDescending(x => x.Health)
                         .FirstOrDefault();
-                if (HealthPrediction.GetHealthPrediction(qtarget, (int) 0.5) <=
+                if (HealthPrediction.GetHealthPrediction(qtarget, (int)0.5) <=
                     player.GetSpellDamage(qtarget, SpellSlot.Q))
                     Q.Cast();
             }
@@ -391,18 +391,18 @@ namespace JustHecarim
             if (E.IsReady() && player.ManaPercent >= harassmana &&
                Config.Item("hE").GetValue<bool>())
                 E.Cast();
-                player.IssueOrder(GameObjectOrder.AttackUnit, target);
-            
+            player.IssueOrder(GameObjectOrder.AttackUnit, target);
+
             if (W.IsReady() && target.IsValidTarget(W.Range) && player.ManaPercent >= harassmana &&
                Config.Item("hW").GetValue<bool>())
                 W.Cast();
-                player.IssueOrder(GameObjectOrder.AttackUnit, target);
+            player.IssueOrder(GameObjectOrder.AttackUnit, target);
 
-            if (Config.Item("hQ").GetValue<bool>() && target.IsValidTarget(Q.Range) && 
+            if (Config.Item("hQ").GetValue<bool>() && target.IsValidTarget(Q.Range) &&
                 player.ManaPercent >= harassmana)
                 Q.Cast();
-                player.IssueOrder(GameObjectOrder.AttackUnit, target);
-            }
+            player.IssueOrder(GameObjectOrder.AttackUnit, target);
+        }
 
         private static void Clear()
         {
@@ -466,6 +466,6 @@ namespace JustHecarim
                         Color.Orange
                     );
             }
-       }
+        }
     }
 }
