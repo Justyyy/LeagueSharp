@@ -199,7 +199,7 @@ namespace JustBlitz
             if (E.IsReady() && target.IsValidTarget(E.Range) && Config.Item("UseE").GetValue<bool>())
                 E.Cast();
                 
-            var enemys = player.CountEnemiesInrange(R.Range);
+            var enemys = target.CountEnemiesInRange(R.Range);
             if (R.IsReady() && Config.Item("UseR").GetValue<bool>() && target.IsValidTarget(R.Range))
                 if (Config.Item("Rene").GetValue<Slider>().Value <= enemys)
                     R.Cast();
