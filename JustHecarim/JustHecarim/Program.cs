@@ -148,7 +148,7 @@ namespace JustHecarim
            
             var target = TargetSelector.GetTarget(R.Range, TargetSelector.DamageType.Physical);
             
-            var enemys = player.CountEnemiesInrange(R.Range);
+            var enemys = target.CountEnemiesInRange(R.Range);
             if (R.IsReady() && Config.Item("UseR").GetValue<bool>() && target.IsValidTarget(R.Range))
             {
                 var pred = R.GetPrediction(target).Hitchance;
