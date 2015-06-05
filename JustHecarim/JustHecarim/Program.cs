@@ -148,7 +148,7 @@ namespace JustHecarim
            
             var target = TargetSelector.GetTarget(R.Range, TargetSelector.DamageType.Physical);
             
-            var enemys = Config.Item("Renem").GetValue<Slider>().Value;
+            var enemys = player.CountEnemiesInrange(R.Range);
             if (R.IsReady() && Config.Item("UseR").GetValue<bool>() && target.IsValidTarget(R.Range))
             {
                 var pred = R.GetPrediction(target).Hitchance;
@@ -160,7 +160,7 @@ namespace JustHecarim
 
         private static void combo()
         {
-            var enemys = Config.Item("Rene").GetValue<Slider>().Value;
+            var enemys = player.CountEnemiesInrange(R.Range);
             var target = TargetSelector.GetTarget(R.Range, TargetSelector.DamageType.Physical);
             if (target == null || !target.IsValidTarget())
                 return;
