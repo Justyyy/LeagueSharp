@@ -190,7 +190,7 @@ namespace JustShyvana
         private static void combo()
         {
             var target = TargetSelector.GetTarget(R.Range, TargetSelector.DamageType.Magical);
-            var enemys = player.CountEnemiesInrange(R.Range);
+            var enemys = target.CountEnemiesInRange(R.Range);
             if (target == null || !target.IsValidTarget())
                 return;
 
