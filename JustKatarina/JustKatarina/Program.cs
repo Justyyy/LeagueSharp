@@ -496,7 +496,9 @@ namespace JustKatarina
         private static void OnDraw(EventArgs args)
         {
             var Target = TargetSelector.GetTarget(R.Range, TargetSelector.DamageType.Physical);
-            if (Config.Item("Draw_Disabled").GetValue<bool>())
+            if (Target == null && !Target.IsValidTarget())
+            
+                if (Config.Item("Draw_Disabled").GetValue<bool>())
                 return;
 
             if (Config.Item("Qdraw").GetValue<bool>())
