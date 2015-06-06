@@ -421,7 +421,7 @@ namespace JustKatarina
         private static void harass()
         {
             var target = TargetSelector.GetTarget(E.Range, TargetSelector.DamageType.Magical);
-            int mode = Config.Item("harassmode", true).GetValue<StringList>().SelectedIndex;
+            int mode = Config.Item("harassmode").GetValue<StringList>().SelectedIndex;
             if (target == null || !target.IsValidTarget())
                 return;
 
