@@ -206,7 +206,7 @@ namespace JustKatarina
                         .FirstOrDefault(
                             enemy =>
                                 enemy.IsValidTarget(Q.Range) && enemy.Health < player.GetSpellDamage(enemy, SpellSlot.Q));
-                if (target.IsValidTarget(Q.Range))
+                if (target.IsValidTarget(Q.Range) && target != null)
                 {
                     Q.CastOnUnit(target);
                 }
@@ -219,7 +219,7 @@ namespace JustKatarina
                         .FirstOrDefault(
                             enemy =>
                                 enemy.IsValidTarget(W.Range) && enemy.Health < player.GetSpellDamage(enemy, SpellSlot.W));
-                if (target.IsValidTarget(W.Range))
+                if (target.IsValidTarget(W.Range) && target != null)
                 {
                     W.Cast();
                 }
@@ -232,7 +232,7 @@ namespace JustKatarina
                         .FirstOrDefault(
                             enemy =>
                                 enemy.IsValidTarget(E.Range) && enemy.Health < player.GetSpellDamage(enemy, SpellSlot.E));
-                if (target.IsValidTarget(E.Range))
+                if (target.IsValidTarget(E.Range) && target != null)
                 {
                     E.CastOnUnit(target);
                 }
