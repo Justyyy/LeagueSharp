@@ -301,7 +301,7 @@ namespace JustRyze
             {
                 float ComboDamage = new float();
 
-                ComboDamage = Q.IsReady() ? Q.GetDamage(Target) : 0;
+                ComboDamage += Q.IsReady() ? Q.GetDamage(Target) : 0;
                 ComboDamage += W.IsReady() ? W.GetDamage(Target) : 0;
                 ComboDamage += E.IsReady() ? E.GetDamage(Target) : 0;
                 ComboDamage += Ignite.IsReady() ? IgniteDamage(Target) : 0;
