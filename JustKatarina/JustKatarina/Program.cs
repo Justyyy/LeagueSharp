@@ -496,9 +496,7 @@ namespace JustKatarina
         private static void OnDraw(EventArgs args)
         {
             var Target = TargetSelector.GetTarget(R.Range, TargetSelector.DamageType.Physical);
-            if (Target == null && !Target.IsValidTarget())
-            
-                if (Config.Item("Draw_Disabled").GetValue<bool>())
+            if (Config.Item("Draw_Disabled").GetValue<bool>())
                 return;
 
             if (Config.Item("Qdraw").GetValue<bool>())
@@ -509,7 +507,7 @@ namespace JustKatarina
                 Render.Circle.DrawCircle(player.Position, E.Range, System.Drawing.Color.White, 3);
             if (Config.Item("Rdraw").GetValue<bool>())
                 Render.Circle.DrawCircle(player.Position, R.Range, System.Drawing.Color.White, 3);
-            if (Config.Item("combodamage").GetValue<bool>() && E.IsInRange(Target))
+            if (Target != null && Config.Item("combodamage").GetValue<bool>() && E.IsInRange(Target))
             {
                 float[] Positions = GetLength();
                 Drawing.DrawLine
