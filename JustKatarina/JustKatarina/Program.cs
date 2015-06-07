@@ -1,10 +1,12 @@
 ﻿using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Remoting.Metadata.W3cXsd2001;
 using LeagueSharp;
 using LeagueSharp.Common;
 using LeagueSharp.Common.Data;
+using JustKatarina;
 using SharpDX;
 using Color = System.Drawing.Color;
 
@@ -13,13 +15,15 @@ namespace JustKatarina
     internal class Program
     {
         public const string ChampName = "Katarina";
+        public const string Menun= "JustKatarina";
         public static Menu Config;
         public static Orbwalking.Orbwalker Orbwalker;
         public static Spell Q, W, E, R;
         private static bool InUlt = false;
+        private static int eTimer;
         private static SpellSlot Ignite;
-        //private static GameObject _ward;
-        //private static int lastWardCast;
+        private static GameObject _ward;
+        private static int lastWardCast;
         private static readonly Obj_AI_Hero player = ObjectManager.Player;
 
         private static void Main(string[] args)
@@ -32,15 +36,13 @@ namespace JustKatarina
             if (player.ChampionName != ChampName)
                 return;
 
-            Notifications.AddNotification("JustKatarina - [V.1.0.0.0]", 8000);
-
-            //Ability Information - Range - Variables.
+           //Ability Information - Range - Variables.
             Q = new Spell(SpellSlot.Q, 675f);
             W = new Spell(SpellSlot.W, 375f);
             E = new Spell(SpellSlot.E, 700f);
             R = new Spell(SpellSlot.R, 550f);
 
-            Config = new Menu(player.ChampionName, player.ChampionName, true);
+            Config = new Menu(Menun, Menun, true);
             Config.AddSubMenu(new Menu("Orbwalking", "Orbwalking"));
 
             var targetSelectorMenu = new Menu("Target Selector", "Target Selector");
@@ -70,6 +72,15 @@ namespace JustKatarina
             Config.SubMenu("Harass").AddItem(new MenuItem("aQ", "Use Q for Auto Harass").SetValue(true));
             Config.SubMenu("Harass").AddItem(new MenuItem("aW", "Use W for Auto Harass").SetValue(true));
 
+            //Farm
+            Config.AddSubMenu(new Menu("Farm", "Farm"));
+            Config.SubMenu("Farm")
+                .AddItem(
+                    new MenuItem("AutoFarm", "Auto Farm", true).SetValue(new KeyBind("X".ToCharArray()[0],
+                        KeyBindType.Toggle)));
+            Config.SubMenu("Farm").AddItem(new MenuItem("fq", "Use Q for Auto Farm").SetValue(true));
+            Config.SubMenu("Farm").AddItem(new MenuItem("fw", "Use W for Auto Farm").SetValue(true));
+
             //Item
             Config.AddSubMenu(new Menu("Item", "Item"));
             Config.SubMenu("Item").AddItem(new MenuItem("useGhostblade", "Use Youmuu's Ghostblade").SetValue(true));
@@ -95,6 +106,14 @@ namespace JustKatarina
             Config.SubMenu("Draw").AddItem(new MenuItem("Edraw", "Draw E Range").SetValue(true));
             Config.SubMenu("Draw").AddItem(new MenuItem("Rdraw", "Draw R Range").SetValue(true));
 
+            //WardJump
+            Config.AddSubMenu(new Menu("Wardjump", "Wardjump"));
+            Config.SubMenu("Wardjump").AddItem(new MenuItem("Wardjump", "Ward Jump").SetValue(new KeyBind("Z".ToArray()[0], KeyBindType.Press)));
+            Config.SubMenu("Wardjump").AddItem(new MenuItem("newWard", "Place new ward every time").SetValue(false));
+            Config.SubMenu("Wardjump").AddItem(new MenuItem("jumpWard", "Jump to Wards").SetValue(true));
+            Config.SubMenu("Wardjump").AddItem(new MenuItem("jumpAlly", "Jump to Ally champions").SetValue(true));
+            Config.SubMenu("Wardjump").AddItem(new MenuItem("jumpMinion", "Jump to Ally minions").SetValue(true));
+
             //Misc
             Config.AddSubMenu(new Menu("Misc", "Misc"));
             Config.SubMenu("Misc").AddItem(new MenuItem("ksQ", "Killsteal with Q").SetValue(true));
@@ -105,6 +124,8 @@ namespace JustKatarina
 
             Config.AddToMainMenu();
             Drawing.OnDraw += OnDraw;
+            GameObject.OnCreate += OnCreateObject;
+            Obj_AI_Base.OnProcessSpellCast += OnProcessSpellCast;
             Game.OnUpdate += Game_OnGameUpdate;
             Obj_AI_Base.OnPlayAnimation += PlayAnimation;
         }
@@ -124,6 +145,15 @@ namespace JustKatarina
                 return ComboDamage;
             }
             return 0;
+        }
+
+        private static void OnCreateObject(GameObject sender, EventArgs args)
+        {
+            if (player.Distance(sender.Position) <= 700 && sender.IsAlly &&
+                (sender.Name == "VisionWard" || sender.Name == "SightWard"))
+            {
+                _ward = sender;
+            }
         }
 
         private static void PlayAnimation(GameObject sender, GameObjectPlayAnimationEventArgs args)
@@ -412,11 +442,110 @@ namespace JustKatarina
                     Clear();
                     break;
             }
-            
+
+            if (Config.SubMenu("Wardjump").Item("Wardjump").GetValue<KeyBind>().Active)
+            {
+                Wardjump();
+            }
+
+            NotificationHandler.Update();
+
             Killsteal();
             var autoHarass = Config.Item("AutoHarass", true).GetValue<KeyBind>().Active;
             if (autoHarass)
                 AutoHarass();
+            var farm = Config.Item("AutoFarm", true).GetValue<KeyBind>().Active;
+            if (farm)
+                Farm();
+        }
+
+        private static void OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
+        {
+            if (sender.IsMe)
+            {
+            if (args.SData.Name.Contains("ward") || args.SData.Name.Contains("Trinket"))
+                    lastWardCast = Utils.GameTimeTickCount;
+            }
+        }
+
+        private static bool CanCastWard()
+        {
+            return E.Instance.Name == "KatarinaE" && Utils.GameTimeTickCount - 2000 > lastWardCast;
+        }
+
+        private static Obj_AI_Base GetEscapeObject(Vector3 pos, int range = 700)
+        {
+            if (_ward != null && _ward.IsValid && !_ward.IsDead && player.Distance(_ward.Position) <= range)
+            {
+                return _ward as Obj_AI_Base;
+            }
+
+            if (Config.SubMenu("Wardjump").Item("newWard").GetValue<bool>() && Config.SubMenu("Wardjump").Item("Wardjump").GetValue<KeyBind>().Active)
+            {
+                return null;
+            }
+
+            var allies =
+                HeroManager.Allies.Where(hero => hero.Distance(pos) <= range)
+                    .OrderBy(hero => hero.Distance(pos))
+                    .ToList();
+            var minions =
+                MinionManager.GetMinions(pos, range, MinionTypes.All, MinionTeam.Ally)
+                    .OrderBy(minion => minion.Distance(pos))
+                    .ToList();
+            var wards =
+                ObjectManager.Get<Obj_AI_Minion>()
+                    .Where(
+                        obj =>
+                            (obj.Name.Contains("Ward") || obj.Name.Contains("ward") || obj.Name.Contains("Trinket")) &&
+                            obj.IsAlly && pos.Distance(obj.ServerPosition) <= range)
+                    .OrderBy(obj => obj.Distance(pos))
+                    .ToList();
+
+            foreach (var ally in allies.Where(ally => !ally.IsMe).Where(ally => Config.SubMenu("Wardjump").Item("jumpAlly").GetValue<bool>()))
+            {
+                return ally;
+            }
+
+            foreach (var ward in wards.Where(ward => player.Distance(ward.ServerPosition) > 400).Where(ward => Config.SubMenu("Wardjump").Item("jumpWard").GetValue<bool>()))
+            {
+                return ward;
+            }
+            return Config.SubMenu("Wardjump").Item("jumpMinion").GetValue<bool>() ? minions.FirstOrDefault() : null;
+        }
+
+        private static void Wardjump()
+        {
+            var escapeObject = GetEscapeObject(Game.CursorPos);
+            if (escapeObject != null)
+            {
+                if (CanCastE())
+                {
+                    eTimer = Utils.GameTimeTickCount + 3000;
+                    E.CastOnUnit(escapeObject);
+                }
+            }
+            else if (E.IsReady())
+            {
+                var wardSlot = Items.GetWardSlot();
+                if (wardSlot.IsValidSlot() &&
+                    (player.Spellbook.CanUseSpell(wardSlot.SpellSlot) == SpellState.Ready || wardSlot.Stacks != 0) &&
+                    CanCastWard())
+                {
+                    lastWardCast = Utils.GameTimeTickCount;
+                    player.Spellbook.CastSpell(wardSlot.SpellSlot, GetCorrectedMousePosition());
+                }
+            }
+        }
+
+        private static bool CanCastE()
+        {
+            return E.IsReady() && E.Instance.Name == "KatarinaE";
+        }
+
+        private static Vector3 GetCorrectedMousePosition()
+        {
+            return player.ServerPosition - (player.ServerPosition - Game.CursorPos).Normalized() * 600;
         }
 
         private static void AutoHarass()
@@ -430,6 +559,31 @@ namespace JustKatarina
 
             if (W.IsReady() && Config.Item("aW").GetValue<bool>() && target.IsValidTarget(W.Range))
                 W.Cast();
+        }
+
+        private static void Farm()
+        {
+            var useq = Config.Item("fq").GetValue<bool>();
+            var usew = Config.Item("fw").GetValue<bool>();
+            var minionCount = MinionManager.GetMinions(player.Position, Q.Range, MinionTypes.All, MinionTeam.NotAlly);
+            {
+                foreach (var minion in minionCount)
+                {
+                    if (useq && Q.IsReady()
+                        && minion.IsValidTarget(Q.Range)
+                        && minion.Health < Q.GetDamage(minion))
+                    {
+                        Q.CastOnUnit(minion);
+                    }
+               
+                    if (usew && W.IsReady()
+                        && minion.IsValidTarget(W.Range)
+                        && minion.Health < W.GetDamage(minion))
+                    {
+                        W.Cast();
+                    }
+                }
+            }
         }
 
         private static void harass()
