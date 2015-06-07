@@ -252,84 +252,99 @@ namespace JustKatarina
                 {
                     foreach (Obj_AI_Base target in targets)
                     {
-                        foreach (Obj_AI_Hero focus in ObjectManager.Get<Obj_AI_Hero>().Where(
-                            focus =>
-                                focus.Distance(target.ServerPosition) <= Q.Range
-                                && focus.IsEnemy
-                                && !focus.IsMe
-                                && !focus.IsInvulnerable
-                                && focus.IsValidTarget()
-                            ))
+                        var focuss = ObjectManager.Get<Obj_AI_Base>().Where(focus =>
+                            focus.Distance(target.ServerPosition) <= Q.Range
+                            && focus.IsEnemy
+                            && !focus.IsMe
+                            && !focus.IsInvulnerable
+                            && focus.IsValidTarget()
+                            );
+                        if (focuss.Any())
                         {
-                            var Qdmg = Q.GetDamage(focus);
-                            var Wdmg = W.GetDamage(focus);
-                            var MarkDmg = Damage.CalcDamage(player, focus, Damage.DamageType.Magical,
-                                player.FlatMagicDamageMod*0.15 + player.Level*15);
-                            float Ignitedmg;
-                            if (Ignite != SpellSlot.Unknown)
+                            foreach (Obj_AI_Hero focus in ObjectManager.Get<Obj_AI_Hero>().Where(
+                                focus =>
+                                    focus.Distance(target.ServerPosition) <= Q.Range
+                                    && focus.IsEnemy
+                                    && !focus.IsMe
+                                    && !focus.IsInvulnerable
+                                    && focus.IsValidTarget()
+                                ))
                             {
-                                Ignitedmg =
-                                    (float) Damage.GetSummonerSpellDamage(player, focus, Damage.SummonerSpell.Ignite);
-                            }
-                            else
-                            {
-                                Ignitedmg = 0f;
-                            }
+                                var Qdmg = Q.GetDamage(focus);
+                                var Wdmg = W.GetDamage(focus);
+                                var MarkDmg = Damage.CalcDamage(player, focus, Damage.DamageType.Magical,
+                                    player.FlatMagicDamageMod*0.15 + player.Level*15);
+                                float Ignitedmg;
+                                if (Ignite != SpellSlot.Unknown)
+                                {
+                                    Ignitedmg =
+                                        (float)
+                                            Damage.GetSummonerSpellDamage(player, focus, Damage.SummonerSpell.Ignite);
+                                }
+                                else
+                                {
+                                    Ignitedmg = 0f;
+                                }
 
-                            if (Config.Item("ksQ").GetValue<bool>() && focus.Health - Qdmg < 0 && E.IsReady() &&
-                                Q.IsReady() &&
-                                focus.Distance(target.ServerPosition) <= Q.Range)
-                            {
-                                E.Cast(target);
-                                Q.Cast(focus);
-                            }
+                                if (Config.Item("ksQ").GetValue<bool>() && focus.Health - Qdmg < 0 && E.IsReady() &&
+                                    Q.IsReady() &&
+                                    focus.Distance(target.ServerPosition) <= Q.Range)
+                                {
+                                    E.Cast(target);
+                                    Q.Cast(focus);
+                                }
 
-                            if (Config.Item("ksQ").GetValue<bool>() && Config.Item("ksW").GetValue<bool>() &&
-                                focus.Distance(target.ServerPosition) <= W.Range && focus.Health - Qdmg - Wdmg < 0 &&
-                                E.IsReady() && Q.IsReady())
-                            {
-                                E.Cast(target);
-                                Q.Cast(focus);
-                                W.Cast();
-                            }
+                                if (Config.Item("ksQ").GetValue<bool>() && Config.Item("ksW").GetValue<bool>() &&
+                                    focus.Distance(target.ServerPosition) <= W.Range && focus.Health - Qdmg - Wdmg < 0 &&
+                                    E.IsReady() && Q.IsReady())
+                                {
+                                    E.Cast(target);
+                                    Q.Cast(focus);
+                                    W.Cast();
+                                }
 
-                            if (Config.Item("ksQ").GetValue<bool>() && focus.Distance(target.ServerPosition) <= E.Range &&
-                                focus.Health - Qdmg - Ignitedmg < 0 && E.IsReady() && Q.IsReady() && Ignite.IsReady())
-                            {
-                                E.Cast(target);
-                                Q.Cast(focus);
-                                player.Spellbook.CastSpell(Ignite, focus);
-                            }
+                                if (Config.Item("ksQ").GetValue<bool>() &&
+                                    focus.Distance(target.ServerPosition) <= E.Range &&
+                                    focus.Health - Qdmg - Ignitedmg < 0 && E.IsReady() && Q.IsReady() &&
+                                    Ignite.IsReady())
+                                {
+                                    E.Cast(target);
+                                    Q.Cast(focus);
+                                    player.Spellbook.CastSpell(Ignite, focus);
+                                }
 
-                            if (Config.Item("ksQ").GetValue<bool>() && Config.Item("ksW").GetValue<bool>() &&
-                                focus.Distance(target.ServerPosition) <= W.Range &&
-                                focus.Health - Qdmg - Wdmg - MarkDmg < 0 &&
-                                E.IsReady() && Q.IsReady() && W.IsReady())
-                            {
-                                E.Cast(target);
-                                Q.Cast(focus);
-                            }
+                                if (Config.Item("ksQ").GetValue<bool>() && Config.Item("ksW").GetValue<bool>() &&
+                                    focus.Distance(target.ServerPosition) <= W.Range &&
+                                    focus.Health - Qdmg - Wdmg - MarkDmg < 0 &&
+                                    E.IsReady() && Q.IsReady() && W.IsReady())
+                                {
+                                    E.Cast(target);
+                                    Q.Cast(focus);
+                                }
 
-                            if (Config.Item("ksW").GetValue<bool>() && Config.Item("ksQ").GetValue<bool>() &&
-                                focus.Distance(target.ServerPosition) <= W.Range &&
-                                focus.Health - Qdmg - Wdmg - Ignitedmg < 0 && E.IsReady() && Q.IsReady() && W.IsReady() &&
-                                Ignite.IsReady())
-                            {
-                                E.Cast(target);
-                                Q.Cast(focus);
-                                W.Cast();
-                                player.Spellbook.CastSpell(Ignite, focus);
-                                return;
-                            }
+                                if (Config.Item("ksW").GetValue<bool>() && Config.Item("ksQ").GetValue<bool>() &&
+                                    focus.Distance(target.ServerPosition) <= W.Range &&
+                                    focus.Health - Qdmg - Wdmg - Ignitedmg < 0 && E.IsReady() && Q.IsReady() &&
+                                    W.IsReady() &&
+                                    Ignite.IsReady())
+                                {
+                                    E.Cast(target);
+                                    Q.Cast(focus);
+                                    W.Cast();
+                                    player.Spellbook.CastSpell(Ignite, focus);
+                                    return;
+                                }
 
-                            if (Config.Item("ksQ").GetValue<bool>() && focus.Distance(target.ServerPosition) <= W.Range &&
-                                focus.Health - Qdmg - Wdmg - MarkDmg - Ignitedmg < 0 && E.IsReady() && Q.IsReady() &&
-                                W.IsReady())
-                            {
-                                E.Cast(target);
-                                Q.Cast(focus);
-                                player.Spellbook.CastSpell(Ignite, focus);
-                                return;
+                                if (Config.Item("ksQ").GetValue<bool>() &&
+                                    focus.Distance(target.ServerPosition) <= W.Range &&
+                                    focus.Health - Qdmg - Wdmg - MarkDmg - Ignitedmg < 0 && E.IsReady() && Q.IsReady() &&
+                                    W.IsReady())
+                                {
+                                    E.Cast(target);
+                                    Q.Cast(focus);
+                                    player.Spellbook.CastSpell(Ignite, focus);
+                                    return;
+                                }
                             }
                         }
                     }
