@@ -97,16 +97,16 @@ namespace JustKatarina
 
             //Misc
             Config.AddSubMenu(new Menu("Misc", "Misc"));
-            Config.SubMenu("Misc").AddItem(new MenuItem("KsQ", "Killsteal with Q").SetValue(true));
-            Config.SubMenu("Misc").AddItem(new MenuItem("KsW", "Killsteal with W").SetValue(false));
-            Config.SubMenu("Misc").AddItem(new MenuItem("KsE", "Killsteal with E").SetValue(true));
+            Config.SubMenu("Misc").AddItem(new MenuItem("ksQ", "Killsteal with Q").SetValue(true));
+            Config.SubMenu("Misc").AddItem(new MenuItem("ksW", "Killsteal with W").SetValue(false));
+            Config.SubMenu("Misc").AddItem(new MenuItem("ksE", "Killsteal with E").SetValue(true));
             Config.SubMenu("Misc").AddItem(new MenuItem("autokill", "Enable E hop for Killsteal (to minion, ally, target)").SetValue(true));
             Config.SubMenu("Misc").AddItem(new MenuItem("combodamage", "Damage Indicator").SetValue(true));
 
             Config.AddToMainMenu();
             Drawing.OnDraw += OnDraw;
             Game.OnUpdate += Game_OnGameUpdate;
-            LeagueSharp.Obj_AI_Base.OnPlayAnimation += PlayAnimation;
+            Obj_AI_Base.OnPlayAnimation += PlayAnimation;
         }
         
         private static float GetComboDamage(Obj_AI_Hero Target)
@@ -162,23 +162,22 @@ namespace JustKatarina
         private static void combo()
         {
             var Target = TargetSelector.GetTarget(E.Range, TargetSelector.DamageType.Magical);
-            if (Target == null || !Target.IsValidTarget() || !InUlt)
+            if (Target == null || !Target.IsValidTarget())
                 return;
 
-            if (Q.IsReady() && Config.Item("UseQ").GetValue<bool>() && Target.IsValidTarget(Q.Range))
+            if (Q.IsReady() && Target.IsValidTarget(Q.Range) && Config.Item("UseQ").GetValue<bool>())
                 {
                     Q.CastOnUnit(Target);
-                }
-            if (E.IsReady() && Target.IsValidTarget(E.Range) && Config.Item("UseE").GetValue<bool>())
-                {
-                    E.CastOnUnit(Target);
                 }
             if (W.IsReady() && Target.IsValidTarget(W.Range) && Config.Item("UseW").GetValue<bool>())
                 {
                     W.Cast();
                 }
-
-            if (R.IsReady() && !InUlt && !E.IsReady() && Target.IsValidTarget(R.Range) && Config.Item("UseR").GetValue<bool>())
+            if (E.IsReady() && Target.IsValidTarget(E.Range) && Config.Item("UseE").GetValue<bool>() && !Q.IsReady())
+                {
+                    E.CastOnUnit(Target);
+                }
+            if (R.IsReady() && !InUlt && !E.IsReady() && !Q.IsReady() && !W.IsReady() && Target.IsValidTarget(R.Range) && Config.Item("UseR").GetValue<bool>())
             {
                 Orbwalker.SetAttack(false);
                 Orbwalker.SetMovement(false);
