@@ -261,14 +261,7 @@ namespace JustKatarina
                             );
                         if (focuss.Any())
                         {
-                            foreach (Obj_AI_Hero focus in ObjectManager.Get<Obj_AI_Hero>().Where(
-                                focus =>
-                                    focus.Distance(target.ServerPosition) <= Q.Range
-                                    && focus.IsEnemy
-                                    && !focus.IsMe
-                                    && !focus.IsInvulnerable
-                                    && focus.IsValidTarget()
-                                ))
+                            foreach (Obj_AI_Base focus in focuss)
                             {
                                 var Qdmg = Q.GetDamage(focus);
                                 var Wdmg = W.GetDamage(focus);
