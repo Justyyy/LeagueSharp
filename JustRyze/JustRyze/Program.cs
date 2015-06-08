@@ -80,6 +80,7 @@ namespace JustRyze
             //Combo
             Config.AddSubMenu(new Menu("Combo", "Combo"));
             Config.SubMenu("Combo").AddItem(new MenuItem("UseAA", "Use AA Options").SetValue(new StringList(new[] { "Use AA", "No AA" })));
+            Config.SubMenu("Combo").AddItem(new MenuItem("combop", "Combo Options (6)").SetValue(new StringList(new[] { "W>Q>E", "W>E>Q", "E>W>Q", "E>Q>W", "Q>W>E", "Q>E>W" }, 1)));
             Config.SubMenu("Combo").AddItem(new MenuItem("UseQ", "Use Q").SetValue(true));
             Config.SubMenu("Combo").AddItem(new MenuItem("UseW", "Use W").SetValue(true));
             Config.SubMenu("Combo").AddItem(new MenuItem("UseE", "Use E").SetValue(true));
@@ -164,6 +165,7 @@ namespace JustRyze
             var t = TargetSelector.GetTarget(ObjectManager.Player.AttackRange, TargetSelector.DamageType.Magical);
             var target = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Magical);
             var enemys = target.CountEnemiesInRange(200);
+            int mode = Config.Item("combop").GetValue<StringList>().SelectedIndex;
             if (target == null || !target.IsValidTarget())
                 return;
 
@@ -187,114 +189,290 @@ namespace JustRyze
                     }
             }
 
-            if (Q.IsReady() && Config.Item("UseQ").GetValue<bool>() && target.IsValidTarget(Q.Range))
             {
-                Q.CastIfHitchanceEquals(target, HitChance.Dashing, true);
-                Q.CastIfHitchanceEquals(target, HitChance.Immobile, true);
-                var qpred = Q.GetPrediction(target);
-                if (qpred.Hitchance >= HitChance.VeryHigh &&
-                    qpred.CollisionObjects.Count(h => h.IsEnemy && !h.IsDead && h is Obj_AI_Minion) < 2)
+                if (GetComboDamage(target) < target.Health)
                 {
-                    Q.Cast(qpred.CastPosition);
+                    if (mode == 0) //W-Q-E
+                    {
+                        if (W.IsReady() && target.IsValidTarget(W.Range) && Config.Item("UseW").GetValue<bool>())
+                            W.CastOnUnit(target);
+                        
+                        if (Q.IsReady() && Config.Item("UseQ").GetValue<bool>() && target.IsValidTarget(Q.Range))
+                        {
+                            Q.CastIfHitchanceEquals(target, HitChance.Dashing, true);
+                            Q.CastIfHitchanceEquals(target, HitChance.Immobile, true);
+                            var qpred = Q.GetPrediction(target);
+                            if (qpred.Hitchance >= HitChance.VeryHigh &&
+                                qpred.CollisionObjects.Count(h => h.IsEnemy && !h.IsDead && h is Obj_AI_Minion) < 2)
+                            {
+                                Q.Cast(qpred.CastPosition);
+                            }
+                        }
+
+                        if (E.IsReady() && target.IsValidTarget(E.Range) && Config.Item("UseE").GetValue<bool>())
+                            E.CastOnUnit(target);
+                     }
+                    else if (mode == 1) //W-E-Q
+                    {
+                        if (W.IsReady() && target.IsValidTarget(W.Range) && Config.Item("UseW").GetValue<bool>())
+                            W.CastOnUnit(target);
+
+                        if (E.IsReady() && target.IsValidTarget(E.Range) && Config.Item("UseE").GetValue<bool>())
+                            E.CastOnUnit(target);
+
+                        if (Q.IsReady() && Config.Item("UseQ").GetValue<bool>() && target.IsValidTarget(Q.Range))
+                        {
+                            Q.CastIfHitchanceEquals(target, HitChance.Dashing, true);
+                            Q.CastIfHitchanceEquals(target, HitChance.Immobile, true);
+                            var qpred = Q.GetPrediction(target);
+                            if (qpred.Hitchance >= HitChance.VeryHigh &&
+                                qpred.CollisionObjects.Count(h => h.IsEnemy && !h.IsDead && h is Obj_AI_Minion) < 2)
+                            {
+                                Q.Cast(qpred.CastPosition);
+                            }
+                        }
+                    }
+                    else if (mode == 2) // E-W-Q
+                    {
+                        if (E.IsReady() && target.IsValidTarget(E.Range) && Config.Item("UseE").GetValue<bool>())
+                            E.CastOnUnit(target);
+
+                        if (W.IsReady() && target.IsValidTarget(W.Range) && Config.Item("UseW").GetValue<bool>())
+                            W.CastOnUnit(target);
+
+                        if (Q.IsReady() && Config.Item("UseQ").GetValue<bool>() && target.IsValidTarget(Q.Range))
+                        {
+                            Q.CastIfHitchanceEquals(target, HitChance.Dashing, true);
+                            Q.CastIfHitchanceEquals(target, HitChance.Immobile, true);
+                            var qpred = Q.GetPrediction(target);
+                            if (qpred.Hitchance >= HitChance.VeryHigh &&
+                                qpred.CollisionObjects.Count(h => h.IsEnemy && !h.IsDead && h is Obj_AI_Minion) < 2)
+                            {
+                                Q.Cast(qpred.CastPosition);
+                            }
+                        }
+                    }
+                    else if (mode == 3) // E-Q-W
+                    {
+                        if (E.IsReady() && target.IsValidTarget(E.Range) && Config.Item("UseE").GetValue<bool>())
+                            E.CastOnUnit(target);
+
+                        if (Q.IsReady() && Config.Item("UseQ").GetValue<bool>() && target.IsValidTarget(Q.Range))
+                        {
+                            Q.CastIfHitchanceEquals(target, HitChance.Dashing, true);
+                            Q.CastIfHitchanceEquals(target, HitChance.Immobile, true);
+                            var qpred = Q.GetPrediction(target);
+                            if (qpred.Hitchance >= HitChance.VeryHigh &&
+                                qpred.CollisionObjects.Count(h => h.IsEnemy && !h.IsDead && h is Obj_AI_Minion) < 2)
+                            {
+                                Q.Cast(qpred.CastPosition);
+                            }
+                        }
+
+                        if (W.IsReady() && target.IsValidTarget(W.Range) && Config.Item("UseW").GetValue<bool>())
+                            W.CastOnUnit(target);
+                    }
+                    else if (mode == 4) // Q-W-E
+                    {
+                        if (Q.IsReady() && Config.Item("UseQ").GetValue<bool>() && target.IsValidTarget(Q.Range))
+                        {
+                            Q.CastIfHitchanceEquals(target, HitChance.Dashing, true);
+                            Q.CastIfHitchanceEquals(target, HitChance.Immobile, true);
+                            var qpred = Q.GetPrediction(target);
+                            if (qpred.Hitchance >= HitChance.VeryHigh &&
+                                qpred.CollisionObjects.Count(h => h.IsEnemy && !h.IsDead && h is Obj_AI_Minion) < 2)
+                            {
+                                Q.Cast(qpred.CastPosition);
+                            }
+                        }
+
+                        if (W.IsReady() && target.IsValidTarget(W.Range) && Config.Item("UseW").GetValue<bool>())
+                            W.CastOnUnit(target);
+
+                        if (E.IsReady() && target.IsValidTarget(E.Range) && Config.Item("UseE").GetValue<bool>())
+                            E.CastOnUnit(target);
+                    }
+                    else if (mode == 5) // Q-E-W
+                    {
+                        if (Q.IsReady() && Config.Item("UseQ").GetValue<bool>() && target.IsValidTarget(Q.Range))
+                        {
+                            Q.CastIfHitchanceEquals(target, HitChance.Dashing, true);
+                            Q.CastIfHitchanceEquals(target, HitChance.Immobile, true);
+                            var qpred = Q.GetPrediction(target);
+                            if (qpred.Hitchance >= HitChance.VeryHigh &&
+                                qpred.CollisionObjects.Count(h => h.IsEnemy && !h.IsDead && h is Obj_AI_Minion) < 2)
+                            {
+                                Q.Cast(qpred.CastPosition);
+                            }
+                        }
+
+                        if (E.IsReady() && target.IsValidTarget(E.Range) && Config.Item("UseE").GetValue<bool>())
+                            E.CastOnUnit(target);
+
+                        if (W.IsReady() && target.IsValidTarget(W.Range) && Config.Item("UseW").GetValue<bool>())
+                            W.CastOnUnit(target);
+                    }
+                    else
+                    {
+                        if (GetComboDamage(target) > target.Health)
+                        {
+                            Killsteal();
+                        }
+                        else
+                        {
+                            if (mode == 0)
+                                {
+                                    if (W.IsReady() && target.IsValidTarget(W.Range) && Config.Item("UseW").GetValue<bool>())
+                                        W.CastOnUnit(target);
+
+                                    if (R.IsReady() && Config.Item("UseR").GetValue<bool>() && target.IsValidTarget(R.Range))
+                                        if (Config.Item("Rene").GetValue<Slider>().Value <= enemys)
+                                            R.Cast();
+
+                                    if (Q.IsReady() && Config.Item("UseQ").GetValue<bool>() && target.IsValidTarget(Q.Range))
+                                    {
+                                        Q.CastIfHitchanceEquals(target, HitChance.Dashing, true);
+                                        Q.CastIfHitchanceEquals(target, HitChance.Immobile, true);
+                                        var qpred = Q.GetPrediction(target);
+                                        if (qpred.Hitchance >= HitChance.VeryHigh &&
+                                            qpred.CollisionObjects.Count(h => h.IsEnemy && !h.IsDead && h is Obj_AI_Minion) < 2)
+                                        {
+                                            Q.Cast(qpred.CastPosition);
+                                        }
+                                    }
+
+                                    if (E.IsReady() && target.IsValidTarget(E.Range) && Config.Item("UseE").GetValue<bool>())
+                                        E.CastOnUnit(target);
+                                }
+                                else if (mode == 1) //W-E-Q
+                                {
+                                    if (W.IsReady() && target.IsValidTarget(W.Range) && Config.Item("UseW").GetValue<bool>())
+                                        W.CastOnUnit(target);
+
+                                    if (R.IsReady() && Config.Item("UseR").GetValue<bool>() && target.IsValidTarget(R.Range))
+                                        if (Config.Item("Rene").GetValue<Slider>().Value <= enemys)
+                                            R.Cast();
+
+                                    if (E.IsReady() && target.IsValidTarget(E.Range) && Config.Item("UseE").GetValue<bool>())
+                                        E.CastOnUnit(target);
+
+                                    if (Q.IsReady() && Config.Item("UseQ").GetValue<bool>() && target.IsValidTarget(Q.Range))
+                                    {
+                                        Q.CastIfHitchanceEquals(target, HitChance.Dashing, true);
+                                        Q.CastIfHitchanceEquals(target, HitChance.Immobile, true);
+                                        var qpred = Q.GetPrediction(target);
+                                        if (qpred.Hitchance >= HitChance.VeryHigh &&
+                                            qpred.CollisionObjects.Count(h => h.IsEnemy && !h.IsDead && h is Obj_AI_Minion) < 2)
+                                        {
+                                            Q.Cast(qpred.CastPosition);
+                                        }
+                                    }
+                                }
+                                else if (mode == 2) // E-W-Q
+                                {
+                                    if (E.IsReady() && target.IsValidTarget(E.Range) && Config.Item("UseE").GetValue<bool>())
+                                        E.CastOnUnit(target);
+
+                                    if (W.IsReady() && target.IsValidTarget(W.Range) && Config.Item("UseW").GetValue<bool>())
+                                        W.CastOnUnit(target);
+
+                                    if (R.IsReady() && Config.Item("UseR").GetValue<bool>() && target.IsValidTarget(R.Range))
+                                        if (Config.Item("Rene").GetValue<Slider>().Value <= enemys)
+                                            R.Cast();
+
+                                    if (Q.IsReady() && Config.Item("UseQ").GetValue<bool>() && target.IsValidTarget(Q.Range))
+                                    {
+                                        Q.CastIfHitchanceEquals(target, HitChance.Dashing, true);
+                                        Q.CastIfHitchanceEquals(target, HitChance.Immobile, true);
+                                        var qpred = Q.GetPrediction(target);
+                                        if (qpred.Hitchance >= HitChance.VeryHigh &&
+                                            qpred.CollisionObjects.Count(h => h.IsEnemy && !h.IsDead && h is Obj_AI_Minion) < 2)
+                                        {
+                                            Q.Cast(qpred.CastPosition);
+                                        }
+                                    }
+                                }
+                                else if (mode == 3) // E-Q-W
+                                {
+                                    if (E.IsReady() && target.IsValidTarget(E.Range) && Config.Item("UseE").GetValue<bool>())
+                                        E.CastOnUnit(target);
+
+                                    if (Q.IsReady() && Config.Item("UseQ").GetValue<bool>() && target.IsValidTarget(Q.Range))
+                                    {
+                                        Q.CastIfHitchanceEquals(target, HitChance.Dashing, true);
+                                        Q.CastIfHitchanceEquals(target, HitChance.Immobile, true);
+                                        var qpred = Q.GetPrediction(target);
+                                        if (qpred.Hitchance >= HitChance.VeryHigh &&
+                                            qpred.CollisionObjects.Count(h => h.IsEnemy && !h.IsDead && h is Obj_AI_Minion) < 2)
+                                        {
+                                            Q.Cast(qpred.CastPosition);
+                                        }
+                                    }
+
+                                    if (W.IsReady() && target.IsValidTarget(W.Range) && Config.Item("UseW").GetValue<bool>())
+                                        W.CastOnUnit(target);
+
+                                    if (R.IsReady() && Config.Item("UseR").GetValue<bool>() && target.IsValidTarget(R.Range))
+                                        if (Config.Item("Rene").GetValue<Slider>().Value <= enemys)
+                                            R.Cast();
+                                }
+                                else if (mode == 4) // Q-W-E
+                                {
+                                    if (Q.IsReady() && Config.Item("UseQ").GetValue<bool>() && target.IsValidTarget(Q.Range))
+                                    {
+                                        Q.CastIfHitchanceEquals(target, HitChance.Dashing, true);
+                                        Q.CastIfHitchanceEquals(target, HitChance.Immobile, true);
+                                        var qpred = Q.GetPrediction(target);
+                                        if (qpred.Hitchance >= HitChance.VeryHigh &&
+                                            qpred.CollisionObjects.Count(h => h.IsEnemy && !h.IsDead && h is Obj_AI_Minion) < 2)
+                                        {
+                                            Q.Cast(qpred.CastPosition);
+                                        }
+                                    }
+
+                                    if (W.IsReady() && target.IsValidTarget(W.Range) && Config.Item("UseW").GetValue<bool>())
+                                        W.CastOnUnit(target);
+
+                                    if (R.IsReady() && Config.Item("UseR").GetValue<bool>() && target.IsValidTarget(R.Range))
+                                        if (Config.Item("Rene").GetValue<Slider>().Value <= enemys)
+                                            R.Cast();
+
+                                    if (E.IsReady() && target.IsValidTarget(E.Range) && Config.Item("UseE").GetValue<bool>())
+                                        E.CastOnUnit(target);
+                                }
+                                else if (mode == 5) // Q-E-W
+                                {
+                                    if (Q.IsReady() && Config.Item("UseQ").GetValue<bool>() && target.IsValidTarget(Q.Range))
+                                    {
+                                        Q.CastIfHitchanceEquals(target, HitChance.Dashing, true);
+                                        Q.CastIfHitchanceEquals(target, HitChance.Immobile, true);
+                                        var qpred = Q.GetPrediction(target);
+                                        if (qpred.Hitchance >= HitChance.VeryHigh &&
+                                            qpred.CollisionObjects.Count(h => h.IsEnemy && !h.IsDead && h is Obj_AI_Minion) < 2)
+                                        {
+                                            Q.Cast(qpred.CastPosition);
+                                        }
+                                    }
+
+                                    if (E.IsReady() && target.IsValidTarget(E.Range) && Config.Item("UseE").GetValue<bool>())
+                                        E.CastOnUnit(target);
+
+                                    if (W.IsReady() && target.IsValidTarget(W.Range) && Config.Item("UseW").GetValue<bool>())
+                                        W.CastOnUnit(target);
+
+                                    if (R.IsReady() && Config.Item("UseR").GetValue<bool>() && target.IsValidTarget(R.Range))
+                                        if (Config.Item("Rene").GetValue<Slider>().Value <= enemys)
+                                            R.Cast();
+                                }
+                        }
+                    }
                 }
             }
-
-            if (R.IsReady() && Config.Item("UseR").GetValue<bool>() && target.IsValidTarget(R.Range))
-                if (Config.Item("Rene").GetValue<Slider>().Value <= enemys)
-                    R.Cast();
-
-            if (W.IsReady() && target.IsValidTarget(W.Range - 10) && Config.Item("UseW").GetValue<bool>())
-                W.CastOnUnit(target);
-
-            if (E.IsReady() && target.IsValidTarget(E.Range) && Config.Item("UseE").GetValue<bool>())
-                E.CastOnUnit(target);
-
 
             if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
                 items();
         }
-
-        private static void Combo2()
-        {
-
-            var target = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Magical);
-            var enemys = target.CountEnemiesInRange(200);
-            var t = TargetSelector.GetTarget(ObjectManager.Player.AttackRange, TargetSelector.DamageType.Magical);
-            if (target == null || !target.IsValidTarget())
-                return;
-
-            switch (Config.Item("UseAA").GetValue<StringList>().SelectedIndex)
-            {
-                case 0:
-                    {
-                        if (t.IsValidTarget() && (!E.IsReady() && (!Q.IsReady() && !W.IsReady())))
-                            Orbwalking.Attack = true;
-                        else
-                            Orbwalking.Attack = false;
-                        break;
-                    }
-                case 1:
-                    {
-                        if (t.IsValidTarget() && ObjectManager.Player.GetAutoAttackDamage(t) > t.Health)
-                            Orbwalking.Attack = true;
-                        else
-                            Orbwalking.Attack = false;
-                        break;
-                    }
-            }
-
-            {
-                if (Q.IsReady() && Config.Item("UseQ").GetValue<bool>() && target.IsValidTarget(Q.Range))
-                {
-                    Q.CastIfHitchanceEquals(target, HitChance.Dashing, true);
-                    Q.CastIfHitchanceEquals(target, HitChance.Immobile, true);
-                    var qpred = Q.GetPrediction(target);
-                    if (qpred.Hitchance >= HitChance.VeryHigh &&
-                        qpred.CollisionObjects.Count(h => h.IsEnemy && !h.IsDead && h is Obj_AI_Minion) < 2)
-                    {
-                        Q.Cast(qpred.CastPosition);
-                    }
-                }
-
-                if (R.IsReady() && Config.Item("UseR").GetValue<bool>() && target.IsValidTarget(R.Range))
-                    if (Config.Item("Rene").GetValue<Slider>().Value <= enemys)
-                        R.Cast();
-
-                if (Q.IsReady() && Config.Item("UseQ").GetValue<bool>() && target.IsValidTarget(Q.Range))
-                {
-                    Q.CastIfHitchanceEquals(target, HitChance.Dashing, true);
-                    Q.CastIfHitchanceEquals(target, HitChance.Immobile, true);
-                    var qpred = Q.GetPrediction(target);
-                    if (qpred.Hitchance >= HitChance.VeryHigh &&
-                        qpred.CollisionObjects.Count(h => h.IsEnemy && !h.IsDead && h is Obj_AI_Minion) < 2)
-                    {
-                        Q.Cast(qpred.CastPosition);
-                    }
-                }
-
-                if (W.IsReady() && target.IsValidTarget(W.Range) && Config.Item("UseW").GetValue<bool>())
-                    W.Cast();
-
-                if (Q.IsReady() && Config.Item("UseQ").GetValue<bool>() && target.IsValidTarget(Q.Range))
-                {
-                    Q.CastIfHitchanceEquals(target, HitChance.Dashing, true);
-                    Q.CastIfHitchanceEquals(target, HitChance.Immobile, true);
-                    var qpred = Q.GetPrediction(target);
-                    if (qpred.Hitchance >= HitChance.VeryHigh &&
-                        qpred.CollisionObjects.Count(h => h.IsEnemy && !h.IsDead && h is Obj_AI_Minion) < 2)
-                    {
-                        Q.Cast(qpred.CastPosition);
-                    }
-                }
-
-                if (E.IsReady() && target.IsValidTarget(2000) && Config.Item("UseE").GetValue<bool>())
-                    E.Cast();
-
-                if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
-                    items();
-            }
-        }
-
+        
         private static float GetComboDamage(Obj_AI_Hero Target)
         {
             if (Target != null)
@@ -442,6 +620,9 @@ namespace JustRyze
 
             switch (Orbwalker.ActiveMode)
             {
+                case Orbwalking.OrbwalkingMode.Combo:
+                    combo();
+                    break;
                 case Orbwalking.OrbwalkingMode.LastHit:
                     Lasthit();
                     break;
@@ -453,15 +634,7 @@ namespace JustRyze
                     break;
             }
 
-            if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo &&
-                player.Buffs.Count(buf => buf.Name == "RyzePassiveStack") == 4)
-                Combo2();
-
-            if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo &&
-                player.Buffs.Count(buf => buf.Name == "RyzePassiveStack") < 4)
-                combo();
-
-            if (Config.Item("fQA").GetValue<bool>())
+           if (Config.Item("fQA").GetValue<bool>())
                 Lasthit2();
 
             Killsteal();
@@ -606,64 +779,61 @@ namespace JustRyze
 
         private static void Clear()
         {
-            var minionObj = MinionManager.GetMinions(Q.Range, MinionTypes.All, MinionTeam.NotAlly,
-                MinionOrderTypes.MaxHealth);
+            var minionCount = MinionManager.GetMinions(player.Position, Q.Range, MinionTypes.All, MinionTeam.NotAlly);
             var lanemana = Config.Item("lanemana").GetValue<Slider>().Value;
-            var minions = MinionManager.GetMinions(player.Position, E.Range, MinionTypes.All, MinionTeam.Enemy,
-                   MinionOrderTypes.MaxHealth);
-
-            if (!minionObj.Any())
+            var emin = Config.Item("emin").GetValue<Slider>().Value;
+            
+            if (!minionCount.Any())
             {
                 return;
             }
 
-            if (player.ManaPercent >= lanemana && Q.IsReady() && minionObj.Count >= 1)
             {
-                if (TearoftheGoddess.IsOwned(player) || TearoftheGoddessCrystalScar.IsOwned(player) || ArchangelsStaff.IsOwned(player) || ArchangelsStaffCrystalScar.IsOwned(player) || Manamune.IsOwned(player) || ManamuneCrystalScar.IsOwned(player) && Config.Item("laneQ").GetValue<StringList>().SelectedIndex != 0)
-                    if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear)
-                    {
-                        var minionsss = minionObj[2];
-                        Q.Cast(minionsss);
-                    }
-            }
-
-            if (player.ManaPercent >= lanemana && Q.IsReady() && minionObj.Count >= 1)
-            {
-                if (Config.Item("laneQ").GetValue<StringList>().SelectedIndex == 1)
-                    if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear)
-                    {
-                        var minionsss = minionObj[2];
-                        Q.Cast(minionsss);
-                    }
-            }
-
-            if (E.IsReady() && Config.Item("laneE").GetValue<bool>() && player.ManaPercent >= lanemana && minionObj.Count >= 3)
-            {
-                var emino = Config.Item("emin").GetValue<Slider>().Value;
-                var allMinionsE = MinionManager.GetMinions(player.Position, E.Range, MinionTypes.All, MinionTeam.Enemy);
-
-                if (minions.Any())
+                foreach (var minion in minionCount)
                 {
-                    var farmAll = E.GetCircularFarmLocation(minions, E.Range);
-                    if (farmAll.MinionsHit >= emino)
+                    if (Config.Item("lQ").GetValue<bool>()
+                        && Q.IsReady()
+                        && minion.IsValidTarget(Q.Range)
+                        && player.ManaPercent >= lanemana)
                     {
-                        var inions = minionObj.OrderBy(minion => minion.Distance(farmAll.Position)).FirstOrDefault();
-                        E.CastOnUnit(inions, true);
-                        return;
+                        Q.Cast(minion);
                     }
-                }
 
-                if (player.ManaPercent >= lanemana)
-                    if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear &&
-                        Config.Item("laneW").GetValue<bool>() && minionObj.Count >= 2)
+                    if (Config.Item("lW").GetValue<bool>()
+                        && W.IsReady()
+                        && minion.IsValidTarget(W.Range)
+                        && player.ManaPercent >= lanemana)
                     {
-                        var minionss = minionObj[1];
-                        {
-                            W.CastOnUnit(minionss);
-                        }
+                        W.Cast();
                     }
+
+                    if (Config.Item("lE").GetValue<bool>()
+                        && E.IsReady()
+                        && minion.IsValidTarget(E.Range)
+                        && player.ManaPercent >= lanemana
+                        && minionCount.Count >= emin)
+                    {
+                        E.CastOnUnit(minion);
+                    }
+
+                }
             }
 
+            if (player.ManaPercent >= lanemana && Q.IsReady() && minionCount.Count >= 1)
+            {
+                foreach (var minion in minionCount)
+                {
+                    if (TearoftheGoddess.IsOwned(player) || TearoftheGoddessCrystalScar.IsOwned(player) ||
+                        ArchangelsStaff.IsOwned(player) || ArchangelsStaffCrystalScar.IsOwned(player) ||
+                        Manamune.IsOwned(player) ||
+                        ManamuneCrystalScar.IsOwned(player) &&
+                        Config.Item("laneQ").GetValue<StringList>().SelectedIndex != 0)
+                        if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear)
+                        {
+                            Q.Cast(minion);
+                        }
+                }
+            }
         }
 
         private static void OnDraw(EventArgs args)
