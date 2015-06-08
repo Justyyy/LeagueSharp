@@ -332,7 +332,7 @@ namespace JustKatarina
                     );
                 if (targets.Any())
                 {
-                    foreach (Obj_AI_Base target in targets)
+                    foreach (Obj_AI_Hero target in targets)
                     {
                         var focuss = ObjectManager.Get<Obj_AI_Base>().Where(focus =>
                             focus.Distance(target.ServerPosition) <= Q.Range
