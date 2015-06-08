@@ -705,7 +705,7 @@ namespace JustKatarina
                         new Vector2(Target.HPBarPosition.X + 10 + Positions[0] * 104, Target.HPBarPosition.Y + 20),
                         new Vector2(Target.HPBarPosition.X + 10 + Positions[1] * 104, Target.HPBarPosition.Y + 20),
                         9,
-                        Color.Orange
+                        Color.DarkOrange
                     );
             }
         }
