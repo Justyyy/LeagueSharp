@@ -62,7 +62,8 @@ namespace JustRyze
             W = new Spell(SpellSlot.W, 600f);
             E = new Spell(SpellSlot.E, 600f);
             R = new Spell(SpellSlot.R);
-            Q.SetSkillshot(0.46f, 50f, 1399f, true, SkillshotType.SkillshotLine);
+            Q.SetSkillshot(0.25f, 50f, 2000f, true, SkillshotType.SkillshotLine);
+            //Q.SetSkillshot(0.46f, 50f, 1399f, true, SkillshotType.SkillshotLine); Test Prediction Data Backup
 
 
             abilitySequence = new int[] { 3, 1, 2, 3, 3, 4, 3, 1, 3, 1, 4, 1, 1, 2, 2, 4, 2, 2 };
@@ -325,7 +326,7 @@ namespace JustRyze
                                     if (W.IsReady() && target.IsValidTarget(W.Range) && Config.Item("UseW").GetValue<bool>())
                                         W.CastOnUnit(target);
 
-                                    if (R.IsReady() && Config.Item("UseR").GetValue<bool>() && target.IsValidTarget(R.Range))
+                                    if (R.IsReady() && Config.Item("UseR").GetValue<bool>())
                                         if (Config.Item("Rene").GetValue<Slider>().Value <= enemys)
                                             R.Cast();
 
@@ -349,7 +350,7 @@ namespace JustRyze
                                     if (W.IsReady() && target.IsValidTarget(W.Range) && Config.Item("UseW").GetValue<bool>())
                                         W.CastOnUnit(target);
 
-                                    if (R.IsReady() && Config.Item("UseR").GetValue<bool>() && target.IsValidTarget(R.Range))
+                                    if (R.IsReady() && Config.Item("UseR").GetValue<bool>())
                                         if (Config.Item("Rene").GetValue<Slider>().Value <= enemys)
                                             R.Cast();
 
@@ -376,7 +377,7 @@ namespace JustRyze
                                     if (W.IsReady() && target.IsValidTarget(W.Range) && Config.Item("UseW").GetValue<bool>())
                                         W.CastOnUnit(target);
 
-                                    if (R.IsReady() && Config.Item("UseR").GetValue<bool>() && target.IsValidTarget(R.Range))
+                                    if (R.IsReady() && Config.Item("UseR").GetValue<bool>())
                                         if (Config.Item("Rene").GetValue<Slider>().Value <= enemys)
                                             R.Cast();
 
@@ -412,7 +413,7 @@ namespace JustRyze
                                     if (W.IsReady() && target.IsValidTarget(W.Range) && Config.Item("UseW").GetValue<bool>())
                                         W.CastOnUnit(target);
 
-                                    if (R.IsReady() && Config.Item("UseR").GetValue<bool>() && target.IsValidTarget(R.Range))
+                                    if (R.IsReady() && Config.Item("UseR").GetValue<bool>())
                                         if (Config.Item("Rene").GetValue<Slider>().Value <= enemys)
                                             R.Cast();
                                 }
@@ -433,7 +434,7 @@ namespace JustRyze
                                     if (W.IsReady() && target.IsValidTarget(W.Range) && Config.Item("UseW").GetValue<bool>())
                                         W.CastOnUnit(target);
 
-                                    if (R.IsReady() && Config.Item("UseR").GetValue<bool>() && target.IsValidTarget(R.Range))
+                                    if (R.IsReady() && Config.Item("UseR").GetValue<bool>())
                                         if (Config.Item("Rene").GetValue<Slider>().Value <= enemys)
                                             R.Cast();
 
@@ -460,7 +461,7 @@ namespace JustRyze
                                     if (W.IsReady() && target.IsValidTarget(W.Range) && Config.Item("UseW").GetValue<bool>())
                                         W.CastOnUnit(target);
 
-                                    if (R.IsReady() && Config.Item("UseR").GetValue<bool>() && target.IsValidTarget(R.Range))
+                                    if (R.IsReady() && Config.Item("UseR").GetValue<bool>())
                                         if (Config.Item("Rene").GetValue<Slider>().Value <= enemys)
                                             R.Cast();
                                 }
