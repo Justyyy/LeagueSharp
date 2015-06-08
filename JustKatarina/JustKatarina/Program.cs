@@ -323,7 +323,7 @@ namespace JustKatarina
 
             if (Config.Item("autokill").GetValue<bool>())
             {
-                var targets = ObjectManager.Get<Obj_AI_Base>().Where(
+                var targets = ObjectManager.Get<Obj_AI_Hero>().Where(
                     target =>
                         ObjectManager.Player.Distance(target.ServerPosition) <= E.Range
                         && !target.IsMe
