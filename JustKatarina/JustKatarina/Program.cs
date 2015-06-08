@@ -37,7 +37,7 @@ namespace JustKatarina
             if (player.ChampionName != ChampName)
                 return;
 
-            Notifications.AddNotification("JustKatarina Beta Version | Give feedback on forum", 8000);
+            Notifications.AddNotification("By Justy&Soresu | Give feedback on forum", 8000);
             Notifications.AddNotification("Don't forget upvote in AssemblyDB", 12000);
 
             //Ability Information - Range - Variables.
