@@ -323,7 +323,7 @@ namespace JustKatarina
 
             if (Config.Item("autokill").GetValue<bool>())
             {
-                var targets = ObjectManager.Get<Obj_AI_Hero>().Where(
+                var targets = ObjectManager.Get<Obj_AI_Base>().Where(
                     target =>
                         ObjectManager.Player.Distance(target.ServerPosition) <= E.Range
                         && !target.IsMe
@@ -332,9 +332,9 @@ namespace JustKatarina
                     );
                 if (targets.Any())
                 {
-                    foreach (Obj_AI_Hero target in targets)
+                    foreach (Obj_AI_Base target in targets)
                     {
-                        var focuss = ObjectManager.Get<Obj_AI_Base>().Where(focus =>
+                        var focuss = ObjectManager.Get<Obj_AI_Hero>().Where(focus =>
                             focus.Distance(target.ServerPosition) <= Q.Range
                             && focus.IsEnemy
                             && !focus.IsMe
@@ -343,7 +343,7 @@ namespace JustKatarina
                             );
                         if (focuss.Any())
                         {
-                            foreach (Obj_AI_Base focus in focuss)
+                            foreach (Obj_AI_Hero focus in focuss)
                             {
                                 var Qdmg = Q.GetDamage(focus);
                                 var Wdmg = W.GetDamage(focus);
