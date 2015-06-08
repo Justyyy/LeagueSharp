@@ -23,6 +23,8 @@ namespace JustKatarina
         private static int eTimer;
         private static SpellSlot Ignite;
         private static GameObject _ward;
+        private static long dtLastQCast = 0;
+        private static long dtLastECast = 0;
         private static int lastWardCast;
         private static readonly Obj_AI_Hero player = ObjectManager.Player;
 
@@ -114,6 +116,14 @@ namespace JustKatarina
             Config.SubMenu("Wardjump").AddItem(new MenuItem("jumpAlly", "Jump to Ally champions").SetValue(true));
             Config.SubMenu("Wardjump").AddItem(new MenuItem("jumpMinion", "Jump to Ally minions").SetValue(true));
 
+            //Legitirino
+            Config.AddSubMenu(new Menu("I'm LCS Player", "Legit"));
+            Config.SubMenu("Legit").AddItem(new MenuItem("trylegit", "Try to be legit").SetValue(false));
+            Config.SubMenu("Legit")
+                .AddItem(new MenuItem("LegitCastDelayQ", "Cast Q Delay").SetValue(new Slider(2000, 0, 5000)));
+            Config.SubMenu("Legit").
+                AddItem(new MenuItem("LegitCastDelayE", "Cast E Delay").SetValue(new Slider(2000, 0, 5000)));
+
             //Misc
             Config.AddSubMenu(new Menu("Misc", "Misc"));
             Config.SubMenu("Misc").AddItem(new MenuItem("ksQ", "Killsteal with Q").SetValue(true));
@@ -194,33 +204,74 @@ namespace JustKatarina
             var Target = TargetSelector.GetTarget(E.Range, TargetSelector.DamageType.Magical);
             if (Target == null || !Target.IsValidTarget())
                 return;
-
-            if (Q.IsReady() && Target.IsValidTarget(Q.Range) && Config.Item("UseQ").GetValue<bool>())
+            
+                if (Q.IsReady() && Target.IsValidTarget(Q.Range) && Config.Item("UseQ").GetValue<bool>())
                 {
-                    Q.CastOnUnit(Target);
+                    CastQ(Target);
                 }
-            if (W.IsReady() && Target.IsValidTarget(W.Range) && Config.Item("UseW").GetValue<bool>())
+                if (W.IsReady() && Target.IsValidTarget(W.Range) && Config.Item("UseW").GetValue<bool>())
                 {
                     W.Cast();
                 }
-            if (E.IsReady() && Target.IsValidTarget(E.Range) && Config.Item("UseE").GetValue<bool>() && !Q.IsReady())
+                if (E.IsReady() && Target.IsValidTarget(E.Range) && Config.Item("UseE").GetValue<bool>() && !Q.IsReady())
                 {
-                    E.CastOnUnit(Target);
+                    CastE(Target);
                 }
-            if (R.IsReady() && !InUlt && !E.IsReady() && !Q.IsReady() && !W.IsReady() && Target.IsValidTarget(R.Range) && Config.Item("UseR").GetValue<bool>())
-            {
-                Orbwalker.SetAttack(false);
-                Orbwalker.SetMovement(false);
-                R.Cast();
-                InUlt = true;
-                return;
-            }
-
+                if (R.IsReady() && !InUlt && !E.IsReady() && !Q.IsReady() && !W.IsReady() &&
+                    Target.IsValidTarget(R.Range) && Config.Item("UseR").GetValue<bool>())
+                {
+                    Orbwalker.SetAttack(false);
+                    Orbwalker.SetMovement(false);
+                    R.Cast();
+                    InUlt = true;
+                    return;
+                }
+            
             if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
                 items();
         }
 
-        private static float IgniteDamage(Obj_AI_Hero target)
+        public static void CastE(Obj_AI_Base unit)
+        {
+            var legit = Config.Item("trylegit").GetValue<bool>();
+            var delaye = Config.Item("LegitCastDelayE").GetValue<Slider>().Value;
+
+            if (legit)
+            {
+                if (Environment.TickCount > dtLastECast + delaye)
+                {
+                    E.CastOnUnit(unit);
+                    dtLastECast = Environment.TickCount;
+                }
+            }
+            else
+            {
+                E.CastOnUnit(unit);
+                dtLastECast = Environment.TickCount;
+            }
+        }
+
+        public static void CastQ(Obj_AI_Base unit)
+        {
+            var legit = Config.Item("trylegit").GetValue<bool>();
+            var delayq = Config.Item("LegitCastDelayQ").GetValue<Slider>().Value;
+
+            if (legit)
+            {
+                if (Environment.TickCount > dtLastQCast + delayq)
+                {
+                    Q.CastOnUnit(unit);
+                    dtLastQCast = Environment.TickCount;
+                }
+            }
+            else
+            {
+                Q.CastOnUnit(unit);
+                dtLastQCast = Environment.TickCount;
+            }
+        }
+
+       private static float IgniteDamage(Obj_AI_Hero target)
         {
             if (Ignite == SpellSlot.Unknown || player.Spellbook.CanUseSpell(Ignite) != SpellState.Ready)
                 return 0f;
