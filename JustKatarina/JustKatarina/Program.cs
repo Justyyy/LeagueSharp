@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +14,7 @@ namespace JustKatarina
     internal class Program
     {
         public const string ChampName = "Katarina";
-        public const string Menun= "JustKatarina";
+        public const string Menun = "JustKatarina";
         public static Menu Config;
         public static Orbwalking.Orbwalker Orbwalker;
         public static Spell Q, W, E, R;
@@ -40,7 +40,7 @@ namespace JustKatarina
             Notifications.AddNotification("JustKatarina Beta Version | Give feedback on forum", 8000);
             Notifications.AddNotification("Don't forget upvote in AssemblyDB", 12000);
 
-           //Ability Information - Range - Variables.
+            //Ability Information - Range - Variables.
             Q = new Spell(SpellSlot.Q, 675f);
             W = new Spell(SpellSlot.W, 375f);
             E = new Spell(SpellSlot.E, 700f);
@@ -65,7 +65,7 @@ namespace JustKatarina
             //Harass
             Config.AddSubMenu(new Menu("Harass", "Harass"));
             Config.SubMenu("Harass").AddItem(new MenuItem("harassmode", "Harass Mode").SetValue(
-                new StringList(new[] {"Q-E-W", "E-Q-W"}, 1)));
+                new StringList(new[] { "Q-E-W", "E-Q-W" }, 1)));
             Config.SubMenu("Harass").AddItem(new MenuItem("hQ", "Use Q").SetValue(true));
             Config.SubMenu("Harass").AddItem(new MenuItem("hW", "Use W").SetValue(true));
             Config.SubMenu("Harass").AddItem(new MenuItem("hE", "Use E").SetValue(true));
@@ -141,7 +141,7 @@ namespace JustKatarina
             Game.OnUpdate += Game_OnGameUpdate;
             Obj_AI_Base.OnPlayAnimation += PlayAnimation;
         }
-        
+
         private static float GetComboDamage(Obj_AI_Hero Target)
         {
             if (Target != null)
@@ -198,7 +198,7 @@ namespace JustKatarina
                 };
                 return Length;
             }
-            return new float[] {0, 0};
+            return new float[] { 0, 0 };
         }
 
         private static void combo()
@@ -206,29 +206,29 @@ namespace JustKatarina
             var Target = TargetSelector.GetTarget(E.Range, TargetSelector.DamageType.Magical);
             if (Target == null || !Target.IsValidTarget())
                 return;
-            
-                if (Q.IsReady() && Target.IsValidTarget(Q.Range) && Config.Item("UseQ").GetValue<bool>())
-                {
-                    CastQ(Target);
-                }
-                if (W.IsReady() && Target.IsValidTarget(W.Range) && Config.Item("UseW").GetValue<bool>())
-                {
-                    W.Cast();
-                }
-                if (E.IsReady() && Target.IsValidTarget(E.Range) && Config.Item("UseE").GetValue<bool>() && !Q.IsReady())
-                {
-                    CastE(Target);
-                }
-                if (R.IsReady() && !InUlt && !E.IsReady() && !Q.IsReady() && !W.IsReady() &&
-                    Target.IsValidTarget(R.Range) && Config.Item("UseR").GetValue<bool>())
-                {
-                    Orbwalker.SetAttack(false);
-                    Orbwalker.SetMovement(false);
-                    R.Cast();
-                    InUlt = true;
-                    return;
-                }
-            
+
+            if (Q.IsReady() && Target.IsValidTarget(Q.Range) && Config.Item("UseQ").GetValue<bool>())
+            {
+                CastQ(Target);
+            }
+            if (W.IsReady() && Target.IsValidTarget(W.Range) && Config.Item("UseW").GetValue<bool>())
+            {
+                W.Cast();
+            }
+            if (E.IsReady() && Target.IsValidTarget(E.Range) && Config.Item("UseE").GetValue<bool>() && !Q.IsReady())
+            {
+                CastE(Target);
+            }
+            if (R.IsReady() && !InUlt && !E.IsReady() && !Q.IsReady() && !W.IsReady() &&
+                Target.IsValidTarget(R.Range) && Config.Item("UseR").GetValue<bool>())
+            {
+                Orbwalker.SetAttack(false);
+                Orbwalker.SetMovement(false);
+                R.Cast();
+                InUlt = true;
+                return;
+            }
+
             if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
                 items();
         }
@@ -273,11 +273,11 @@ namespace JustKatarina
             }
         }
 
-       private static float IgniteDamage(Obj_AI_Hero target)
+        private static float IgniteDamage(Obj_AI_Hero target)
         {
             if (Ignite == SpellSlot.Unknown || player.Spellbook.CanUseSpell(Ignite) != SpellState.Ready)
                 return 0f;
-            return (float) player.GetSummonerSpellDamage(target, Damage.SummonerSpell.Ignite);
+            return (float)player.GetSummonerSpellDamage(target, Damage.SummonerSpell.Ignite);
         }
 
         private static void Killsteal()
@@ -348,7 +348,7 @@ namespace JustKatarina
                                 var Qdmg = Q.GetDamage(focus);
                                 var Wdmg = W.GetDamage(focus);
                                 var MarkDmg = Damage.CalcDamage(player, focus, Damage.DamageType.Magical,
-                                    player.FlatMagicDamageMod*0.15 + player.Level*15);
+                                    player.FlatMagicDamageMod * 0.15 + player.Level * 15);
                                 float Ignitedmg;
                                 if (Ignite != SpellSlot.Unknown)
                                 {
@@ -360,64 +360,35 @@ namespace JustKatarina
                                 {
                                     Ignitedmg = 0f;
                                 }
-
-                                if (Config.Item("ksQ").GetValue<bool>() && focus.Health - Qdmg < 0 && E.IsReady() &&
-                                    Q.IsReady() &&
-                                    focus.Distance(target.ServerPosition) <= Q.Range)
+                                if (focus.Health - Ignitedmg < 0 && Ignite.IsReady())
                                 {
-                                    E.Cast(target);
-                                    Q.Cast(focus);
-                                }
-
-                                if (Config.Item("ksQ").GetValue<bool>() && Config.Item("ksW").GetValue<bool>() &&
-                                    focus.Distance(target.ServerPosition) <= W.Range && focus.Health - Qdmg - Wdmg < 0 &&
-                                    E.IsReady() && Q.IsReady())
-                                {
-                                    E.Cast(target);
-                                    Q.Cast(focus);
-                                    W.Cast();
-                                }
-
-                                if (Config.Item("ksQ").GetValue<bool>() &&
-                                    focus.Distance(target.ServerPosition) <= E.Range &&
-                                    focus.Health - Qdmg - Ignitedmg < 0 && E.IsReady() && Q.IsReady() &&
-                                    Ignite.IsReady())
-                                {
-                                    E.Cast(target);
-                                    Q.Cast(focus);
                                     player.Spellbook.CastSpell(Ignite, focus);
                                 }
-
-                                if (Config.Item("ksQ").GetValue<bool>() && Config.Item("ksW").GetValue<bool>() &&
-                                    focus.Distance(target.ServerPosition) <= W.Range &&
-                                    focus.Health - Qdmg - Wdmg - MarkDmg < 0 &&
-                                    E.IsReady() && Q.IsReady() && W.IsReady())
+                                if (Config.Item("ksQ").GetValue<bool>() && Q.CanCast(target) && Q.IsReady() &&
+                                    Config.Item("ksW").GetValue<bool>() && W.CanCast(focus) && W.IsReady() &&
+                                    focus.Distance(target)<W.Range &&
+                                    focus.Health - Qdmg - Wdmg - MarkDmg < 0)
                                 {
-                                    E.Cast(target);
                                     Q.Cast(focus);
                                 }
 
-                                if (Config.Item("ksW").GetValue<bool>() && Config.Item("ksQ").GetValue<bool>() &&
-                                    focus.Distance(target.ServerPosition) <= W.Range &&
-                                    focus.Health - Qdmg - Wdmg - Ignitedmg < 0 && E.IsReady() && Q.IsReady() &&
-                                    W.IsReady() &&
-                                    Ignite.IsReady())
+                                if (focus.Health - Ignitedmg < 0 && Ignite.IsReady())
                                 {
-                                    E.Cast(target);
-                                    Q.Cast(focus);
-                                    W.Cast();
                                     player.Spellbook.CastSpell(Ignite, focus);
-                                    return;
                                 }
-
-                                if (Config.Item("ksQ").GetValue<bool>() &&
-                                    focus.Distance(target.ServerPosition) <= W.Range &&
-                                    focus.Health - Qdmg - Wdmg - MarkDmg - Ignitedmg < 0 && E.IsReady() && Q.IsReady() &&
-                                    W.IsReady())
+                                if ((Config.Item("ksW").GetValue<bool>() && W.IsReady() &&
+                                     Config.Item("ksE").GetValue<bool>() && E.IsReady() &&
+                                     focus.Health - Wdmg < 0 && target.Distance(focus) < W.Range) ||
+                                     (Config.Item("ksQ").GetValue<bool>() && W.IsReady() &&
+                                     Config.Item("ksE").GetValue<bool>() && E.IsReady() &&
+                                     focus.Health - Qdmg - MarkDmg < 0 && target.Distance(focus) < Q.Range) ||
+                                     (Config.Item("ksQ").GetValue<bool>() && W.IsReady() &&
+                                     Config.Item("ksE").GetValue<bool>() && E.IsReady() &&
+                                     Config.Item("ksW").GetValue<bool>() && W.IsReady() &&
+                                     focus.Health - Qdmg - MarkDmg - Wdmg < 0 && target.Distance(focus) < W.Range)
+                                     )
                                 {
                                     E.Cast(target);
-                                    Q.Cast(focus);
-                                    player.Spellbook.CastSpell(Ignite, focus);
                                     return;
                                 }
                             }
@@ -490,7 +461,7 @@ namespace JustKatarina
                     break;
                 case Orbwalking.OrbwalkingMode.Mixed:
                     harass();
-                   break;
+                    break;
                 case Orbwalking.OrbwalkingMode.LaneClear:
                     Clear();
                     break;
@@ -501,7 +472,7 @@ namespace JustKatarina
                 Wardjump();
             }
 
-           Killsteal();
+            Killsteal();
             var autoHarass = Config.Item("AutoHarass", true).GetValue<KeyBind>().Active;
             if (autoHarass)
                 AutoHarass();
@@ -514,7 +485,7 @@ namespace JustKatarina
         {
             if (sender.IsMe)
             {
-            if (args.SData.Name.Contains("ward") || args.SData.Name.Contains("Trinket"))
+                if (args.SData.Name.Contains("ward") || args.SData.Name.Contains("Trinket"))
                     lastWardCast = Utils.GameTimeTickCount;
             }
         }
@@ -626,7 +597,7 @@ namespace JustKatarina
                     {
                         Q.CastOnUnit(minion);
                     }
-               
+
                     if (usew && W.IsReady()
                         && minion.IsValidTarget(W.Range)
                         && minion.Health < W.GetDamage(minion))
@@ -731,8 +702,8 @@ namespace JustKatarina
                 float[] Positions = GetLength();
                 Drawing.DrawLine
                     (
-                        new Vector2(Target.HPBarPosition.X + 10 + Positions[0]*104, Target.HPBarPosition.Y + 20),
-                        new Vector2(Target.HPBarPosition.X + 10 + Positions[1]*104, Target.HPBarPosition.Y + 20),
+                        new Vector2(Target.HPBarPosition.X + 10 + Positions[0] * 104, Target.HPBarPosition.Y + 20),
+                        new Vector2(Target.HPBarPosition.X + 10 + Positions[1] * 104, Target.HPBarPosition.Y + 20),
                         9,
                         Color.Orange
                     );
@@ -740,6 +711,3 @@ namespace JustKatarina
         }
     }
 }
-
-
-    
