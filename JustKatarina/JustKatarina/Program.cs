@@ -291,7 +291,7 @@ namespace JustKatarina
                                 enemy.IsValidTarget(Q.Range) && enemy.Health < player.GetSpellDamage(enemy, SpellSlot.Q));
                 if (target != null && target.IsValidTarget(Q.Range))
                 {
-                    Q.CastOnUnit(target);
+                    CastQ(target);
                 }
             }
 
@@ -317,7 +317,7 @@ namespace JustKatarina
                                 enemy.IsValidTarget(E.Range) && enemy.Health < player.GetSpellDamage(enemy, SpellSlot.E));
                 if (target != null && target.IsValidTarget(E.Range))
                 {
-                    E.CastOnUnit(target);
+                    CastE(target);
                 }
             }
 
@@ -369,7 +369,7 @@ namespace JustKatarina
                                     focus.Distance(target)<W.Range &&
                                     focus.Health - Qdmg - Wdmg - MarkDmg < 0)
                                 {
-                                    Q.Cast(focus);
+                                    CastQ(focus);
                                 }
 
                                 if (focus.Health - Ignitedmg < 0 && Ignite.IsReady())
@@ -388,7 +388,7 @@ namespace JustKatarina
                                      focus.Health - Qdmg - MarkDmg - Wdmg < 0 && target.Distance(focus) < W.Range)
                                      )
                                 {
-                                    E.Cast(target);
+                                    CastE(target);
                                     return;
                                 }
                             }
@@ -577,7 +577,7 @@ namespace JustKatarina
                 return;
 
             if (Q.IsReady() && Config.Item("aQ").GetValue<bool>() && target.IsValidTarget(Q.Range))
-                Q.CastOnUnit(target);
+                CastQ(target);
 
             if (W.IsReady() && Config.Item("aW").GetValue<bool>() && target.IsValidTarget(W.Range))
                 W.Cast();
@@ -619,11 +619,11 @@ namespace JustKatarina
             {
                 if (Q.IsReady() && Config.Item("hQ").GetValue<bool>() && target.IsValidTarget(Q.Range))
                 {
-                    Q.CastOnUnit(target);
+                    CastQ(target);
                 }
                 if (E.IsReady() && Config.Item("hE").GetValue<bool>() && target.IsValidTarget(E.Range))
                 {
-                    E.CastOnUnit(target);
+                    CastE(target);
                 }
                 if (W.IsReady() && Config.Item("hW").GetValue<bool>() && target.IsValidTarget(W.Range))
                 {
@@ -635,12 +635,12 @@ namespace JustKatarina
             {
                 if (E.IsReady() && Config.Item("hE").GetValue<bool>() && target.IsValidTarget(E.Range))
                 {
-                    E.CastOnUnit(target);
+                    CastE(target);
                 }
 
                 if (Q.IsReady() && Config.Item("hQ").GetValue<bool>() && target.IsValidTarget(player.AttackRange))
                 {
-                    Q.CastOnUnit(target);
+                    CastQ(target);
                 }
 
                 if (W.IsReady() && Config.Item("hW").GetValue<bool>() && target.IsValidTarget(W.Range))
