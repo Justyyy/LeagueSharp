@@ -6,7 +6,6 @@ using System.Runtime.Remoting.Metadata.W3cXsd2001;
 using LeagueSharp;
 using LeagueSharp.Common;
 using LeagueSharp.Common.Data;
-using JustKatarina;
 using SharpDX;
 using Color = System.Drawing.Color;
 
@@ -37,6 +36,9 @@ namespace JustKatarina
         {
             if (player.ChampionName != ChampName)
                 return;
+
+            Notifications.AddNotification("JustKatarina Beta Version | Give feedback on forum", 8000);
+            Notifications.AddNotification("Don't forget upvote in AssemblyDB", 12000);
 
            //Ability Information - Range - Variables.
             Q = new Spell(SpellSlot.Q, 675f);
@@ -499,9 +501,7 @@ namespace JustKatarina
                 Wardjump();
             }
 
-            NotificationHandler.Update();
-
-            Killsteal();
+           Killsteal();
             var autoHarass = Config.Item("AutoHarass", true).GetValue<KeyBind>().Active;
             if (autoHarass)
                 AutoHarass();
