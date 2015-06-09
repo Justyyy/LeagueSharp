@@ -45,7 +45,7 @@ namespace JustBlitz
             if (player.ChampionName != ChampName)
                 return;
 
-            Notifications.AddNotification("JustBlitzcrank Loaded - [V.1.0.3.0]", 8000);
+            Notifications.AddNotification("JustBlitzcrank Loaded - [V.1.0.5.0]", 8000);
 
             //Ability Information - Range - Variables.
             Q = new Spell(SpellSlot.Q, 925);
@@ -140,8 +140,23 @@ namespace JustBlitz
             Config.AddToMainMenu();
             Drawing.OnDraw += OnDraw;
             Game.OnUpdate += Game_OnGameUpdate;
+            Orbwalking.BeforeAttack += OrbwalkingBeforeAttack;
             AntiGapcloser.OnEnemyGapcloser += AntiGapcloser_OnEnemyGapcloser;
             Interrupter2.OnInterruptableTarget += Interrupter2_OnInterruptableTarget;
+        }
+
+        private static void OrbwalkingBeforeAttack(Orbwalking.BeforeAttackEventArgs args)
+        {
+            if (!args.Unit.IsMe || !(args.Target is Obj_AI_Hero))
+            {
+                return;
+            }
+
+            if ((Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo && Config.Item("UseE").GetValue<bool>())
+                || (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Mixed && Config.Item("hE").GetValue<bool>()))
+            {
+                E.Cast();
+            }
         }
 
         static void Interrupter2_OnInterruptableTarget(Obj_AI_Hero sender, Interrupter2.InterruptableTargetEventArgs args)
@@ -152,7 +167,7 @@ namespace JustBlitz
                 Q.CastIfHitchanceEquals(sender, HitChance.Immobile, true);
                 var qpred = Q.GetPrediction(sender);
                 if (qpred.Hitchance >= HitChance.High &&
-                    qpred.CollisionObjects.Count(h => h.IsEnemy && !h.IsDead && h is Obj_AI_Minion) < 2)
+                    qpred.CollisionObjects.Count(h => h.IsEnemy && !h.IsDead && h is Obj_AI_Minion) < 1)
                 {
                     Q.Cast(qpred.CastPosition);
                 }
@@ -170,7 +185,7 @@ namespace JustBlitz
 
         private static void AntiGapcloser_OnEnemyGapcloser(ActiveGapcloser gapcloser)
         {
-            if (W.IsReady() && Config.Item("grapop" + gapcloser.Sender.ChampionName).GetValue<StringList>().SelectedIndex == 1 && gapcloser.Sender.IsValidTarget(400) && Config.Item("antigap").GetValue<bool>())
+            if (W.IsReady() && gapcloser.Sender.IsValidTarget(400) && Config.Item("antigap").GetValue<bool>())
                 W.Cast();
         }
 
@@ -190,7 +205,7 @@ namespace JustBlitz
                 Q.CastIfHitchanceEquals(target, HitChance.Immobile, true);
                 var qpred = Q.GetPrediction(target);
                 if (qpred.Hitchance >= (HitChance)Config.Item("qhit").GetValue<Slider>().Value + 1 &&
-                    qpred.CollisionObjects.Count(h => h.IsEnemy && !h.IsDead && h is Obj_AI_Minion) < 2)
+                    qpred.CollisionObjects.Count(h => h.IsEnemy && !h.IsDead && h is Obj_AI_Minion) < 1)
                 {
                     Q.Cast(qpred.CastPosition);
                 }
@@ -258,8 +273,8 @@ namespace JustBlitz
             {
                 float ComboDamage = new float();
 
-                ComboDamage = Q.IsReady() ? Q.GetDamage(Target) : 0;
-                ComboDamage += W.IsReady() ? W.GetDamage(Target) : 0;
+                ComboDamage += Q.IsReady() ? Q.GetDamage(Target) : 0;
+                ComboDamage += E.IsReady() ? E.GetDamage(Target) : 0;
                 ComboDamage += player.TotalAttackDamage;
                 return ComboDamage;
             }
