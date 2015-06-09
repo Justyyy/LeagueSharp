@@ -7,6 +7,7 @@ using LeagueSharp;
 using LeagueSharp.Common;
 using LeagueSharp.Common.Data;
 using SharpDX;
+using JustKatarina;
 using Color = System.Drawing.Color;
 
 namespace JustKatarina
@@ -37,7 +38,7 @@ namespace JustKatarina
             if (player.ChampionName != ChampName)
                 return;
 
-            Notifications.AddNotification("By Justy&Soresu | Give feedback on forum", 8000);
+            Notifications.AddNotification("JustKatarina Loaded | Give feedback on forum", 8000);
             Notifications.AddNotification("Don't forget upvote in AssemblyDB", 12000);
 
             //Ability Information - Range - Variables.
@@ -131,8 +132,28 @@ namespace JustKatarina
             Config.SubMenu("Misc").AddItem(new MenuItem("ksQ", "Killsteal with Q").SetValue(true));
             Config.SubMenu("Misc").AddItem(new MenuItem("ksW", "Killsteal with W").SetValue(false));
             Config.SubMenu("Misc").AddItem(new MenuItem("ksE", "Killsteal with E").SetValue(true));
+            Config.SubMenu("Misc").AddItem(new MenuItem("rcancel", "Cancel R for KS").SetValue(false));
             Config.SubMenu("Misc").AddItem(new MenuItem("autokill", "Enable E hop for Killsteal (to minion, ally, target)").SetValue(true));
-            Config.SubMenu("Misc").AddItem(new MenuItem("combodamage", "Damage Indicator").SetValue(true));
+            var dmg = new MenuItem("combodamage", "Damage Indicator").SetValue(true);
+            var drawFill = new MenuItem("color", "Fill colour", true).SetValue(new Circle(true, Color.Purple));
+            Config.SubMenu("Draw").AddItem(drawFill);
+            Config.SubMenu("Draw").AddItem(dmg);
+
+            DrawDamage.DamageToUnit = GetComboDamage;
+            DrawDamage.Enabled = dmg.GetValue<bool>();
+            DrawDamage.Fill = drawFill.GetValue<Circle>().Active;
+            DrawDamage.FillColor = drawFill.GetValue<Circle>().Color;
+
+            dmg.ValueChanged += delegate(object sender, OnValueChangeEventArgs eventArgs)
+            {
+                DrawDamage.Enabled = eventArgs.GetNewValue<bool>();
+            };
+
+            drawFill.ValueChanged += delegate(object sender, OnValueChangeEventArgs eventArgs)
+            {
+                DrawDamage.Fill = eventArgs.GetNewValue<Circle>().Active;
+                DrawDamage.FillColor = eventArgs.GetNewValue<Circle>().Color;
+            };
 
             Config.AddToMainMenu();
             Drawing.OnDraw += OnDraw;
@@ -182,23 +203,6 @@ namespace JustKatarina
                     InUlt = false;
                 }
             }
-        }
-
-        private static float[] GetLength()
-        {
-            var Target = TargetSelector.GetTarget(E.Range, TargetSelector.DamageType.Magical);
-            if (Target != null)
-            {
-                float[] Length =
-                {
-                    GetComboDamage(Target) > Target.Health
-                        ? 0
-                        : (Target.Health - GetComboDamage(Target))/Target.MaxHealth,
-                    Target.Health/Target.MaxHealth
-                };
-                return Length;
-            }
-            return new float[] { 0, 0 };
         }
 
         private static void combo()
@@ -282,6 +286,11 @@ namespace JustKatarina
 
         private static void Killsteal()
         {
+            if (Config.Item("rcancel").GetValue<bool>() && InUlt)
+                {
+                    player.IssueOrder(GameObjectOrder.MoveTo, Game.CursorPos);
+                }
+
             if (Config.Item("ksQ").GetValue<bool>() && Q.IsReady())
             {
                 var target =
@@ -320,6 +329,7 @@ namespace JustKatarina
                     CastE(target);
                 }
             }
+
 
             if (Config.Item("autokill").GetValue<bool>())
             {
@@ -697,17 +707,6 @@ namespace JustKatarina
                 Render.Circle.DrawCircle(player.Position, E.Range, System.Drawing.Color.White, 3);
             if (Config.Item("Rdraw").GetValue<bool>())
                 Render.Circle.DrawCircle(player.Position, R.Range, System.Drawing.Color.White, 3);
-            if (Target != null && Config.Item("combodamage").GetValue<bool>() && E.IsInRange(Target))
-            {
-                float[] Positions = GetLength();
-                Drawing.DrawLine
-                    (
-                        new Vector2(Target.HPBarPosition.X + 10 + Positions[0] * 104, Target.HPBarPosition.Y + 20),
-                        new Vector2(Target.HPBarPosition.X + 10 + Positions[1] * 104, Target.HPBarPosition.Y + 20),
-                        9,
-                        Color.DarkOrange
-                    );
             }
-        }
     }
 }
