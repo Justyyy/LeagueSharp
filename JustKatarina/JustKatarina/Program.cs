@@ -329,8 +329,7 @@ namespace JustKatarina
                     CastE(target);
                 }
             }
-
-
+            
             if (Config.Item("autokill").GetValue<bool>())
             {
                 var targets = ObjectManager.Get<Obj_AI_Base>().Where(
