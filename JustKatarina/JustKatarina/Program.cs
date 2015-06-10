@@ -287,9 +287,9 @@ namespace JustKatarina
         private static void Killsteal()
         {
             if (Config.Item("rcancel").GetValue<bool>() && InUlt)
-                {
-                    player.IssueOrder(GameObjectOrder.MoveTo, Game.CursorPos);
-                }
+            {
+                player.IssueOrder(GameObjectOrder.MoveTo, Game.CursorPos);
+            }
 
             if (Config.Item("ksQ").GetValue<bool>() && Q.IsReady())
             {
@@ -329,7 +329,7 @@ namespace JustKatarina
                     CastE(target);
                 }
             }
-            
+
             if (Config.Item("autokill").GetValue<bool>())
             {
                 var targets = ObjectManager.Get<Obj_AI_Base>().Where(
@@ -375,7 +375,7 @@ namespace JustKatarina
                                 }
                                 if (Config.Item("ksQ").GetValue<bool>() && Q.CanCast(target) && Q.IsReady() &&
                                     Config.Item("ksW").GetValue<bool>() && W.CanCast(focus) && W.IsReady() &&
-                                    focus.Distance(target)<W.Range &&
+                                    focus.Distance(target) < W.Range &&
                                     focus.Health - Qdmg - Wdmg - MarkDmg < 0)
                                 {
                                     CastQ(focus);
@@ -385,16 +385,14 @@ namespace JustKatarina
                                 {
                                     player.Spellbook.CastSpell(Ignite, focus);
                                 }
-                                if ((Config.Item("ksW").GetValue<bool>() && W.IsReady() &&
-                                     Config.Item("ksE").GetValue<bool>() && E.IsReady() &&
-                                     focus.Health - Wdmg < 0 && target.Distance(focus) < W.Range) ||
-                                     (Config.Item("ksQ").GetValue<bool>() && W.IsReady() &&
+                                if (E.CanCast(target) &&
+                                     ((Config.Item("ksQ").GetValue<bool>() && W.IsReady() &&
                                      Config.Item("ksE").GetValue<bool>() && E.IsReady() &&
                                      focus.Health - Qdmg - MarkDmg < 0 && target.Distance(focus) < Q.Range) ||
                                      (Config.Item("ksQ").GetValue<bool>() && W.IsReady() &&
                                      Config.Item("ksE").GetValue<bool>() && E.IsReady() &&
                                      Config.Item("ksW").GetValue<bool>() && W.IsReady() &&
-                                     focus.Health - Qdmg - MarkDmg - Wdmg < 0 && target.Distance(focus) < W.Range)
+                                     focus.Health - Qdmg - MarkDmg - Wdmg < 0 && target.Distance(focus) < W.Range))
                                      )
                                 {
                                     CastE(target);
@@ -402,6 +400,58 @@ namespace JustKatarina
                                 }
                             }
                         }
+                    }
+                }
+            }
+            PutWardToKill();
+        }
+
+        private static void PutWardToKill()
+        {
+            var wardingRange = 600;
+            foreach (var hero in HeroManager.Enemies.Where(h => h.IsValidTarget() && h.Distance(player) < E.Range + wardingRange))
+            {
+                var wardingPlace = player.Position.Extend(hero.Position, wardingRange);
+                if (!wardingPlace.IsValid() || wardingPlace.IsWall() || !E.IsReady())
+                {
+                    return;
+                }
+                var Qdmg = Q.GetDamage(hero);
+                var Wdmg = W.GetDamage(hero);
+                var MarkDmg = Damage.CalcDamage(player, hero, Damage.DamageType.Magical,
+                    player.FlatMagicDamageMod * 0.15 + player.Level * 15);
+                float Ignitedmg;
+                if (Ignite != SpellSlot.Unknown)
+                {
+                    Ignitedmg =
+                        (float)
+                            Damage.GetSummonerSpellDamage(player, hero, Damage.SummonerSpell.Ignite);
+                }
+                else
+                {
+                    Ignitedmg = 0f;
+                }
+                if ((Config.Item("ksQ").GetValue<bool>() && Q.IsReady() &&
+                     Config.Item("ksE").GetValue<bool>() && E.IsReady() &&
+                     hero.Health - Qdmg < 0 && wardingPlace.Distance(hero.Position) < Q.Range) ||
+                     (Config.Item("ksQ").GetValue<bool>() && Q.IsReady() &&
+                     Config.Item("ksE").GetValue<bool>() && E.IsReady() &&
+                     Config.Item("ksW").GetValue<bool>() && W.IsReady() &&
+                     hero.Health - Qdmg - MarkDmg - Wdmg < 0 && wardingPlace.Distance(hero.Position) < W.Range)||
+                    (Config.Item("ksW").GetValue<bool>() && W.IsReady() &&
+                     Config.Item("ksE").GetValue<bool>() && E.IsReady() &&
+                     hero.Health - Wdmg < 0 && wardingPlace.Distance(hero.Position) < W.Range) ||
+                    (Config.Item("ksE").GetValue<bool>() && E.IsReady() && Ignite.IsReady() &&
+                     hero.Health - Ignitedmg < 0 && wardingPlace.Distance(hero.Position) < 580)
+                     )
+                {
+                    var wardSlot = Items.GetWardSlot();
+                    if (wardSlot.IsValidSlot() &&
+                        (player.Spellbook.CanUseSpell(wardSlot.SpellSlot) == SpellState.Ready || wardSlot.Stacks != 0) &&
+                        CanCastWard())
+                    {
+                        lastWardCast = Utils.GameTimeTickCount;
+                        player.Spellbook.CastSpell(wardSlot.SpellSlot, wardingPlace);
                     }
                 }
             }
@@ -706,6 +756,6 @@ namespace JustKatarina
                 Render.Circle.DrawCircle(player.Position, E.Range, System.Drawing.Color.White, 3);
             if (Config.Item("Rdraw").GetValue<bool>())
                 Render.Circle.DrawCircle(player.Position, R.Range, System.Drawing.Color.White, 3);
-            }
+        }
     }
 }
