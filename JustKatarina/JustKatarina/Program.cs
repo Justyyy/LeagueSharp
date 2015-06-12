@@ -163,21 +163,26 @@ namespace JustKatarina
             Obj_AI_Base.OnPlayAnimation += PlayAnimation;
         }
 
-        private static float GetComboDamage(Obj_AI_Hero Target)
+        private static float GetComboDamage(Obj_AI_Hero enemy)
         {
-            if (Target != null)
-            {
-                float ComboDamage = new float();
-
-                ComboDamage += Q.IsReady() ? Q.GetDamage(Target) : 0;
-                ComboDamage += W.IsReady() ? W.GetDamage(Target) : 0;
-                ComboDamage += E.IsReady() ? E.GetDamage(Target) : 0;
-                ComboDamage += R.IsReady() ? R.GetDamage(Target) : 0;
-                ComboDamage += Ignite.IsReady() ? IgniteDamage(Target) : 0;
-                ComboDamage += player.TotalAttackDamage;
-                return ComboDamage;
-            }
-            return 0;
+            double damage = 0d;
+            
+            if (Q.IsReady())
+                damage += player.GetSpellDamage(enemy, SpellSlot.Q) + player.GetSpellDamage(enemy, SpellSlot.Q, 1);
+            
+            if (W.IsReady())
+                damage += player.GetSpellDamage(enemy, SpellSlot.W);
+           
+            if (E.IsReady())
+                damage += player.GetSpellDamage(enemy, SpellSlot.E);
+            
+            if (R.IsReady() || (ObjectManager.Player.Spellbook.GetSpell(SpellSlot.R).State == SpellState.Surpressed && R.Level > 0))
+                damage += player.GetSpellDamage(enemy, SpellSlot.R) * 8;
+           
+            if (Ignite.IsReady())
+                damage += IgniteDamage(enemy);
+            
+            return (float)damage;
         }
 
         private static void OnCreateObject(GameObject sender, EventArgs args)
@@ -187,6 +192,11 @@ namespace JustKatarina
             {
                 _ward = sender;
             }
+        }
+
+        private double MarkDmg(Obj_AI_Base target)
+        {
+            return target.HasBuff("katarinaqmark") ? player.GetSpellDamage(target, SpellSlot.Q, 1) : 0;
         }
 
         private static void PlayAnimation(GameObject sender, GameObjectPlayAnimationEventArgs args)
@@ -520,6 +530,9 @@ namespace JustKatarina
                     break;
                 case Orbwalking.OrbwalkingMode.Mixed:
                     harass();
+                    break;
+                case Orbwalking.OrbwalkingMode.LastHit:
+                    Farm();
                     break;
                 case Orbwalking.OrbwalkingMode.LaneClear:
                     Clear();
