@@ -123,7 +123,6 @@ namespace JustHecarim
             if (E.IsReady() && sender.IsValidTarget(E.Range) && Config.Item("interrupte").GetValue<bool>())
             {
                 E.Cast();
-                player.IssueOrder(GameObjectOrder.AttackUnit, sender);
             }
 
             if (R.IsReady() && sender.IsValidTarget(R.Range) && Config.Item("interruptr").GetValue<bool>())
@@ -170,12 +169,10 @@ namespace JustHecarim
 
             if (W.IsReady() && target.IsValidTarget(W.Range) && Config.Item("UseW").GetValue<bool>())
                 W.Cast();
-            player.IssueOrder(GameObjectOrder.AttackUnit, target);
-
+           
             if (Q.IsReady() && Config.Item("UseQ").GetValue<bool>() && target.IsValidTarget(Q.Range))
             {
                 Q.Cast();
-                player.IssueOrder(GameObjectOrder.AttackUnit, target);
             }
 
             if (R.IsReady() && Config.Item("UseR").GetValue<bool>() && target.IsValidTarget(R.Range))
@@ -237,7 +234,6 @@ namespace JustHecarim
                 if (target.IsValidTarget(Q.Range))
                 {
                     Q.Cast();
-                    player.IssueOrder(GameObjectOrder.AttackUnit, target);
                 }
             }
 
@@ -355,7 +351,6 @@ namespace JustHecarim
             if (Q.IsReady() && Config.Item("hQA").GetValue<bool>() && target.IsValidTarget(Q.Range - 10))
             {
                 Q.Cast();
-                player.IssueOrder(GameObjectOrder.AttackUnit, target);
             }
         }
 
@@ -391,18 +386,15 @@ namespace JustHecarim
             if (E.IsReady() && player.ManaPercent >= harassmana &&
                Config.Item("hE").GetValue<bool>())
                 E.Cast();
-            player.IssueOrder(GameObjectOrder.AttackUnit, target);
-
+            
             if (W.IsReady() && target.IsValidTarget(W.Range) && player.ManaPercent >= harassmana &&
                Config.Item("hW").GetValue<bool>())
                 W.Cast();
-            player.IssueOrder(GameObjectOrder.AttackUnit, target);
-
+            
             if (Config.Item("hQ").GetValue<bool>() && target.IsValidTarget(Q.Range) &&
                 player.ManaPercent >= harassmana)
                 Q.Cast();
-            player.IssueOrder(GameObjectOrder.AttackUnit, target);
-        }
+            }
 
         private static void Clear()
         {
