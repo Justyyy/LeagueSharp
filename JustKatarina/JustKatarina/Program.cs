@@ -225,7 +225,7 @@ namespace JustKatarina
             {
                 CastQ(Target);
             }
-            if (W.IsReady() && Target.IsValidTarget(W.Range) && Config.Item("UseW").GetValue<bool>())
+            if (Target.HasBuff("KatarinaQMark") && W.IsReady() && Target.IsValidTarget(W.Range) && Config.Item("UseW").GetValue<bool>())
             {
                 W.Cast();
             }
