@@ -13,7 +13,7 @@ namespace JustFlash
         private static Menu Config;
         private static readonly Obj_AI_Hero player = ObjectManager.Player;
         public const string Menuname = "JustFlash";
-        private static Obj_AI_Hero igniteuser;
+        public static readonly List<Obj_AI_Base> Attackers = new List<Obj_AI_Base>();
         private static SpellSlot flash = ObjectManager.Player.GetSpellSlot("SummonerFlash");
 
         private static void Main(string[] args)
@@ -28,58 +28,69 @@ namespace JustFlash
             Config = new Menu(Menuname, Menuname, true);
             //Menu
             Config.AddSubMenu(new Menu("Flash Settings", "Flash Settings"));
-            Config.SubMenu("settings").AddItem(new MenuItem("block", "Block Flash").SetValue(true));
-            Config.SubMenu("settings").AddItem(new MenuItem("ignite", "For Ignite").SetValue(true));
-            Config.SubMenu("settings").AddItem(new MenuItem("poison", "For Poison - SOON™"));
+            Config.SubMenu("Flash Settings").AddItem(new MenuItem("ignite", "For Ignite").SetValue(true));
+            Config.SubMenu("Flash Settings").AddItem(new MenuItem("poison", "For Poison - Soon™"));
+            Config.SubMenu("Flash Settings").AddItem(new MenuItem("author", "Justy LeagueSharp | © 2015"));
             Spellbook.OnCastSpell += OnCastSpell;
             Obj_AI_Hero.OnProcessSpellCast += Obj_AI_Hero_OnProcessSpellCast;
             Config.AddToMainMenu();
         }
 
-       private static void Obj_AI_Hero_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
+        private static void Obj_AI_Hero_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
         {
-            if (sender.IsMe)
-            {
-                Notifications.AddNotification(sender.Name + " " + args.SData.Name, 2000);
-            }
+            //if (sender.IsMe)
+            //  {
+            //     Notifications.AddNotification(sender.Name + " " + args.SData.Name, 2000);
+            //   }
 
-            if (args.SData.Name == "summonerdot" && sender.IsEnemy)
             {
-                sender = igniteuser;
+                if (sender.IsValid && args.Target.IsMe && args.SData.Name == "summonerdot")
+                {
+                    Attackers.Add(sender);
+                    Utility.DelayAction.Add(5000, () => Attackers.Remove(Attackers.FirstOrDefault(a => a.NetworkId == sender.NetworkId)));
+                }
             }
         }
 
         private static void OnCastSpell(Spellbook sender, SpellbookCastSpellEventArgs args)
         {
-            if (Config.Item("block").GetValue<bool>() && (Config.Item("ignite").GetValue<bool>() && (ObjectManager.Player.Spellbook.CanUseSpell(flash) == SpellState.Ready) 
-                && args.Slot == ObjectManager.Player.GetSpellSlot("SummonerFlash")))
+            if ((Config.Item("ignite").GetValue<bool>()
+
+                 &&
+                 ObjectManager.Player.Spellbook.CanUseSpell(flash) == SpellState.Ready 
+                 &&
+                 args.Slot == flash)
+                )
+
             {
-                if (player.Health < IgniteDamage())
                 {
-                    args.Process = false;
+                    if (player.Health < IgniteDamage())
+                        args.Process = false;
                 }
             }
         }
 
         private static float IgniteDamage()
         {
-            double ignite = 0;
-            double hp = player.HPRegenRate;
-            var ignitedamage = (90 + (20*igniteuser.Level) - 20);
-            var tick = ignitedamage/5;
-            var durationstart = player.Buffs.Find(buff => buff.Name == "summonerdot").StartTime;
-            var durationstop = player.Buffs.Find(buff => buff.Name == "summonerdot").EndTime;
-            var buffduration = Game.Time - durationstart;
-            var exactdmg = tick*buffduration;
-            var regen = (hp / 5) * buffduration;
-           
-            ignite += exactdmg;
-            Console.WriteLine("Damage :" + ignitedamage);
-            return (float) ignite;
+
+            var igniteBuff =
+                player.Buffs.Where(buff => buff.Name == "summonerdot")
+                    .OrderBy(buff => buff.StartTime)
+                    .FirstOrDefault();
+            if (igniteBuff == null)
+            {
+                return 0;
+            }
+            else
+            {
+                var igniteDamage = Math.Floor(igniteBuff.EndTime - Game.ClockTime)*
+                                   player.GetSummonerSpellDamage(Attackers[0], Damage.SummonerSpell.Ignite)/5;
+                return (float) igniteDamage;
+            }
         }
     }
 }
 
 
-    
+
 
