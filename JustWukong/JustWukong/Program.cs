@@ -3,6 +3,7 @@ using System.Diagnostics.Eventing.Reader;
 using System.Drawing.Printing;
 using System.Linq;
 using LeagueSharp;
+using ItemData = LeagueSharp.Common.Data.ItemData;
 using LeagueSharp.Common;
 using LeagueSharp.Common.Data;
 using Color = System.Drawing.Color;
