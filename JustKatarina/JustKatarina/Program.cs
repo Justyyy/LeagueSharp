@@ -7,6 +7,7 @@ using LeagueSharp;
 using LeagueSharp.Common;
 using LeagueSharp.Common.Data;
 using SharpDX;
+using ItemData = LeagueSharp.Common.Data.ItemData;
 using JustKatarina;
 using Color = System.Drawing.Color;
 
