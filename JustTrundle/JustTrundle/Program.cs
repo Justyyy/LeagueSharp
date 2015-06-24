@@ -2,6 +2,7 @@
 using System.Diagnostics.Eventing.Reader;
 using System.Drawing.Printing;
 using System.Linq;
+using ItemData = LeagueSharp.Common.Data.ItemData;
 using LeagueSharp;
 using LeagueSharp.Common;
 using LeagueSharp.Common.Data;
