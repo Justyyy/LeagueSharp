@@ -59,7 +59,7 @@ namespace JustEzreal
             Q.SetSkillshot(0.25f, 60f, 2000f, true, SkillshotType.SkillshotLine);
             W = new Spell(SpellSlot.W, 800);
             W.SetSkillshot(0.25f, 80f, 1600f, false, SkillshotType.SkillshotLine);
-            E = new Spell(SpellSlot.E);
+            E = new Spell(SpellSlot.E, 475);
             R = new Spell(SpellSlot.R, 2500);
             R.SetSkillshot(1f, 160f, 2000f, false, SkillshotType.SkillshotLine);
 
@@ -78,7 +78,7 @@ namespace JustEzreal
             Config.SubMenu("Combo").AddItem(new MenuItem("qhit", "Q Hitchance 1-Low, 4-Very High")).SetValue(new Slider(3, 1, 4));
             Config.SubMenu("Combo").AddItem(new MenuItem("UseW", "Use W").SetValue(true));
             Config.SubMenu("Combo").AddItem(new MenuItem("UseE", "Use E").SetValue(true));
-           // Config.SubMenu("Combo").AddItem(new MenuItem("emode", "E Usage Modes").SetValue(new StringList(new[] { "To Target", "To Mouse Cursor" })));
+            Config.SubMenu("Combo").AddItem(new MenuItem("emode", "E Usage Modes").SetValue(new StringList(new[] { "To Target", "To Mouse Cursor" })));
             Config.SubMenu("Combo").AddItem(new MenuItem("UseR", "Use R").SetValue(true));
             Config.SubMenu("Combo").AddItem(new MenuItem("Rene", "Min Enemies for R").SetValue(new Slider(2, 1, 5)));
 
@@ -198,14 +198,7 @@ namespace JustEzreal
 
             if (Q.IsReady() && Config.Item("UseQ").GetValue<bool>() && target.IsValidTarget(Q.Range))
             {
-                Q.CastIfHitchanceEquals(target, HitChance.Dashing, true);
-                Q.CastIfHitchanceEquals(target, HitChance.Immobile, true);
-                var qpred = Q.GetPrediction(target);
-                if (qpred.Hitchance >= (HitChance) Config.Item("qhit").GetValue<Slider>().Value + 1 &&
-                    qpred.CollisionObjects.Count(h => h.IsEnemy && !h.IsDead && h is Obj_AI_Minion) < 2)
-                {
-                    Q.Cast(qpred.CastPosition);
-                }
+                Q.CastIfHitchanceEquals(target, HitChance.VeryHigh);
             }
 
             if (W.IsReady() && Config.Item("UseW").GetValue<bool>() && target.IsValidTarget(W.Range))
@@ -218,7 +211,14 @@ namespace JustEzreal
             if (E.IsReady() && Config.Item("UseE").GetValue<bool>() && target.IsValidTarget(E.Range))
             {
                 {
-                    E.Cast(target);
+                    if (mode == 0)
+                    {
+                        E.Cast(target);
+                    }
+                    else if (mode == 1)
+                    {
+                        E.Cast(Game.CursorPos);
+                    }
                 }
             }
 
@@ -229,6 +229,7 @@ namespace JustEzreal
                     R.CastIfWillHit(target, hit);
                 }
             }
+            
             if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
                 items();
         }
@@ -275,6 +276,7 @@ namespace JustEzreal
                         .FirstOrDefault(
                             enemy =>
                                 enemy.IsValidTarget(Q.Range) && enemy.Health < player.GetSpellDamage(enemy, SpellSlot.Q));
+               
                 if (target2 != null && target2.IsValidTarget(Q.Range) && target2.Health < Q.GetDamage(target2))
                     return;
 
@@ -420,7 +422,7 @@ namespace JustEzreal
 
         private static void harass()
         {
-            var target = TargetSelector.GetTarget(E.Range, TargetSelector.DamageType.Physical);
+            var target = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Physical);
             var mana = Config.Item("harassmana").GetValue<Slider>().Value;
             if (target == null || !target.IsValidTarget())
                 return;
