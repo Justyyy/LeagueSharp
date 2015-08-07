@@ -43,7 +43,7 @@ namespace JustTrundle
             if (player.ChampionName != ChampName)
                 return;
 
-            Notifications.AddNotification("JustTrundle - [V.1.0.1.0]", 8000);
+            Notifications.AddNotification("JustTrundle - [V.1.0.2.0]", 8000);
             Game.PrintChat("JustTrundle Loaded!");
 
             //Ability Information - Range - Variables.
@@ -72,9 +72,9 @@ namespace JustTrundle
             Config.SubMenu("Combo").AddItem(new MenuItem("manualr", "Cast R Manual").SetValue(new KeyBind('R', KeyBindType.Press)));
             Config.SubMenu("Combo").AddItem(new MenuItem("DontUlt", "Dont Use R On"));
             Config.SubMenu("Combo").AddItem(new MenuItem("sep0", "======"));
-            foreach (var enemy in ObjectManager.Get<Obj_AI_Hero>().Where(enemy => enemy.Team != player.Team))
+            foreach (var enemy in ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsEnemy))
             {
-                Config.SubMenu("Combo").AddItem(new MenuItem("DontUlt" + enemy.BaseSkinName, enemy.BaseSkinName).SetValue(false));
+                Config.SubMenu("Combo").AddItem(new MenuItem("DontUlt" + enemy.SkinName, enemy.SkinName, true).SetValue(false));
             }
             Config.SubMenu("Combo").AddItem(new MenuItem("sep1", "======"));
 
@@ -193,8 +193,8 @@ namespace JustTrundle
 
             if (R.IsReady() && target.IsValidTarget(R.Range) && Config.Item("UseR").GetValue<bool>())
             {
-                if (Config.Item("DontUlt" + target.BaseSkinName) != null &&
-                    Config.Item("DontUlt" + target.BaseSkinName).GetValue<bool>() == false)
+                if (Config.Item("DontUlt" + target.SkinName) != null &&
+                    Config.Item("DontUlt" + target.SkinName).GetValue<bool>() == false)
                     R.CastOnUnit(target);
             }
 
