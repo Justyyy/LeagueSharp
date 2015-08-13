@@ -40,7 +40,7 @@ namespace JustShyvana
             if (player.ChampionName != ChampName)
                 return;
 
-            Notifications.AddNotification("JusShyvana - [V.1.0.0.0]", 8000);
+            Notifications.AddNotification("JusShyvana - [V.1.0.2.0]", 8000);
 
             //Ability Information - Range - Variables.
             Q = new Spell(SpellSlot.Q, player.AttackRange);
@@ -91,9 +91,9 @@ namespace JustShyvana
 
             //Laneclear
             Config.AddSubMenu(new Menu("Clear", "Clear"));
-            Config.SubMenu("Clear").AddItem(new MenuItem("laneQ", "Use Q").SetValue(true));
-            Config.SubMenu("Clear").AddItem(new MenuItem("laneW", "Use W").SetValue(true));
-            Config.SubMenu("Clear").AddItem(new MenuItem("laneE", "Use E").SetValue(true));
+            Config.SubMenu("Clear").AddItem(new MenuItem("lQ", "Use Q").SetValue(true));
+            Config.SubMenu("Clear").AddItem(new MenuItem("lW", "Use W").SetValue(true));
+            Config.SubMenu("Clear").AddItem(new MenuItem("lE", "Use E").SetValue(true));
 
             //Draw
             Config.AddSubMenu(new Menu("Draw", "Draw"));
@@ -386,38 +386,38 @@ namespace JustShyvana
 
         private static void Clear()
         {
-            var minionObj = MinionManager.GetMinions(E.Range, MinionTypes.All, MinionTeam.NotAlly,
-                MinionOrderTypes.MaxHealth);
-            var minionss = minionObj[2];
-           
-            if (!minionObj.Any())
+            var minionCount = MinionManager.GetMinions(player.Position, E.Range, MinionTypes.All, MinionTeam.NotAlly);
+            
             {
-                return;
-            }
-
-            if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear && Config.Item("laneQ").GetValue<bool>())
-            {
+                foreach (var minion in minionCount)
                 {
-                    Q.Cast();
+                    if (Config.Item("lQ").GetValue<bool>()
+                        && Q.IsReady()
+                        && minion.IsValidTarget(125)
+                        )
+                    {
+                        Q.Cast();
+                    }
+
+                    if (Config.Item("lW").GetValue<bool>()
+                        && W.IsReady()
+                        && minion.IsValidTarget(W.Range)
+                       )
+                    {
+                        W.Cast();
+                    }
+
+                    if (Config.Item("lE").GetValue<bool>()
+                        && E.IsReady()
+                        && minion.IsValidTarget(E.Range)
+                        )
+                    {
+                        E.Cast(minion);
+                    }
+
                 }
             }
-
-           {
-                if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear && Config.Item("laneW").GetValue<bool>() && minionss.IsValidTarget(W.Range))
-                {
-                    W.Cast();
-                }
-            }
-
-            {
-                if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear && Config.Item("laneE").GetValue<bool>())
-                {
-                    var minionsss = minionObj[2];
-                    E.Cast(minionsss);
-                }
-            }
-
-            }
+        }
 
         private static void OnDraw(EventArgs args)
         {
