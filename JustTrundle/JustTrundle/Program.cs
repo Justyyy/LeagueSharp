@@ -181,7 +181,8 @@ namespace JustTrundle
                 Config.Item("UseW").GetValue<bool>())
                 W.Cast();
 
-            if (E.IsReady() && target.IsValidTarget(E.Range))
+            if (E.IsReady() && target.IsValidTarget(E.Range) &&
+                Config.Item("UseE").GetValue<bool>())
                 E.CastIfHitchanceEquals(target, HitChance.High);
 
             if (Q.IsReady() && Config.Item("UseQ").GetValue<bool>() &&
