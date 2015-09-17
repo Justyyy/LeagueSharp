@@ -40,14 +40,14 @@ namespace JustNautilus
             if (player.ChampionName != ChampName)
                 return;
 
-            Notifications.AddNotification("JustNautilus - [V.1.0.0.0]", 8000);
+            Notifications.AddNotification("JustNautilus - [V.1.0.1.0]", 8000);
 
             //Ability Information - Range - Variables.
-            Q = new Spell(SpellSlot.Q, 1100);
-            Q.SetSkillshot(1100f, 90, 2000, true, SkillshotType.SkillshotLine);
+            Q = new Spell(SpellSlot.Q, 1100f);
+            Q.SetSkillshot(0.25f, 90f, 2000f, true, SkillshotType.SkillshotLine);
             W = new Spell(SpellSlot.W);
-            E = new Spell(SpellSlot.E, 600);
-            R = new Spell(SpellSlot.R, 825);
+            E = new Spell(SpellSlot.E, 500f);
+            R = new Spell(SpellSlot.R, 825f);
 
             SetSmiteSlot();
 
@@ -66,6 +66,8 @@ namespace JustNautilus
             Config.SubMenu("Combo").AddItem(new MenuItem("UseW", "Use W").SetValue(true));
             Config.SubMenu("Combo").AddItem(new MenuItem("UseE", "Use E").SetValue(true));
             Config.SubMenu("Combo").AddItem(new MenuItem("UseR", "Use R").SetValue(true));
+            foreach (Obj_AI_Hero enemy in HeroManager.Enemies)
+                Config.SubMenu("Combo").AddItem(new MenuItem("nor" + enemy.ChampionName, string.Format("Don't Ulti {0}", enemy.ChampionName)).SetValue(false));
             Config.SubMenu("Combo").AddItem(new MenuItem("UseS", "Use Smite (Red/Blue)").SetValue(true));
             
             //Harass
@@ -90,8 +92,9 @@ namespace JustNautilus
 
             //Laneclear
             Config.AddSubMenu(new Menu("Clear", "Clear"));
-            Config.SubMenu("Clear").AddItem(new MenuItem("laneW", "Use W").SetValue(true));
-            Config.SubMenu("Clear").AddItem(new MenuItem("laneE", "Use E").SetValue(true));
+            Config.SubMenu("Clear").AddItem(new MenuItem("lQ", "Use Q").SetValue(true));
+            Config.SubMenu("Clear").AddItem(new MenuItem("lW", "Use W").SetValue(true));
+            Config.SubMenu("Clear").AddItem(new MenuItem("lE", "Use E").SetValue(true));
             Config.SubMenu("Clear").AddItem(new MenuItem("laneclearmana", "Mana Percentage").SetValue(new Slider(30, 0, 100)));
 
             //Draw
@@ -178,16 +181,14 @@ namespace JustNautilus
             if (target == null || !target.IsValidTarget())
                 return;
 
-            if (R.IsReady() && Config.Item("UseR").GetValue<bool>() && target.IsValidTarget(R.Range))
+            if (R.IsReady() && Config.Item("UseR").GetValue<bool>() && target.IsValidTarget(R.Range) && !Config.Item("nor" + target.ChampionName).GetValue<bool>()) 
                 R.CastOnUnit(target);
 
             UseSmite(target);
 
             if (Q.IsReady() && Config.Item("UseQ").GetValue<bool>() && target.IsValidTarget(Q.Range))
             {
-                var qpred = Q.GetPrediction(target);
-                if (qpred.Hitchance >= HitChance.High && qpred.CollisionObjects.Count(h => h.IsEnemy && !h.IsDead && h is Obj_AI_Minion) < 2)
-                    Q.Cast(qpred.CastPosition);
+                Q.CastIfHitchanceEquals(target, HitChance.High, true);
             }
 
             if (W.IsReady() && target.IsValidTarget(W.Range) && Config.Item("UseW").GetValue<bool>())
@@ -264,9 +265,7 @@ namespace JustNautilus
                 var qDmg = player.GetSpellDamage(target, SpellSlot.Q);
                 if (Config.Item("ksQ").GetValue<bool>() && target.IsValidTarget(Q.Range) && target.Health <= qDmg)
                 {
-                    var qpred = Q.GetPrediction(target);
-                    if (qpred.Hitchance >= HitChance.High && qpred.CollisionObjects.Count(h => h.IsEnemy && !h.IsDead && h is Obj_AI_Minion) < 2)
-                        Q.Cast(qpred.CastPosition);
+                    Q.CastIfHitchanceEquals(target, HitChance.High, true);
                 }
                 var eDmg = player.GetSpellDamage(target, SpellSlot.E);
                 if (Config.Item("ksE").GetValue<bool>() && target.IsValidTarget(E.Range) && target.Health <= eDmg)
@@ -373,9 +372,7 @@ namespace JustNautilus
 
             if (Q.IsReady() && Config.Item("hQ").GetValue<bool>() && target.IsValidTarget(Q.Range) && player.ManaPercent >= harassmana)
             {
-                var qpred = Q.GetPrediction(target);
-                if (qpred.Hitchance >= HitChance.High && qpred.CollisionObjects.Count(h => h.IsEnemy && !h.IsDead && h is Obj_AI_Minion) < 2)
-                    Q.Cast(qpred.CastPosition);
+                Q.CastIfHitchanceEquals(target, HitChance.High, true);
             }
 
             if (W.IsReady() && Config.Item("hW").GetValue<bool>() && target.IsValidTarget(175) && player.ManaPercent >= harassmana)
@@ -387,39 +384,40 @@ namespace JustNautilus
 
         private static void Clear()
         {
-            var lanemana = Config.Item("laneclearmana").GetValue<Slider>().Value;
-            var minionObj = MinionManager.GetMinions(E.Range, MinionTypes.All, MinionTeam.NotAlly,
-                MinionOrderTypes.MaxHealth);
-
-            if (!minionObj.Any())
+            var farmmana = Config.Item("laneclearmana").GetValue<Slider>().Value;
+            var minionCount = MinionManager.GetMinions(player.Position, Q.Range, MinionTypes.All, MinionTeam.NotAlly);
             {
-                return;
-            }
+                foreach (var minion in minionCount)
+                {
+                    if (Config.Item("lQ").GetValue<bool>()
+                        && Q.IsReady()
+                        && player.ManaPercent >= farmmana
+                        && minion.IsValidTarget(Q.Range))
+                    {
+                        Q.Cast();
+                    }
 
-            if (minionObj.Count > 0)
-            {
-                var minions = minionObj[2];
-                if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear && player.ManaPercent >= lanemana && Config.Item("laneE").GetValue<bool>())
-                {
-                    E.Cast(minions);
-                }
-            }
+                    if (Config.Item("lE").GetValue<bool>()
+                        && E.IsReady()
+                        && player.ManaPercent >= farmmana
+                        && minion.IsValidTarget(E.Range)
+                        )
+                    {
+                        E.Cast();
+                    }
 
-            if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear
-                && Config.Item("laneW").GetValue<bool>())
-            {
-                var obj = minionObj.Where(i => W.IsInRange(i)).FirstOrDefault(i => i.MaxHealth >= 1200);
-                if (obj == null)
-                {
-                    obj = minionObj.Where(i => W.IsInRange(i)).MinOrDefault(i => i.Health);
-                }
-                if (obj != null)
-                {
-                    W.Cast();
+                    if (Config.Item("lW").GetValue<bool>()
+                        && W.IsReady()
+                        && player.ManaPercent >= farmmana
+                        && minion.IsValidTarget(320)
+                        )
+                    {
+                        W.Cast();
+                    }
+
                 }
             }
         }
-
 
         private static void OnDraw(EventArgs args)
         {

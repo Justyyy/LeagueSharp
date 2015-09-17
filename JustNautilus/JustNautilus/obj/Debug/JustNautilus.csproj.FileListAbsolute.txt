@@ -10,3 +10,15 @@ c:\users\koray\documents\visual studio 2013\Projects\JustNautilus\JustNautilus\b
 c:\users\koray\documents\visual studio 2013\Projects\JustNautilus\JustNautilus\bin\Release\LeagueSharp.xml
 c:\users\koray\documents\visual studio 2013\Projects\JustNautilus\JustNautilus\obj\Debug\JustNautilus.exe
 c:\users\koray\documents\visual studio 2013\Projects\JustNautilus\JustNautilus\obj\Debug\JustNautilus.pdb
+C:\Users\Koray\Documents\GitHub\LeagueSharpp\JustNautilus\JustNautilus\bin\Release\JustNautilus.exe.config
+C:\Users\Koray\Documents\GitHub\LeagueSharpp\JustNautilus\JustNautilus\obj\Debug\JustNautilus.exe
+C:\Users\Koray\Documents\GitHub\LeagueSharpp\JustNautilus\JustNautilus\obj\Debug\JustNautilus.pdb
+C:\Users\Koray\Documents\GitHub\LeagueSharpp\JustNautilus\JustNautilus\bin\Release\JustNautilus.exe
+C:\Users\Koray\Documents\GitHub\LeagueSharpp\JustNautilus\JustNautilus\bin\Release\JustNautilus.pdb
+C:\Users\Koray\Documents\GitHub\LeagueSharpp\JustNautilus\JustNautilus\bin\Release\clipper_library.dll
+C:\Users\Koray\Documents\GitHub\LeagueSharpp\JustNautilus\JustNautilus\bin\Release\LeagueSharp.Common.dll
+C:\Users\Koray\Documents\GitHub\LeagueSharpp\JustNautilus\JustNautilus\bin\Release\LeagueSharp.dll
+C:\Users\Koray\Documents\GitHub\LeagueSharpp\JustNautilus\JustNautilus\bin\Release\SharpDX.Direct3D9.dll
+C:\Users\Koray\Documents\GitHub\LeagueSharpp\JustNautilus\JustNautilus\bin\Release\SharpDX.dll
+C:\Users\Koray\Documents\GitHub\LeagueSharpp\JustNautilus\JustNautilus\bin\Release\LeagueSharp.Sandbox.dll
+C:\Users\Koray\Documents\GitHub\LeagueSharpp\JustNautilus\JustNautilus\bin\Release\LeagueSharp.xml
