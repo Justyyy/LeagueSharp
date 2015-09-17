@@ -9,6 +9,7 @@ using LeagueSharp.Common.Data;
 using ItemData = LeagueSharp.Common.Data.ItemData;
 using Color = System.Drawing.Color;
 using SharpDX;
+using SPrediction;
 
 namespace JustMorgana
 {
@@ -46,7 +47,7 @@ namespace JustMorgana
             if (player.ChampionName != ChampName)
                 return;
 
-            Notifications.AddNotification("JustMorgana Loaded - [V.1.0.0.0]", 8000);
+            Notifications.AddNotification("JustMorgana Loaded - [V.1.0.1.0]", 8000);
 
             //Ability Information - Range - Variables.
             Q = new Spell(SpellSlot.Q, 1175f);
@@ -122,6 +123,26 @@ namespace JustMorgana
                 .AddItem(new MenuItem("qmana", "Auto Q Mana Percentage").SetValue(new Slider(30, 0, 100)));
             Config.SubMenu("Misc").AddItem(new MenuItem("antigap", "AntiGapCloser with Q").SetValue(false));
             Config.SubMenu("Misc").AddItem(new MenuItem("autolevel", "Auto Level Spells").SetValue(false));
+            var dmg = new MenuItem("combodamage", "Damage Indicator").SetValue(true);
+            var drawFill = new MenuItem("color", "Fill colour", true).SetValue(new Circle(true, Color.DarkRed));
+            Config.SubMenu("Draw").AddItem(drawFill);
+            Config.SubMenu("Draw").AddItem(dmg);
+
+            DrawDamage.DamageToUnit = GetComboDamage;
+            DrawDamage.Enabled = dmg.GetValue<bool>();
+            DrawDamage.Fill = drawFill.GetValue<Circle>().Active;
+            DrawDamage.FillColor = drawFill.GetValue<Circle>().Color;
+
+            dmg.ValueChanged += delegate(object sender, OnValueChangeEventArgs eventArgs)
+            {
+                DrawDamage.Enabled = eventArgs.GetNewValue<bool>();
+            };
+
+            drawFill.ValueChanged += delegate(object sender, OnValueChangeEventArgs eventArgs)
+            {
+                DrawDamage.Fill = eventArgs.GetNewValue<Circle>().Active;
+                DrawDamage.FillColor = eventArgs.GetNewValue<Circle>().Color;
+            };
 
             Config.AddToMainMenu();
             Drawing.OnDraw += OnDraw;
@@ -133,15 +154,27 @@ namespace JustMorgana
         {
             if (Q.IsReady() && gapcloser.Sender.IsValidTarget(400) && Config.Item("antigap").GetValue<bool>())
             {
-                Q.CastIfHitchanceEquals(gapcloser.Sender, HitChance.Dashing, true);
-                Q.CastIfHitchanceEquals(gapcloser.Sender, HitChance.Immobile, true);
-                var qpred = Q.GetPrediction(gapcloser.Sender);
-                if (qpred.Hitchance >= HitChance.High &&
-                    qpred.CollisionObjects.Count(h => h.IsEnemy && !h.IsDead && h is Obj_AI_Minion) < 2)
-                {
-                    Q.Cast(qpred.CastPosition);
-                }
+                Q.SPredictionCast(gapcloser.Sender, (HitChance)Config.Item("qhit").GetValue<Slider>().Value + 1);
             }
+        }
+
+        private static float GetComboDamage(Obj_AI_Hero enemy)
+        {
+            double damage = 0d;
+
+            if (Q.IsReady())
+                damage += player.GetSpellDamage(enemy, SpellSlot.Q);
+
+            if (W.IsReady())
+                damage += player.GetSpellDamage(enemy, SpellSlot.W);
+
+            if (R.IsReady())
+                damage += player.GetSpellDamage(enemy, SpellSlot.R);
+
+            if (Ignite.IsReady())
+                damage += IgniteDamage(enemy);
+
+            return (float)damage;
         }
 
         private static void combo()
@@ -152,14 +185,7 @@ namespace JustMorgana
             var qrange = Config.Item("qrange").GetValue<Slider>().Value;
             if (Q.IsReady() && Config.Item("UseQ").GetValue<bool>() && target.IsValidTarget(qrange))
             {
-                Q.CastIfHitchanceEquals(target, HitChance.Dashing, true);
-                Q.CastIfHitchanceEquals(target, HitChance.Immobile, true);
-                var qpred = Q.GetPrediction(target);
-                if (qpred.Hitchance >= (HitChance)Config.Item("qhit").GetValue<Slider>().Value + 1 &&
-                    qpred.CollisionObjects.Count(h => h.IsEnemy && !h.IsDead && h is Obj_AI_Minion) < 2)
-                {
-                    Q.Cast(qpred.CastPosition);
-                }
+                Q.SPredictionCast(target, (HitChance)Config.Item("qhit").GetValue<Slider>().Value + 1);
             }
             if (W.IsReady() && Config.Item("UseW").GetValue<bool>() && target.IsValidTarget(W.Range))
             {
@@ -201,62 +227,17 @@ namespace JustMorgana
                     var qmana = Config.Item("qmana").GetValue<Slider>().Value;
                     if (Config.Item("AutoQ").GetValue<bool>() && Q.CanCast(target) && Q.GetPrediction(target).Hitchance >= HitChance.Immobile && player.ManaPercent >= qmana)
                     {
-                        Q.CastIfHitchanceEquals(target, HitChance.Dashing, true);
-                        Q.CastIfHitchanceEquals(target, HitChance.Immobile, true);
-                        var qpred = Q.GetPrediction(target);
-                        if (qpred.Hitchance >= (HitChance)Config.Item("qhit").GetValue<Slider>().Value + 1 &&
-                            qpred.CollisionObjects.Count(h => h.IsEnemy && !h.IsDead && h is Obj_AI_Minion) < 1)
-                        {
-                            Q.Cast(qpred.CastPosition);
-                        }
+                        Q.SPredictionCast(target, (HitChance)Config.Item("qhit").GetValue<Slider>().Value + 1);
                     }
 
                      if (Config.Item("AutoQ2").GetValue<bool>() && Q.CanCast(target) && Q.GetPrediction(target).Hitchance >= HitChance.Dashing && player.ManaPercent >= qmana)
                     {
-                        Q.CastIfHitchanceEquals(target, HitChance.Dashing, true);
-                        Q.CastIfHitchanceEquals(target, HitChance.Immobile, true);
-                        var qpred = Q.GetPrediction(target);
-                        if (qpred.Hitchance >= (HitChance)Config.Item("qhit").GetValue<Slider>().Value + 1 &&
-                            qpred.CollisionObjects.Count(h => h.IsEnemy && !h.IsDead && h is Obj_AI_Minion) < 2)
-                        {
-                            Q.Cast(qpred.CastPosition);
-                        }
+                        Q.SPredictionCast(target, (HitChance)Config.Item("qhit").GetValue<Slider>().Value + 1);
                     }
             }
         }
 
-       private static float GetComboDamage(Obj_AI_Hero Target)
-        {
-            if (Target != null)
-            {
-                float ComboDamage = new float();
-
-                ComboDamage = Q.IsReady() ? Q.GetDamage(Target) : 0;
-                ComboDamage += W.IsReady() ? W.GetDamage(Target) : 0;
-                ComboDamage += player.TotalAttackDamage;
-                return ComboDamage;
-            }
-            return 0;
-        }
-
-        private static float[] GetLength()
-        {
-            var Target = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Physical);
-            if (Target != null)
-            {
-                float[] Length =
-                {
-                    GetComboDamage(Target) > Target.Health
-                        ? 0
-                        : (Target.Health - GetComboDamage(Target))/Target.MaxHealth,
-                    Target.Health/Target.MaxHealth
-                };
-                return Length;
-            }
-            return new float[] { 0, 0 };
-        }
-
-        private static float IgniteDamage(Obj_AI_Hero target)
+       private static float IgniteDamage(Obj_AI_Hero target)
         {
             if (Ignite == SpellSlot.Unknown || player.Spellbook.CanUseSpell(Ignite) != SpellState.Ready)
                 return 0f;
@@ -275,14 +256,7 @@ namespace JustMorgana
                                 enemy.IsValidTarget(qrange) && enemy.Health < player.GetSpellDamage(enemy, SpellSlot.Q));
                 if (target.IsValidTarget(qrange))
                 {
-                    Q.CastIfHitchanceEquals(target, HitChance.Dashing, true);
-                    Q.CastIfHitchanceEquals(target, HitChance.Immobile, true);
-                    var qpred = Q.GetPrediction(target);
-                    if (qpred.Hitchance >= (HitChance)Config.Item("qhit").GetValue<Slider>().Value + 1 &&
-                        qpred.CollisionObjects.Count(h => h.IsEnemy && !h.IsDead && h is Obj_AI_Minion) < 2)
-                    {
-                        Q.Cast(qpred.CastPosition);
-                    }
+                    Q.SPredictionCast(target, (HitChance)Config.Item("qhit").GetValue<Slider>().Value + 1);
                 }
             }
           }
@@ -383,14 +357,7 @@ namespace JustMorgana
 
             if (target.Distance(player.ServerPosition) > Config.Item("qrange").GetValue<Slider>().Value)
             {
-                Q.CastIfHitchanceEquals(target, HitChance.Dashing, true);
-                Q.CastIfHitchanceEquals(target, HitChance.Immobile, true);
-                var qpred = Q.GetPrediction(target);
-                if (qpred.Hitchance >= (HitChance)Config.Item("qhit").GetValue<Slider>().Value + 1 &&
-                    qpred.CollisionObjects.Count(h => h.IsEnemy && !h.IsDead && h is Obj_AI_Minion) < 3)
-                {
-                    Q.Cast(qpred.CastPosition);
-                }
+                Q.SPredictionCast(target, (HitChance)Config.Item("qhit").GetValue<Slider>().Value + 1);
             }
 
             if (W.IsReady() && target.IsValidTarget(W.Range) &&
@@ -450,17 +417,6 @@ namespace JustMorgana
             if (Config.Item("Rdraw").GetValue<bool>())
                 Render.Circle.DrawCircle(player.Position, R.Range, System.Drawing.Color.White, 3);
             if (Target == null)return;
-            if (Config.Item("combodamage").GetValue<bool>() && Q.IsInRange(Target))
-            {
-                float[] Positions = GetLength();
-                Drawing.DrawLine
-                    (
-                        new Vector2(Target.HPBarPosition.X + 10 + Positions[0] * 104, Target.HPBarPosition.Y + 20),
-                        new Vector2(Target.HPBarPosition.X + 10 + Positions[1] * 104, Target.HPBarPosition.Y + 20),
-                        9,
-                        Color.DarkRed
-                    );
-            }
             if (Config.SubMenu("Draw").Item("qpred").GetValue<bool>() && !player.IsDead)
             {
                 if (currentTarget != null && player.Distance(currentTarget) < Q.Range + 200)
