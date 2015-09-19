@@ -67,7 +67,7 @@ namespace JustNautilus
             Config.SubMenu("Combo").AddItem(new MenuItem("UseE", "Use E").SetValue(true));
             Config.SubMenu("Combo").AddItem(new MenuItem("UseR", "Use R").SetValue(true));
             foreach (Obj_AI_Hero enemy in HeroManager.Enemies)
-                Config.SubMenu("Combo").AddItem(new MenuItem("nor" + enemy.ChampionName, string.Format("Don't Ulti {0}", enemy.ChampionName)).SetValue(false));
+                Config.SubMenu("Combo").AddItem(new MenuItem("nor" + enemy.ChampionName, string.Format("Don't Use R on {0}", enemy.ChampionName)).SetValue(false));
             Config.SubMenu("Combo").AddItem(new MenuItem("UseS", "Use Smite (Red/Blue)").SetValue(true));
             
             //Harass
