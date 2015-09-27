@@ -70,7 +70,7 @@ namespace JustMalphite
             Config.SubMenu("Combo").AddItem(new MenuItem("UseE", "Use E").SetValue(true));
             Config.SubMenu("Combo").AddItem(new MenuItem("UseR", "Use R").SetValue(true));
             Config.SubMenu("Combo").AddItem(new MenuItem("manualr", "Cast R Manual").SetValue(new KeyBind('R', KeyBindType.Press)));
-            Config.SubMenu("Combo").AddItem(new MenuItem("RHit", "Cast R If Hit").SetValue(new Slider(2, 1, 5)));
+            Config.SubMenu("Combo").AddItem(new MenuItem("RHit", "Cast R if Hit X Enemies").SetValue(new Slider(2, 1, 5)));
 
             //Harass menu:
             Config.AddSubMenu(new Menu("Harass", "Harass"));
@@ -78,9 +78,9 @@ namespace JustMalphite
             Config.SubMenu("Harass").AddItem(new MenuItem("hW", "Use W").SetValue(false));
             Config.SubMenu("Harass").AddItem(new MenuItem("hE", "Use E").SetValue(true));
             Config.SubMenu("Harass").AddItem(new MenuItem("harassmana", "Mana Percentage").SetValue(new Slider(30, 0, 100)));
-            Config.SubMenu("Harass").AddItem(new MenuItem("AutoHarass", "Auto Harass", true).SetValue(new KeyBind("T".ToCharArray()[0], KeyBindType.Toggle)));
-            Config.SubMenu("Harass").AddItem(new MenuItem("AutoHarass.Q", "Use Q for Auto").SetValue(true));
-            Config.SubMenu("Harass").AddItem(new MenuItem("AutoHarass.E", "Use E for Auto").SetValue(true));
+            Config.SubMenu("Harass").AddItem(new MenuItem("AutoHarass", "Toggle Auto-Harass", true).SetValue(new KeyBind("T".ToCharArray()[0], KeyBindType.Toggle)));
+            Config.SubMenu("Harass").AddItem(new MenuItem("AutoHarass.Q", "Auto-Use Q").SetValue(true));
+            Config.SubMenu("Harass").AddItem(new MenuItem("AutoHarass.E", "Auto-Use E").SetValue(true));
 
             //Farming menu:
             Config.AddSubMenu(new Menu("Clear", "Clear"));
@@ -96,7 +96,7 @@ namespace JustMalphite
 
             //Misc Menu:
             Config.AddSubMenu(new Menu("Misc", "Misc"));
-            Config.SubMenu("Misc").AddItem(new MenuItem("interrupt", "Use R To Interrupt").SetValue(true));
+            Config.SubMenu("Misc").AddItem(new MenuItem("interrupt", "Use R to Interrupt").SetValue(true));
             Config.SubMenu("Misc").AddItem(new MenuItem("tower", "Auto R Under Tower").SetValue(false));
             Config.SubMenu("Misc").AddItem(new MenuItem("antigap", "Anti Gapcloser with Q")).SetValue(true);
             Config.SubMenu("Misc").AddItem(new MenuItem("DrawD", "Damage Indicator").SetValue(true));
