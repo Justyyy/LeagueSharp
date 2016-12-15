@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="d9299723-e921-4616-ac26-d1283f72a687" name="Default" comment="" />
+    <ignored path="JustShyvanaV2.iws" />
+    <ignored path=".idea/workspace.xml" />
+    <ignored path=".idea/dataSources.local.xml" />
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="TRACKING_ENABLED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="CreatePatchCommitExecutor">
+    <option name="PATCH_PATH" value="" />
+  </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
+  <component name="FavoritesManager">
+    <favorites_list name="JustShyvanaV2" />
+  </component>
+  <component name="FileEditorManager">
+    <leaf>
+      <file leaf-file-name="JustShyvanaV2.cs" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/../../JustShyvanaV2/JustShyvanaV2.cs">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="144">
+              <caret line="9" column="23" selection-start-line="9" selection-start-column="23" selection-end-line="9" selection-end-column="23" />
+              <folding>
+                <marker date="1481830667414" expanded="true" signature="6:148" ph="..." />
+                <marker date="1481830667414" expanded="true" signature="174:15680" ph="{...}" />
+                <marker date="1481830667414" expanded="true" signature="194:15678" ph="{...}" />
+                <marker date="1481830667414" expanded="true" signature="518:594" ph="{...}" />
+                <marker date="1481830667414" expanded="true" signature="651:6067" ph="{...}" />
+                <marker date="1481830667414" expanded="true" signature="6211:6403" ph="{...}" />
+                <marker date="1481830667414" expanded="true" signature="6467:7102" ph="{...}" />
+                <marker date="1481830667414" expanded="true" signature="7189:8111" ph="{...}" />
+                <marker date="1481830667414" expanded="true" signature="8171:9090" ph="{...}" />
+                <marker date="1481830667414" expanded="true" signature="9149:9814" ph="{...}" />
+                <marker date="1481830667414" expanded="true" signature="9855:10486" ph="{...}" />
+                <marker date="1481830667414" expanded="true" signature="10515:11102" ph="{...}" />
+                <marker date="1481830667414" expanded="true" signature="11132:11671" ph="{...}" />
+                <marker date="1481830667414" expanded="true" signature="11708:12392" ph="{...}" />
+                <marker date="1481830667414" expanded="true" signature="12438:12653" ph="{...}" />
+                <marker date="1481830667414" expanded="true" signature="12699:13065" ph="{...}" />
+                <marker date="1481830667414" expanded="true" signature="13111:13306" ph="{...}" />
+                <marker date="1481830667414" expanded="true" signature="13352:13696" ph="{...}" />
+                <marker date="1481830667414" expanded="true" signature="13752:13832" ph="{...}" />
+                <marker date="1481830667414" expanded="true" signature="13893:14060" ph="{...}" />
+                <marker date="1481830667414" expanded="true" signature="14117:14600" ph="{...}" />
+                <marker date="1481830667414" expanded="true" signature="14656:14842" ph="{...}" />
+                <marker date="1481830667414" expanded="true" signature="14898:15240" ph="{...}" />
+                <marker date="1481830667414" expanded="true" signature="15296:15672" ph="{...}" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="HpBarIndicator.cs" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../../JustShyvanaV2/HpBarIndicator.cs">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-66">
+              <caret line="10" column="32" selection-start-line="10" selection-start-column="32" selection-end-line="10" selection-end-column="32" />
+              <folding>
+                <marker date="1481830667431" expanded="true" signature="6:108" ph="..." />
+                <marker date="1481830667431" expanded="true" signature="133:2973" ph="{...}" />
+                <marker date="1481830667431" expanded="true" signature="169:2971" ph="{...}" />
+                <marker date="1481830667431" expanded="true" signature="408:757" ph="{...}" />
+                <marker date="1481830667431" expanded="true" signature="1350:1400" ph="{...}" />
+                <marker date="1481830667431" expanded="true" signature="1466:1522" ph="{...}" />
+                <marker date="1481830667431" expanded="true" signature="1587:1642" ph="{...}" />
+                <marker date="1481830667431" expanded="true" signature="1691:1837" ph="{...}" />
+                <marker date="1481830667431" expanded="true" signature="1890:2026" ph="{...}" />
+                <marker date="1481830667431" expanded="true" signature="2083:2371" ph="{...}" />
+                <marker date="1481830667431" expanded="true" signature="2434:2652" ph="{...}" />
+                <marker date="1481830667431" expanded="true" signature="2727:2965" ph="{...}" />
+                <marker date="1481830667431" expanded="true" signature="2797:2919" ph="{...}" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/../../JustShyvanaV2/HpBarIndicator.cs" />
+        <option value="$PROJECT_DIR$/../../JustShyvanaV2/JustShyvanaV2.cs" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectFrameBounds">
+    <option name="x" value="-8" />
+    <option name="y" value="-8" />
+    <option name="width" value="1936" />
+    <option name="height" value="1056" />
+  </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="false">
+    <OptionsSetting value="true" id="Add" />
+    <OptionsSetting value="true" id="Remove" />
+    <OptionsSetting value="true" id="Checkout" />
+    <OptionsSetting value="true" id="Update" />
+    <OptionsSetting value="true" id="Status" />
+    <OptionsSetting value="true" id="Edit" />
+    <ConfirmationsSetting value="0" id="Add" />
+    <ConfirmationsSetting value="0" id="Remove" />
+  </component>
+  <component name="ProjectView">
+    <navigator currentView="SolutionExplorer" proportions="" version="1">
+      <flattenPackages />
+      <showMembers />
+      <showModules />
+      <showLibraryContents />
+      <hideEmptyPackages />
+      <abbreviatePackageNames />
+      <autoscrollToSource />
+      <autoscrollFromSource />
+      <sortByType />
+      <manualOrder />
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="SolutionExplorer">
+        <subPane>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" />
+              <option name="myItemType" value="com.jetbrains.resharper.projectView.solutionExplorer.SolutionExplorerViewPane$ProjectViewPaneTreeStructure$createRoot$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="JustShyvanaV2 (1 project)" />
+              <option name="myItemType" value="com.jetbrains.resharper.projectView.solutionExplorer.SolutionExplorerNodeRider" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="JustShyvanaV2" />
+              <option name="myItemType" value="com.jetbrains.resharper.projectView.solutionExplorer.SolutionExplorerNodeRider" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+        <option name="show-file-system" value="false" />
+        <option name="show-all-items" value="false" />
+      </pane>
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="last_opened_file_path" value="F:/L#/References/LeagueSharp.dll" />
+  </component>
+  <component name="RunManager" selected=".NET Project.Default">
+    <configuration default="true" type="DotNetProject" factoryName=".NET Project">
+      <option name="PROJECT_PATH" value="" />
+      <option name="PROJECT_KIND" value="None" />
+      <option name="PROJECT_TFM" value="" />
+      <option name="EXE_PATH" value="" />
+      <option name="PROGRAM_PARAMETERS" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="USE_MONO" value="0" />
+      <option name="USE_EXTERNAL_CONSOLE" value="0" />
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="Default" type="DotNetProject" factoryName=".NET Project">
+      <option name="PROJECT_PATH" value="" />
+      <option name="PROJECT_KIND" value="None" />
+      <option name="PROJECT_TFM" value="" />
+      <option name="EXE_PATH" value="" />
+      <option name="PROGRAM_PARAMETERS" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="USE_MONO" value="0" />
+      <option name="USE_EXTERNAL_CONSOLE" value="0" />
+      <envs />
+      <method />
+    </configuration>
+    <list size="1">
+      <item index="0" class="java.lang.String" itemvalue=".NET Project.Default" />
+    </list>
+  </component>
+  <component name="ShelveChangesManager" show_recycled="false">
+    <option name="remove_strategy" value="false" />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="d9299723-e921-4616-ac26-d1283f72a687" name="Default" comment="" />
+      <created>1481830503173</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1481830503173</updated>
+      <workItem from="1481830504733" duration="313000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TimeTrackingManager">
+    <option name="totallyTimeSpent" value="313000" />
+  </component>
+  <component name="TodoView">
+    <todo-panel id="selected-file">
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+    <todo-panel id="all">
+      <are-packages-shown value="true" />
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="-8" y="-8" width="1936" height="1056" extended-state="0" />
+    <editor active="false" />
+    <layout>
+      <window_info id="Change Signature" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Errors in solution" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Build" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
+      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="UnitTesting" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="NuGet" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
+      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+    </layout>
+  </component>
+  <component name="VcsContentAnnotationSettings">
+    <option name="myLimit" value="2678400000" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager />
+    <watches-manager />
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/../../JustShyvanaV2/HpBarIndicator.cs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-66">
+          <caret line="10" column="32" selection-start-line="10" selection-start-column="32" selection-end-line="10" selection-end-column="32" />
+          <folding>
+            <marker date="1481830667431" expanded="true" signature="6:108" ph="..." />
+            <marker date="1481830667431" expanded="true" signature="133:2973" ph="{...}" />
+            <marker date="1481830667431" expanded="true" signature="169:2971" ph="{...}" />
+            <marker date="1481830667431" expanded="true" signature="408:757" ph="{...}" />
+            <marker date="1481830667431" expanded="true" signature="1350:1400" ph="{...}" />
+            <marker date="1481830667431" expanded="true" signature="1466:1522" ph="{...}" />
+            <marker date="1481830667431" expanded="true" signature="1587:1642" ph="{...}" />
+            <marker date="1481830667431" expanded="true" signature="1691:1837" ph="{...}" />
+            <marker date="1481830667431" expanded="true" signature="1890:2026" ph="{...}" />
+            <marker date="1481830667431" expanded="true" signature="2083:2371" ph="{...}" />
+            <marker date="1481830667431" expanded="true" signature="2434:2652" ph="{...}" />
+            <marker date="1481830667431" expanded="true" signature="2727:2965" ph="{...}" />
+            <marker date="1481830667431" expanded="true" signature="2797:2919" ph="{...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../JustShyvanaV2/JustShyvanaV2.cs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="144">
+          <caret line="9" column="23" selection-start-line="9" selection-start-column="23" selection-end-line="9" selection-end-column="23" />
+          <folding>
+            <marker date="1481830667414" expanded="true" signature="6:148" ph="..." />
+            <marker date="1481830667414" expanded="true" signature="174:15680" ph="{...}" />
+            <marker date="1481830667414" expanded="true" signature="194:15678" ph="{...}" />
+            <marker date="1481830667414" expanded="true" signature="518:594" ph="{...}" />
+            <marker date="1481830667414" expanded="true" signature="651:6067" ph="{...}" />
+            <marker date="1481830667414" expanded="true" signature="6211:6403" ph="{...}" />
+            <marker date="1481830667414" expanded="true" signature="6467:7102" ph="{...}" />
+            <marker date="1481830667414" expanded="true" signature="7189:8111" ph="{...}" />
+            <marker date="1481830667414" expanded="true" signature="8171:9090" ph="{...}" />
+            <marker date="1481830667414" expanded="true" signature="9149:9814" ph="{...}" />
+            <marker date="1481830667414" expanded="true" signature="9855:10486" ph="{...}" />
+            <marker date="1481830667414" expanded="true" signature="10515:11102" ph="{...}" />
+            <marker date="1481830667414" expanded="true" signature="11132:11671" ph="{...}" />
+            <marker date="1481830667414" expanded="true" signature="11708:12392" ph="{...}" />
+            <marker date="1481830667414" expanded="true" signature="12438:12653" ph="{...}" />
+            <marker date="1481830667414" expanded="true" signature="12699:13065" ph="{...}" />
+            <marker date="1481830667414" expanded="true" signature="13111:13306" ph="{...}" />
+            <marker date="1481830667414" expanded="true" signature="13352:13696" ph="{...}" />
+            <marker date="1481830667414" expanded="true" signature="13752:13832" ph="{...}" />
+            <marker date="1481830667414" expanded="true" signature="13893:14060" ph="{...}" />
+            <marker date="1481830667414" expanded="true" signature="14117:14600" ph="{...}" />
+            <marker date="1481830667414" expanded="true" signature="14656:14842" ph="{...}" />
+            <marker date="1481830667414" expanded="true" signature="14898:15240" ph="{...}" />
+            <marker date="1481830667414" expanded="true" signature="15296:15672" ph="{...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+  </component>
+</project>
