@@ -6,7 +6,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{840FFDC0-2ADA-402E-BC29-43EDD33C0E62}</ProjectGuid>
     <ProjectTypeGuids>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <OutputType>Library</OutputType>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>JustShyvanaV2</RootNamespace>
     <AssemblyName>JustShyvanaV2</AssemblyName>
@@ -32,22 +32,25 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>JustShyvanaV2.Program</StartupObject>
+  </PropertyGroup>
   <ItemGroup>
     <Compile Include="HpBarIndicator.cs" />
     <Compile Include="JustShyvanaV2.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="LeagueSharp, Version=1.0.0.25, Culture=neutral, PublicKeyToken=a41ba14f653257a6">
-      <HintPath>F:\L#\References\LeagueSharp.dll</HintPath>
+      <HintPath>C:\6wUlUrg0A\References\LeagueSharp.dll</HintPath>
     </Reference>
     <Reference Include="LeagueSharp.Common, Version=1.0.0.52, Culture=neutral, PublicKeyToken=57a5292ddd39b703">
-      <HintPath>F:\L#\References\LeagueSharp.Common.dll</HintPath>
+      <HintPath>C:\6wUlUrg0A\References\LeagueSharp.Common.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX, Version=2.6.3.0, Culture=neutral, PublicKeyToken=345b829e6e492981">
-      <HintPath>F:\L#\References\SharpDX.dll</HintPath>
+      <HintPath>C:\6wUlUrg0A\References\SharpDX.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX.Direct3D9, Version=2.6.3.0, Culture=neutral, PublicKeyToken=345b829e6e492981">
-      <HintPath>F:\L#\References\SharpDX.Direct3D9.dll</HintPath>
+      <HintPath>C:\6wUlUrg0A\References\SharpDX.Direct3D9.dll</HintPath>
     </Reference>
     <Reference Include="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <HintPath>..\..\..\..\..\Windows\Microsoft.NET\Framework\v4.0.30319\System.Drawing.dll</HintPath>

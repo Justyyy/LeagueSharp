@@ -6,7 +6,6 @@ using LeagueSharp.Common;
 using LeagueSharp;
 using SharpDX;
 
-
 namespace JustShyvanaV2
 {
     class Program
@@ -14,23 +13,27 @@ namespace JustShyvanaV2
         internal static Menu Menu;
         internal static Spell Q, W, E, R;
         internal static Orbwalking.Orbwalker Orbwalker;
-        internal static Obj_AI_Hero Player => ObjectManager.Player;
+        internal static Obj_AI_Hero Player = ObjectManager.Player;
         internal static HpBarIndicator BarIndicator = new HpBarIndicator();
 
         static void Main(string[] args)
         {
+            Console.WriteLine("Main1");
             CustomEvents.Game.OnGameLoad += OnGameLoad;
+            Console.WriteLine("Main2");
         }
 
         internal static void OnGameLoad(EventArgs args)
         {
+            Console.WriteLine(0);
             try
             {
+                Console.WriteLine(1);
                 if (ObjectManager.Player.ChampionName != "Shyvana")
                 {
                     return;
                 }
-
+                Console.WriteLine(2);
                 Notifications.AddNotification("Justy's Shyvana - [V.1.0.0.0]", 8000);
 
                 Q = new Spell(SpellSlot.Q);
@@ -55,7 +58,9 @@ namespace JustShyvanaV2
                 Menu.AddSubMenu(kmenu);
 
                 var cmenu = new Menu("[JS] - Combo", "cmenu");
+
                 var emenu = new Menu("[JS] - Extra", "emenu");
+
                 var smenu = new Menu("[JS] - Skills", "smenu");
 
                 smenu.AddItem(new MenuItem("useqcombo", "Use Q")).SetValue(true);
@@ -93,6 +98,7 @@ namespace JustShyvanaV2
                 Menu.AddSubMenu(exmenu);
 
                 var skmenu = new Menu("[JS] - Skins", "skmenu");
+
                 var skinitem = new MenuItem("useskin", "Enabled");
                 skmenu.AddItem(skinitem).SetValue(false);
 
@@ -100,8 +106,8 @@ namespace JustShyvanaV2
                 {
                     if (!eventArgs.GetNewValue<bool>())
                     {
-                        ObjectManager.Player.SetSkin(ObjectManager.Player.CharData.BaseSkinName,
-                            ObjectManager.Player.BaseSkinId);
+                        ObjectManager.Player.SetSkin(
+                            ObjectManager.Player.CharData.BaseSkinName, ObjectManager.Player.BaseSkinId);
                     }
                 };
 
@@ -125,7 +131,6 @@ namespace JustShyvanaV2
                 Drawing.OnEndScene += Drawing_OnEndScene;
                 Interrupter2.OnInterruptableTarget += Interrupter2_OnInterruptableTarget;
                 Orbwalking.AfterAttack += OnAfterAttack;
-
             }
 
             catch (Exception e)
@@ -145,10 +150,8 @@ namespace JustShyvanaV2
         {
             if (Menu.Item("drawhpbarfill").GetValue<bool>())
             {
-                foreach (
-                    var enemy in
-                    ObjectManager.Get<Obj_AI_Hero>()
-                        .Where(ene => ene.IsValidTarget() && !ene.IsZombie))
+                foreach (var enemy in
+                    ObjectManager.Get<Obj_AI_Hero>().Where(ene => ene.IsValidTarget() && !ene.IsZombie))
                 {
                     var color = R.IsReady() && IsLethal(enemy)
                         ? new ColorBGRA(0, 255, 0, 90)
@@ -162,7 +165,8 @@ namespace JustShyvanaV2
 
         private static void OnAfterAttack(AttackableUnit unit, AttackableUnit target)
         {
-            if (!unit.IsMe || !unit.IsValid) return;
+            if (!unit.IsMe || !unit.IsValid)
+                return;
 
             switch (Orbwalker.ActiveMode)
             {
@@ -193,12 +197,14 @@ namespace JustShyvanaV2
                 return;
 
             var eCircle = Menu.Item("drawe").GetValue<Circle>();
+
             if (eCircle.Active)
             {
                 Render.Circle.DrawCircle(Player.Position, E.Range, eCircle.Color);
             }
 
             var wCircle = Menu.Item("draww").GetValue<Circle>();
+
             if (wCircle.Active && !Player.HasBuff("ShyvanaTransform"))
             {
                 Render.Circle.DrawCircle(Player.Position, W.Range, wCircle.Color);
@@ -210,6 +216,7 @@ namespace JustShyvanaV2
             }
 
             var rCircle = Menu.Item("drawr").GetValue<Circle>();
+
             if (rCircle.Active)
             {
                 Render.Circle.DrawCircle(Player.Position, R.Range, rCircle.Color);
@@ -249,15 +256,18 @@ namespace JustShyvanaV2
         private static void Killsteal()
         {
             var target = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Physical);
+
             var target2 = TargetSelector.GetTarget(E.Range, TargetSelector.DamageType.Magical);
+
             {
-                if (Menu.Item("KsQ").GetValue<bool>() && target.IsValidTarget(Q.Range + 1) && target.Health <= Qdmg(target))
+                if (Menu.Item("KsQ").GetValue<bool>() && target.IsValidTarget(Q.Range + 1) &&
+                    target.Health <= Qdmg(target))
                 {
                     UseQ(target);
                 }
 
-
-                if (Menu.Item("KsE").GetValue<bool>() && target2.IsValidTarget(E.Range) && target.Health <= Edmg(target2))
+                if (Menu.Item("KsE").GetValue<bool>() && target2.IsValidTarget(E.Range) &&
+                    target.Health <= Edmg(target2))
                 {
                     UseE(target2);
                 }
@@ -267,6 +277,7 @@ namespace JustShyvanaV2
         static void Combo()
         {
             var target = TargetSelector.GetTarget(W.Range, TargetSelector.DamageType.Physical);
+
             if (target.IsValidTarget() && !target.IsZombie)
             {
                 if (Menu.Item("useqcombo").GetValue<bool>())
@@ -286,6 +297,7 @@ namespace JustShyvanaV2
         static void Harass()
         {
             var target = TargetSelector.GetTarget(E.Range, TargetSelector.DamageType.Physical);
+
             if (target.IsValidTarget() && !target.IsZombie)
             {
                 if (Menu.Item("useqharass").GetValue<bool>() && Q.IsReady())
@@ -301,8 +313,8 @@ namespace JustShyvanaV2
 
         private static void Clear()
         {
-            var minions = MinionManager.GetMinions(Player.Position, W.Range,
-                MinionTypes.All, MinionTeam.NotAlly, MinionOrderTypes.MaxHealth);
+            var minions = MinionManager.GetMinions(
+                Player.Position, W.Range, MinionTypes.All, MinionTeam.NotAlly, MinionOrderTypes.MaxHealth);
 
             foreach (var unit in minions)
             {
@@ -356,7 +368,9 @@ namespace JustShyvanaV2
         static void UseR(Obj_AI_Hero target)
         {
             var minr = Menu.Item("rene").GetValue<Slider>().Value;
+
             var enemys = target.CountEnemiesInRange(R.Range);
+
             if (minr <= enemys && R.IsReady() && target.Distance(Player.ServerPosition) <= R.Range)
             {
                 R.CastIfHitchanceEquals(target, HitChance.Medium);
@@ -373,10 +387,8 @@ namespace JustShyvanaV2
             if (unit == null)
                 return 0d;
 
-            return Qdmg(unit) + Wdmg(unit) +
-                   Edmg(unit) + Rdmg(unit);
+            return Qdmg(unit) + Wdmg(unit) + Edmg(unit) + Rdmg(unit);
         }
-
 
         private static double Qdmg(Obj_AI_Base target)
         {
@@ -384,11 +396,9 @@ namespace JustShyvanaV2
 
             if (Q.IsReady() && target != null)
             {
-
-                dmg += Player.CalcDamage(target, Damage.DamageType.Physical, Player.GetAutoAttackDamage(target, true) +
-                                                                             (new[] {0.2, 0.25, 0.30, 0.35, 0.40}[
-                                                                                 Q.Level - 1]));
-
+                dmg += Player.CalcDamage(
+                    target, Damage.DamageType.Physical,
+                    Player.GetAutoAttackDamage(target, true) + (new[] { 0.2, 0.25, 0.30, 0.35, 0.40 }[Q.Level - 1]));
             }
 
             return dmg;
@@ -412,9 +422,9 @@ namespace JustShyvanaV2
 
             if (E.IsReady() && target != null)
             {
-                dmg += Player.CalcDamage(target, Damage.DamageType.Magical,
-                (new[] {60, 100, 140, 180, 220}[E.Level - 1] +
-                 (0.6 * Player.FlatMagicDamageMod)));
+                dmg += Player.CalcDamage(
+                    target, Damage.DamageType.Magical,
+                    (new[] { 60, 100, 140, 180, 220 }[E.Level - 1] + (0.6 * Player.FlatMagicDamageMod)));
             }
 
             return dmg;
@@ -423,10 +433,12 @@ namespace JustShyvanaV2
         private static double Rdmg(Obj_AI_Base target)
         {
             double dmg = 0;
+
             if (R.IsReady() && target != null)
             {
-                dmg += Player.CalcDamage(target, Damage.DamageType.Magical, (new[] {175, 300, 425}[R.Level - 1] +
-                                                                             (0.8 * Player.FlatMagicDamageMod)));
+                dmg += Player.CalcDamage(
+                    target, Damage.DamageType.Magical,
+                    (new[] { 175, 300, 425 }[R.Level - 1] + (0.8 * Player.FlatMagicDamageMod)));
             }
 
             return dmg;
