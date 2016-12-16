@@ -38,6 +38,7 @@
   <ItemGroup>
     <Compile Include="HpBarIndicator.cs" />
     <Compile Include="JustShyvanaV2.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="LeagueSharp, Version=1.0.0.25, Culture=neutral, PublicKeyToken=a41ba14f653257a6">

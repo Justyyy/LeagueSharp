@@ -93,8 +93,7 @@ namespace JustShyvanaV2
                 Menu.AddSubMenu(fmenu);
 
                 var exmenu = new Menu("[JS] - Interrupt", "exmenu");
-                exmenu.AddItem(new MenuItem("interrupt", "Interrupt")).SetValue(false).ValueChanged +=
-                    (sender, eventArgs) => eventArgs.Process = false;
+                exmenu.AddItem(new MenuItem("interrupt", "Auto Interrupt with [R]").SetValue(true));
                 Menu.AddSubMenu(exmenu);
 
                 var skmenu = new Menu("[JS] - Skins", "skmenu");
@@ -176,8 +175,16 @@ namespace JustShyvanaV2
         private static void Interrupter2_OnInterruptableTarget(Obj_AI_Hero sender,
             Interrupter2.InterruptableTargetEventArgs args)
         {
-            if (R.IsReady() && sender.IsValidTarget(R.Range) && Menu.Item("interrupt").GetValue<bool>())
-                R.CastIfHitchanceEquals(sender, HitChance.Medium);
+            if (Menu.Item("interrupt").GetValue<bool>())
+            {
+                if (sender.IsValidTarget(R.Range))
+                {
+                    if (R.CanCast(sender))
+                    {
+                        R.Cast(sender);
+                    }
+                }
+            }
         }
 
         private static void Drawing_OnEndScene(EventArgs args)
