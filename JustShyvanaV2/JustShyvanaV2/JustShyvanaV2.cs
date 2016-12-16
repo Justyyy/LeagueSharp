@@ -34,7 +34,7 @@ namespace JustShyvanaV2
                     return;
                 }
                 Console.WriteLine(2);
-                Notifications.AddNotification("Justy's Shyvana - [V.1.0.0.0]", 8000);
+                Notifications.AddNotification("Justy's Shyvana - [V.1.0.0.1]", 8000);
 
                 Q = new Spell(SpellSlot.Q);
                 W = new Spell(SpellSlot.W, 350f);
@@ -130,12 +130,46 @@ namespace JustShyvanaV2
                 Drawing.OnDraw += Drawing_OnDraw;
                 Drawing.OnEndScene += Drawing_OnEndScene;
                 Interrupter2.OnInterruptableTarget += Interrupter2_OnInterruptableTarget;
-                Orbwalking.AfterAttack += OnAfterAttack;
+                Obj_AI_Base.OnDoCast += OnDoCast;
             }
 
             catch (Exception e)
             {
                 Console.WriteLine(e);
+            }
+        }
+
+        private static void OnDoCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
+        {
+            if (sender.IsMe && args.SData.IsAutoAttack() && args.Target is Obj_AI_Hero)
+            {
+                switch (Orbwalker.ActiveMode)
+                {
+                    case Orbwalking.OrbwalkingMode.Combo:
+                        if (Q.IsReady() && Menu.Item("useqcombo").GetValue<bool>())
+                        {
+                            Q.Cast();
+                        }
+                        break;
+                    case Orbwalking.OrbwalkingMode.Mixed:
+                        if (Q.IsReady() && Menu.Item("useqharass").GetValue<bool>())
+                        {
+                            Q.Cast();
+                        }
+                        break;
+                }
+            }
+            if (sender.IsMe && args.SData.IsAutoAttack() && args.Target is Obj_AI_Minion)
+            {
+                switch (Orbwalker.ActiveMode)
+                {
+                    case Orbwalking.OrbwalkingMode.LaneClear:
+                        if (Q.IsReady() && Menu.Item("useqclear").GetValue<bool>())
+                        {
+                            Q.Cast();
+                        }
+                        break;
+                }
             }
         }
 
@@ -160,34 +194,6 @@ namespace JustShyvanaV2
                     BarIndicator.unit = enemy;
                     BarIndicator.drawDmg((float) ComboDamage(enemy), color);
                 }
-            }
-        }
-
-        private static void OnAfterAttack(AttackableUnit unit, AttackableUnit target)
-        {
-            if (!unit.IsMe || !unit.IsValid)
-                return;
-
-            switch (Orbwalker.ActiveMode)
-            {
-                case Orbwalking.OrbwalkingMode.Combo:
-                    if (Menu.Item("useqcombo").GetValue<bool>() && target.IsValid<Obj_AI_Hero>())
-                    {
-                        Q.Cast();
-                    }
-                    break;
-                case Orbwalking.OrbwalkingMode.Mixed:
-                    if (Menu.Item("useqharass").GetValue<bool>() && target.IsValid<Obj_AI_Hero>())
-                    {
-                        Q.Cast();
-                    }
-                    break;
-                case Orbwalking.OrbwalkingMode.LaneClear:
-                    if (Menu.Item("useqclear").GetValue<bool>() && target.IsValid<Obj_AI_Minion>())
-                    {
-                        Q.Cast();
-                    }
-                    break;
             }
         }
 
@@ -263,7 +269,7 @@ namespace JustShyvanaV2
                 if (Menu.Item("KsQ").GetValue<bool>() && target.IsValidTarget(Q.Range + 1) &&
                     target.Health <= Qdmg(target))
                 {
-                    UseQ(target);
+                    Q.Cast();
                 }
 
                 if (Menu.Item("KsE").GetValue<bool>() && target2.IsValidTarget(E.Range) &&
@@ -280,9 +286,6 @@ namespace JustShyvanaV2
 
             if (target.IsValidTarget() && !target.IsZombie)
             {
-                if (Menu.Item("useqcombo").GetValue<bool>())
-                    UseQ(target);
-
                 if (Menu.Item("usewcombo").GetValue<bool>())
                     UseW(target);
 
@@ -300,9 +303,6 @@ namespace JustShyvanaV2
 
             if (target.IsValidTarget() && !target.IsZombie)
             {
-                if (Menu.Item("useqharass").GetValue<bool>() && Q.IsReady())
-                    UseQ(target);
-
                 if (Menu.Item("usewharass").GetValue<bool>() && W.IsReady())
                     UseW(target);
 
@@ -318,11 +318,6 @@ namespace JustShyvanaV2
 
             foreach (var unit in minions)
             {
-                if (Menu.Item("useqclear").GetValue<bool>() && Q.IsReady())
-                {
-                    UseQ(unit);
-                }
-
                 if (Menu.Item("usewclear").GetValue<bool>() && W.IsReady())
                 {
                     UseW(unit);
@@ -332,15 +327,6 @@ namespace JustShyvanaV2
                 {
                     UseE(unit);
                 }
-            }
-        }
-
-        static void UseQ(Obj_AI_Base target)
-        {
-            if (Q.IsReady() && target.Distance(Player.ServerPosition) <= Q.Range)
-            {
-                if (Q.Cast())
-                    Orbwalking.ResetAutoAttackTimer();
             }
         }
 
