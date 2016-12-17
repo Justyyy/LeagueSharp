@@ -199,9 +199,6 @@ namespace JustShyvanaV2
 
         private static void Drawing_OnDraw(EventArgs args)
         {
-            if (Player.IsDead)
-                return;
-
             var eCircle = Menu.Item("drawe").GetValue<Circle>();
 
             if (eCircle.Active)
@@ -273,27 +270,43 @@ namespace JustShyvanaV2
                 }
 
                 if (Menu.Item("KsE").GetValue<bool>() && target2.IsValidTarget(E.Range) &&
-                    target.Health <= Edmg(target2))
+                    target.Health <= Edmg(target2) && E.IsReady())
                 {
-                    UseE(target2);
+                    var pred = E.GetPrediction(target);
+                    if (pred.Hitchance >= HitChance.High)
+                    {
+                        E.Cast(pred.CastPosition);
+                    }
                 }
             }
         }
 
         static void Combo()
         {
-            var target = TargetSelector.GetTarget(W.Range, TargetSelector.DamageType.Physical);
+            var target = TargetSelector.GetTarget(R.Range, TargetSelector.DamageType.Physical);
 
-            if (target.IsValidTarget() && !target.IsZombie)
+            if (target != null)
             {
-                if (Menu.Item("usewcombo").GetValue<bool>())
+                if (Menu.Item("usewcombo").GetValue<bool>() && target.IsValidTarget(W.Range))
+                {
                     UseW(target);
+                }
+                    
 
-                if (Menu.Item("useecombo").GetValue<bool>())
-                    UseE(target);
+                if (Menu.Item("useecombo").GetValue<bool>() && target.IsValidTarget(E.Range) && E.IsReady())
+                {
+                    var pred = E.GetPrediction(target);
+                    if (pred.Hitchance >= HitChance.High)
+                    {
+                        E.Cast(pred.CastPosition);
+                    }
+                }
 
-                if (Menu.Item("usercombo").GetValue<bool>())
+                if (Menu.Item("usercombo").GetValue<bool>() && target.IsValidTarget(R.Range) && R.IsReady())
+                {
                     UseR(target);
+                }
+                    
             }
         }
 
@@ -301,13 +314,22 @@ namespace JustShyvanaV2
         {
             var target = TargetSelector.GetTarget(E.Range, TargetSelector.DamageType.Physical);
 
-            if (target.IsValidTarget() && !target.IsZombie)
+            if (target != null)
             {
-                if (Menu.Item("usewharass").GetValue<bool>() && W.IsReady())
+                if (Menu.Item("usewharass").GetValue<bool>() && W.IsReady() && target.IsValidTarget(W.Range))
+                {
                     UseW(target);
+                }
 
-                if (Menu.Item("useeharass").GetValue<bool>() && E.IsReady())
-                    UseE(target);
+                if (Menu.Item("useeharass").GetValue<bool>() && E.IsReady() && target.IsValidTarget(E.Range))
+                {
+                    var pred = E.GetPrediction(target);
+                    if (pred.Hitchance >= HitChance.High)
+                    {
+                        E.Cast(pred.CastPosition);
+                    }
+                }
+                    
             }
         }
 
@@ -325,7 +347,11 @@ namespace JustShyvanaV2
 
                 if (Menu.Item("useeclear").GetValue<bool>() && E.IsReady())
                 {
-                    UseE(unit);
+                    var minioncount = E.GetLineFarmLocation(minions);
+                    if (minioncount.MinionsHit > 3)
+                    {
+                        E.Cast(minioncount.Position);
+                    }
                 }
             }
         }
@@ -343,14 +369,6 @@ namespace JustShyvanaV2
             }
         }
 
-        static void UseE(Obj_AI_Base target)
-        {
-            if (E.IsReady() && target.Distance(Player.ServerPosition) <= E.Range)
-            {
-                E.CastIfHitchanceEquals(target, HitChance.High);
-            }
-        }
-
         static void UseR(Obj_AI_Hero target)
         {
             var minr = Menu.Item("rene").GetValue<Slider>().Value;
@@ -359,7 +377,11 @@ namespace JustShyvanaV2
 
             if (minr <= enemys && R.IsReady() && target.Distance(Player.ServerPosition) <= R.Range)
             {
-                R.CastIfHitchanceEquals(target, HitChance.Medium);
+                var pred = R.GetPrediction(target);
+                if (pred.Hitchance >= HitChance.High)
+                {
+                    R.Cast(pred.CastPosition);
+                }
             }
         }
 
