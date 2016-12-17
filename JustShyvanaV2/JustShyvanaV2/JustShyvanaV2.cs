@@ -279,7 +279,7 @@ namespace JustShyvanaV2
                 if (Menu.Item("KsE").GetValue<bool>() && target2.IsValidTarget(E.Range) &&
                     target.Health <= Edmg(target2) && E.IsReady())
                 {
-                    var pred = E.GetPrediction(target);
+                    var pred = E.GetPrediction(target2);
                     if (pred.Hitchance >= HitChance.High)
                     {
                         E.Cast(pred.CastPosition);
