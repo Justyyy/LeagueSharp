@@ -34,7 +34,7 @@ namespace JustShyvanaV2
                     return;
                 }
                 Console.WriteLine(2);
-                Notifications.AddNotification("Justy's Shyvana - [V.1.0.0.1]", 8000);
+                Notifications.AddNotification("Justy's Shyvana - [V.1.0.0.2]", 8000);
 
                 Q = new Spell(SpellSlot.Q);
                 W = new Spell(SpellSlot.W, 350f);
